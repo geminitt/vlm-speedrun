@@ -10,7 +10,7 @@ Read them in order; each notebook only uses concepts introduced earlier.
 | Notebook | Topic | GPU |
 |---|---|---|
 | `00_thong_ke_suy_luan` | inferential statistics: standard error, Wald vs Wilson intervals, p-values, exact McNemar, power, paired bootstrap, effect size | no |
-| `01_bo_tri_thi_nghiem_cho_cong_bang` | fair experiment design, through the six measurement mistakes met in the project | no |
+| `01_bo_tri_thi_nghiem_cho_cong_bang` | fair experiment design, through the eleven measurement mistakes met in the project and its audit | no |
 | `02_do_thoi_gian_tren_gpu` | timing GPU work: asynchronous execution, warm-up, noise, clocks, drift, profiler, Amdahl's law | yes |
 | `03_ben_trong_bo_ma_hoa_thi_giac` | the vision encoder: tiling, patch embedding, ViT, pixel shuffle, FLOP counting | yes |
 | `04_prefill_decode_kv_cache` | autoregressive decoding, KV cache, compute vs bandwidth limits, roofline | yes |
