@@ -15,7 +15,7 @@ from pathlib import Path
 import torch
 
 from bench.latency_probe import GpuSampler, summarize, timed
-from bench.metrics import relaxed_match, wilson_interval, anls
+from bench.metrics import accuracy_ci, relaxed_match, anls
 from bench.prune import build_inputs
 
 # The instruction appended to every question. These strings are an experimental
@@ -267,9 +267,10 @@ def summarize_config(records, noise_cv_pct):
     pre = [r.prefill_ms for r in records]
     k = sum(r.correct for r in records)
     n = len(records)
-    lo, hi = wilson_interval(k, n)
+    (lo, hi), n_samples = accuracy_ci(records)   # one observation per sample, not per round
     return {
         "n": n,
+        "n_samples": n_samples,
         "accuracy": k / n if n else 0.0,
         "accuracy_ci95": [lo, hi],
         "generate_ms": summarize(gen),

@@ -3,7 +3,8 @@
 Presentation rules:
   - colour encodes the LEVER FAMILY (baseline / fewer tiles / token pruning), never rank
   - every point carries a direct label, because the palette has one low-contrast slot
-  - error bars are the 95% Wilson confidence interval of accuracy
+  - error bars are the 95% Wilson confidence interval of accuracy, one observation
+    per sample (replicate rounds are not extra samples)
   - grid and axes recede, the data comes forward
 """
 import argparse, json
@@ -12,6 +13,8 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+from bench.metrics import accuracy_ci
 
 THEMES = {
     "light": dict(surface="#fcfcfb", ink="#0b0b0b", ink2="#52514e", grid="#e3e2dd",
@@ -22,8 +25,8 @@ THEMES = {
 FAMILIES = ["Baseline", "Fewer image tiles", "Prune tokens after encoding"]
 # Labels are staggered like steps. Points in the left half are always labelled to
 # the right so they are not clipped at the edge, and vice versa.
-RIGHT = [(13, 12), (13, -12), (13, 34), (13, -32), (13, 56), (13, -52)]
-LEFT = [(-13, 10), (-13, -6), (-13, 24), (-13, -20)]
+LABEL_GAP = 4.2        # minimum vertical distance between stacked labels, in accuracy points
+CLUSTER_GAP = 0.3      # points closer than this on the speed axis share one label column
 
 
 def family_of(key):
@@ -39,21 +42,42 @@ def load(path):
     sp = r.get("paired_speedup_vs_baseline", {})
     rows = []
     for key, c in r["configs"].items():
+        # Recompute the interval from the records with one observation per sample;
+        # files written before this fix stored an interval that counted every round.
+        (lo, hi), _ = accuracy_ci([x for x in r["records"] if x["config"] == key])
         rows.append(dict(
             key=key.split("(")[0],
             fam=family_of(key),
             acc=100 * c["accuracy"],
-            lo=100 * c["accuracy_ci95"][0],
-            hi=100 * c["accuracy_ci95"][1],
+            lo=100 * lo,
+            hi=100 * hi,
             speed=sp.get(key, {}).get("median_speedup", 1.0),
             tokens=c["image_tokens_median"],
         ))
     rows = sorted(rows, key=lambda d: d["speed"])
-    xs = [d["speed"] for d in rows]
-    mid = (min(xs) + max(xs)) / 2
-    for i, d in enumerate(rows):
-        d["slot"], d["x_mid"] = i, mid
     return r, rows
+
+
+def label_positions(rows):
+    """Place direct labels: one column to the right of each cluster of nearby points.
+
+    Points closer than CLUSTER_GAP on the speed axis form a cluster. Inside a
+    cluster, labels go in accuracy order, each pushed down just enough to keep
+    LABEL_GAP from the one above, so clustered points never share a line.
+    Returns {id(row): (x, y)} in data coordinates.
+    """
+    clusters, pos = [], {}
+    for d in sorted(rows, key=lambda d: d["speed"]):
+        if clusters and d["speed"] - clusters[-1][-1]["speed"] <= CLUSTER_GAP:
+            clusters[-1].append(d)
+        else:
+            clusters.append([d])
+    for c in clusters:
+        x, prev = max(d["speed"] for d in c) + 0.1, None
+        for d in sorted(c, key=lambda d: -d["acc"]):
+            y = d["acc"] if prev is None else min(d["acc"], prev - LABEL_GAP)
+            pos[id(d)], prev = (x, y), y
+    return pos
 
 
 def draw(path, out, theme="light"):
@@ -72,17 +96,15 @@ def draw(path, out, theme="light"):
                     fmt="o", ms=9, lw=0, elinewidth=1.6, capsize=3,
                     color=t["series"][f], ecolor=t["series"][f], alpha=0.95,
                     markeredgecolor=t["surface"], markeredgewidth=1.5, label=name)
-        for d in pts:                       # direct labels, staggered so they do not overlap
-            if d["speed"] < d["x_mid"]:
-                dx, dy = RIGHT[d["slot"] % len(RIGHT)]; ha = "left"
-            else:
-                dx, dy = LEFT[d["slot"] % len(LEFT)]; ha = "right"
-            ax.annotate(f"{d['key']} · {d['tokens']:.0f} tok",
-                        (d["speed"], d["acc"]), textcoords="offset points",
-                        xytext=(dx, dy), fontsize=8, color=t["ink2"], ha=ha,
-                        arrowprops=dict(arrowstyle="-", color=t["grid"], lw=0.8,
-                                        shrinkA=0, shrinkB=6))
 
+    pos = label_positions(rows)
+    for d in rows:
+        ax.annotate(f"{d['key']} · {d['tokens']:.0f} tok",
+                    (d["speed"], d["acc"]), xytext=pos[id(d)],
+                    textcoords="data", fontsize=8, color=t["ink2"], ha="left",
+                    va="center",
+                    arrowprops=dict(arrowstyle="-", color=t["grid"], lw=0.8,
+                                    shrinkA=2, shrinkB=6))
     base = next(d for d in rows if d["fam"] == 0)
     ax.axhline(base["acc"], color=t["grid"], lw=1.2, ls="--", zorder=0)
     ax.axhspan(base["lo"], base["hi"], color=t["grid"], alpha=0.5, zorder=0)

@@ -66,6 +66,25 @@ def wilson_interval(k, n, z=1.96):
     return (max(0.0, centre - half), min(1.0, centre + half))
 
 
+def accuracy_ci(records):
+    """95% Wilson interval for accuracy, counting each sample once.
+
+    Replicate rounds of the same sample are not independent observations: greedy
+    decoding gives the same verdict every round, so counting records instead of
+    samples would shrink the interval by about sqrt(rounds). Each sample contributes
+    its mean correctness over the rounds. Returns ((lower, upper), n_samples).
+    """
+    from collections import defaultdict
+    per = defaultdict(list)
+    for r in records:
+        sid = r["sample_id"] if isinstance(r, dict) else r.sample_id
+        ok = r["correct"] if isinstance(r, dict) else r.correct
+        per[sid].append(float(ok))
+    n = len(per)
+    k = sum(sum(v) / len(v) for v in per.values())
+    return wilson_interval(k, n), n
+
+
 def mcnemar(b, c):
     """McNemar test for two classifiers evaluated on the SAME samples.
 

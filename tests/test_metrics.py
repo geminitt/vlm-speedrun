@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from bench.metrics import relaxed_match, relaxed_accuracy, to_number, wilson_interval
+from bench.metrics import accuracy_ci, relaxed_match, relaxed_accuracy, to_number, wilson_interval
 
 
 def test_exact_match():
@@ -96,3 +96,25 @@ def test_anls_unrelated_answer_scores_zero():
 def test_anls_takes_the_best_of_several_answers():
     from bench.metrics import anls
     assert anls("2022", ["year 2019", "2022"]) == 1.0
+
+
+def test_accuracy_ci_counts_each_sample_once():
+    # Greedy decoding gives the same verdict in every round, so three replicate
+    # rounds carry no more information than one: the interval must not shrink.
+    one_round = [{"sample_id": i, "correct": i < 12} for i in range(40)]
+    three_rounds = one_round * 3
+    (lo1, hi1), n1 = accuracy_ci(one_round)
+    (lo3, hi3), n3 = accuracy_ci(three_rounds)
+    assert n1 == n3 == 40
+    assert (lo1, hi1) == (lo3, hi3)
+    assert (lo3, hi3) == wilson_interval(12, 40)
+
+
+def test_accuracy_ci_averages_rounds_that_disagree():
+    # With random token selection the rounds can differ; each sample then
+    # contributes its mean correctness, still as one observation.
+    recs = [{"sample_id": 0, "correct": True}, {"sample_id": 0, "correct": False},
+            {"sample_id": 1, "correct": True}, {"sample_id": 1, "correct": True}]
+    (lo, hi), n = accuracy_ci(recs)
+    assert n == 2
+    assert (lo, hi) == wilson_interval(1.5, 2)
