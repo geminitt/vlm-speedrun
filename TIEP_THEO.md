@@ -18,9 +18,9 @@ Hạ tầng đã kiểm chứng:
 | Thành phần | Trạng thái |
 |---|---|
 | Bản clone mới chạy được máy chủ | ✅ mã gRPC tự sinh lại khi thiếu hoặc lệch phiên bản |
-| Môi trường CI (`pixi run test`) | ✅ 1,8 GB thay vì 6,2 GB; 38 test xanh trên máy. **Chưa thấy chạy trên GitHub** |
-| Ảnh Docker | ✅ build được (3,46 GB), đã chạy máy chủ trong container và trả lời đúng một câu hỏi thật trên CPU |
-| Docker có GPU | ❌ máy chưa có NVIDIA Container Toolkit — cài cần `sudo` |
+| Môi trường CI (`pixi run test`) | ✅ xanh trên GitHub: 38 test, 33 giây |
+| Ảnh Docker | ✅ 3,49 GB, build chịu được mạng chập chờn |
+| Docker có GPU | ✅ chạy và đo được; chênh với chạy trực tiếp 3–9%, dưới ngưỡng nhiễu |
 
 ## Phần mở rộng có thể làm thêm
 
@@ -34,8 +34,6 @@ Không bắt buộc, xếp theo mức đáng làm:
    hoá thị giác chiếm hơn một nửa thời gian" có đúng ngoài SmolVLM không.
 4. **Batching ở máy chủ** — hiện mỗi lần chỉ xử lý một yêu cầu; gộp lô có thể tăng
    thông lượng mà không đổi phần cứng.
-5. **Chạy container có GPU** — cần cài NVIDIA Container Toolkit (apt, cần `sudo`),
-   rồi thêm vào `~/wsl/apt-packages.txt` cho đúng quy ước của máy.
 
 ## Lưu ý khi chạy lại
 

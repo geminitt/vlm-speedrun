@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1
 # Máy chủ suy luận vlm-speedrun.
 #
 #   docker build -t vlm-speedrun .
@@ -7,8 +8,11 @@
 # theo thư viện CUDA runtime, còn driver lấy từ máy chủ qua nvidia-container-toolkit.
 FROM ubuntu:24.04
 
+# gcc và libc6-dev: Triton (PyTorch dùng để sinh kernel GPU) biên dịch một đoạn mã
+# khởi chạy bằng C ngay lúc chạy. Thiếu chúng thì mọi yêu cầu trên GPU đều lỗi
+# "Failed to find C compiler" — chạy trên CPU thì không lộ ra vì Triton không được gọi.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        curl ca-certificates && rm -rf /var/lib/apt/lists/*
+        curl ca-certificates gcc libc6-dev && rm -rf /var/lib/apt/lists/*
 
 # pixi dựng môi trường từ đúng pixi.lock dùng lúc phát triển
 RUN curl -fsSL https://pixi.sh/install.sh | bash
@@ -16,7 +20,14 @@ ENV PATH="/root/.pixi/bin:${PATH}"
 
 WORKDIR /app
 COPY pixi.toml pixi.lock ./
-RUN pixi install --locked -e default
+# Bộ đệm tải về dùng chung giữa các lần build: sửa một lớp phía trên sẽ không
+# kéo theo việc tải lại vài GB gói, và mạng đứt giữa chừng thì lần sau thử lại được.
+# Giảm số luồng tải song song từ mặc định 50 xuống 8: đường truyền không ổn định
+# hay ngắt khi mở quá nhiều kết nối cùng lúc
+# UV_HTTP_TIMEOUT: tệp torch nặng 529 MB; trên đường truyền chậm, thời gian chờ
+# mặc định khoảng 30 giây làm bộ cài bỏ ngang cả tệp giữa chừng
+RUN --mount=type=cache,target=/root/.cache/rattler \
+    UV_HTTP_TIMEOUT=900 pixi install --locked -e default --concurrent-downloads 4
 
 COPY bench/ bench/
 COPY serve/ serve/

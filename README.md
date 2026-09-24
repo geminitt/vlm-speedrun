@@ -39,9 +39,17 @@ docker build -t vlm-speedrun .
 docker run --gpus all -p 50051:50051 -v ~/.cache/huggingface:/models vlm-speedrun
 ```
 
-`--gpus all` cần NVIDIA Container Toolkit trên máy chủ Docker. Không có GPU thì
-chạy được trên CPU bằng `--device cpu` (đã kiểm tra với bản 256M: khoảng 15 giây
-mỗi yêu cầu — chạy được nhưng không dùng để phục vụ thật).
+`--gpus all` cần NVIDIA Container Toolkit khi Docker engine chạy bên trong WSL
+(Docker Desktop thì không cần). Đã đo máy chủ trong container có GPU, cùng tham số
+với lúc chạy trực tiếp:
+
+| Cạnh dài | Chạy trực tiếp | Trong Docker | Chênh lệch |
+|---:|---:|---:|---:|
+| 768 | 503 ms · 2,02 yc/s | 517 ms · 1,95 yc/s | +3% |
+| 1536 | 939 ms · 1,03 yc/s | 1.020 ms · 0,96 yc/s | +9% |
+
+Cả hai đều dưới ngưỡng nhiễu 25,5%, nên không kết luận được là Docker chậm hơn.
+Không có GPU thì chạy bằng `--device cpu` (bản 256M: khoảng 15 giây mỗi yêu cầu).
 
 Phần cứng dùng để đo: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**,
 chạy trong WSL2. Không cần GPU đám mây, không tốn tiền API.
