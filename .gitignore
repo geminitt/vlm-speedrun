@@ -1,0 +1,16 @@
+# môi trường pixi (6,3 GB, dựng lại được từ pixi.lock)
+.pixi/*
+!.pixi/config.toml
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+
+# nhật ký chạy: tái tạo được, và chứa thanh tiến trình rác
+results/*.log
+
+# mã sinh tự động từ vlm.proto (tái tạo bằng grpc_tools.protoc)
+serve/vlm_pb2.py
+serve/vlm_pb2_grpc.py

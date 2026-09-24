@@ -1,0 +1,29 @@
+[workspace]
+authors = ["geminitt <tkt310505@gmail.com>"]
+channels = ["conda-forge"]
+name = "vlm-speedrun"
+platforms = ["linux-64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+
+[pypi-dependencies]
+torch = ">=2.14.0, <3"
+torchvision = ">=0.29.0, <0.30"
+transformers = ">=5.17.0, <6"
+accelerate = ">=1.15.0, <2"
+pillow = ">=12.3.0, <13"
+matplotlib = ">=3.11.2, <4"
+num2words = ">=0.5.14, <0.6"
+jupyter = ">=1.1.1, <2"
+datasets = ">=5.0.1, <6"
+pytest = ">=9.1.1, <10"
+nbclient = ">=0.11.0, <0.12"
+nbformat = ">=5.11.1, <6"
+ipykernel = ">=7.3.0, <8"
+bitsandbytes = ">=0.50.2, <0.51"
+grpcio = ">=1.84.0, <2"
+grpcio-tools = ">=1.84.0, <2"
