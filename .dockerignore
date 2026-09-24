@@ -4,3 +4,4 @@ notebooks/
 *.log
 __pycache__/
 .git/
+serve/vlm_pb2*.py

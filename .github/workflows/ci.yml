@@ -11,17 +11,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Cài pixi
+      # Chỉ cài môi trường "ci" (PyTorch bản CPU, khoảng 1,8 GB), không cài môi
+      # trường mặc định có PyTorch bản CUDA (khoảng 6 GB). Bộ test không cần GPU
+      # và không tải mô hình: nó kiểm tra phần lõi — thống kê, chấm điểm, bố trí
+      # thí nghiệm, chọn token, sinh mã gRPC — chứ không kiểm tra chất lượng mô hình.
+      - name: Cài pixi và môi trường ci
         uses: prefix-dev/setup-pixi@v0.8.1
         with:
           pixi-version: v0.79.0
+          environments: ci
           cache: true
 
-      # Bộ test cố ý không cần GPU và không tải mô hình: nó kiểm tra phần lõi
-      # (thống kê, chấm điểm, bố trí thí nghiệm, chọn token) chứ không kiểm tra
-      # chất lượng mô hình. Nhờ vậy CI chạy trong vài giây trên máy chỉ có CPU.
+      # Bản clone mới không có mã sinh từ vlm.proto; test_proto.py đi đúng đường đó.
       - name: Chạy test
-        run: pixi run python -m pytest tests/ -q
+        run: pixi run -e ci test
 
-      - name: Kiểm tra script chạy lại được
+      - name: Kiểm tra cú pháp script chạy lại
         run: bash -n speedrun.sh
