@@ -1,0 +1,6 @@
+.pixi/
+results/
+notebooks/
+*.log
+__pycache__/
+.git/

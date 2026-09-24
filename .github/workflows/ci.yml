@@ -1,0 +1,27 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cài pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          pixi-version: v0.79.0
+          cache: true
+
+      # Bộ test cố ý không cần GPU và không tải mô hình: nó kiểm tra phần lõi
+      # (thống kê, chấm điểm, bố trí thí nghiệm, chọn token) chứ không kiểm tra
+      # chất lượng mô hình. Nhờ vậy CI chạy trong vài giây trên máy chỉ có CPU.
+      - name: Chạy test
+        run: pixi run python -m pytest tests/ -q
+
+      - name: Kiểm tra script chạy lại được
+        run: bash -n speedrun.sh
