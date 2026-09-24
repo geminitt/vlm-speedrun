@@ -28,3 +28,8 @@ jobs:
 
       - name: Check reproduction script syntax
         run: bash -n speedrun.sh
+
+      # Every number in README.md is generated from results/ by bench/report.py.
+      # A result file that changes without the README being regenerated fails here.
+      - name: Check README matches the recorded results
+        run: pixi run -e ci python -m bench.report --check
