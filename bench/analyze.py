@@ -9,7 +9,7 @@ from bench.metrics import paired_accuracy
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--results", default="results/gate2_edge_sweep.json")
+    ap.add_argument("--results", default="results/gate2_sweep.json")
     ap.add_argument("--alpha", type=float, default=0.05)
     a = ap.parse_args()
     r = json.load(open(a.results))

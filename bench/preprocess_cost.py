@@ -10,7 +10,7 @@ from pathlib import Path
 import torch
 
 from bench.harness import Runner, Config, load_samples
-from bench.latency_probe import summarize, timed
+from bench.latency_probe import check_gpu_idle, summarize, timed
 
 
 def main():
@@ -19,7 +19,11 @@ def main():
     ap.add_argument("--samples", type=int, default=16)
     ap.add_argument("--edges", default="1536,768")
     ap.add_argument("--out", default="results/preprocess_cost.json")
+    ap.add_argument("--allow-busy-gpu", action="store_true")
     a = ap.parse_args()
+    busy = None if a.allow_busy_gpu else check_gpu_idle()
+    if busy:
+        raise SystemExit(busy)
 
     runner = Runner(a.model)
     samples = load_samples(a.samples, seed=0)

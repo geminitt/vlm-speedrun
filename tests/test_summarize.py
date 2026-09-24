@@ -35,3 +35,11 @@ def test_cv_grows_with_spread():
 def test_single_element_does_not_crash():
     s = summarize([42.0])
     assert s["median"] == 42.0 and s["std"] == 0.0
+
+
+def test_robust_cv_ignores_a_single_outlier():
+    from bench.metrics import robust_cv
+    steady = [100.0 + (i % 5) for i in range(60)]
+    assert abs(robust_cv(steady + [300.0]) - robust_cv(steady)) < 0.5
+    s = summarize(steady + [300.0])
+    assert s["cv_pct"] > 3 * s["robust_cv_pct"]      # the plain CV is dominated by one run

@@ -1,12 +1,14 @@
 """Main benchmark harness for vlm-speedrun.
 
-One command, one headline metric, and six anti-noise rules enforced in code:
-  1. interleave configurations instead of running them in blocks
-  2. shuffle the order within each round
-  3. report median and IQR, never mean +/- standard deviation
-  4. set the threshold for claiming an improvement from measured noise
-  5. record clock, temperature and power alongside every measurement
-  6. re-measure the control configuration throughout the session to detect drift
+The six measurement rules of the README, and where each lives in this file:
+  1. the timed region covers the whole real path, in every configuration  -> Runner.run
+  2. rounds are replicates over the same sample set, so comparisons pair   -> build_plan
+  3. configurations are interleaved and shuffled, with a seed              -> build_plan
+  4. report the median and interquartile range                             -> summarize_config
+  5. claim a speedup only when its 95% interval excludes 1                 -> paired_speedup
+  6. record invariants and machine state, and check the run's integrity:
+     image tokens, clock, temperature, control drift, timing spikes, and
+     GPU memory held by other processes                                    -> main (integrity)
 """
 import argparse, json, random, statistics, time
 from dataclasses import dataclass, field, asdict
@@ -14,8 +16,9 @@ from pathlib import Path
 
 import torch
 
-from bench.latency_probe import GpuSampler, summarize, timed
-from bench.metrics import accuracy_ci, relaxed_match, anls
+from bench.latency_probe import (GpuSampler, check_gpu_idle, foreign_memory_mb,
+                                 summarize, timed)
+from bench.metrics import accuracy_ci, anls, bootstrap_ci, clean_answer, relaxed_match
 from bench.prune import build_inputs
 
 # The instruction appended to every question. These strings are an experimental
@@ -24,6 +27,7 @@ from bench.prune import build_inputs
 PROMPTS = {
     "vi": "{q}\nTrả lời ngắn gọn, chỉ đưa ra đáp án.",
     "en": "{q}\nAnswer briefly with the answer only.",
+    "none": "{q}",                    # the question alone, for serving free-form requests
 }
 PROMPT = PROMPTS["vi"]   # kept as the default so earlier results stay reproducible
 
@@ -34,7 +38,7 @@ class Config:
     name: str
     keep_ratio: float = 1.0          # fraction of image tokens kept (after the connector)
     method: str = "uniform"          # token selection: uniform | pool | random | norm
-    prompt: str = "vi"               # instruction language: vi | en
+    prompt: str = "vi"               # instruction appended to the question: vi | en | none
     split: bool = True               # whether the image is split into tiles
     max_edge: int = 1536             # longest edge when tiling (SmolVLM default)
     max_new_tokens: int = 32
@@ -94,6 +98,7 @@ class Record:
     input_tokens: int
     clock_mhz: float = 0.0
     temp_c: float = 0.0
+    foreign_mb: float = 0.0          # GPU memory held by other processes at the time
 
 
 class Runner:
@@ -149,7 +154,8 @@ class Runner:
             new_tokens = out[0][ids.numel():]
         else:
             embeds, mask, n_img = build_inputs(self.model, inputs,
-                                               cfg.keep_ratio, cfg.method)
+                                               cfg.keep_ratio, cfg.method,
+                                               seed=sample.get("sample_id", 0))
             out = self.model.generate(inputs_embeds=embeds, attention_mask=mask,
                                       do_sample=False,
                                       max_new_tokens=cfg.max_new_tokens)
@@ -176,15 +182,16 @@ class Runner:
                 if gen:
                     return self.model.generate(**inputs, do_sample=False,
                                                max_new_tokens=cfg.max_new_tokens)
-                return self.model(**inputs)
+                return self.model(**inputs, logits_to_keep=1)   # as generate() does
             embeds, mask, n_kept = build_inputs(self.model, inputs,
-                                                cfg.keep_ratio, cfg.method)
+                                                cfg.keep_ratio, cfg.method,
+                                                seed=sample["sample_id"])
             state["n_img"], state["n_in"] = n_kept, int(embeds.shape[1])
             kw = {"inputs_embeds": embeds, "attention_mask": mask}
             if gen:
                 return self.model.generate(**kw, do_sample=False,
                                            max_new_tokens=cfg.max_new_tokens)
-            return self.model(**kw)
+            return self.model(**kw, logits_to_keep=1)
 
         prefill_ms, _ = timed(lambda: full(False))
         gen_ms, out = timed(lambda: full(True))
@@ -239,8 +246,9 @@ def build_plan(configs, n_samples, rounds, seed):
 def paired_speedup(records, base_key, other_key):
     """Paired comparison: for each sample, take the ratio of the two latencies.
 
-    Returns the median ratio and its interquartile range. This removes the effect
-    of some samples being heavier than others, which dominates the spread.
+    Returns the median ratio, its interquartile range, and a bootstrap 95% interval
+    for the median (rule 5). Pairing removes the effect of some samples being heavier
+    than others, which dominates the spread.
     """
     from collections import defaultdict
     per = defaultdict(dict)
@@ -257,12 +265,51 @@ def paired_speedup(records, base_key, other_key):
         return None
     ratios.sort()
     n = len(ratios)
+    lo, hi = bootstrap_ci(ratios, stat=statistics.median, n_boot=4000)
     return {"n_pairs": n, "median_speedup": statistics.median(ratios),
+            "ci95": [lo, hi],
             "p25": ratios[n // 4], "p75": ratios[(3 * n) // 4],
             "min": ratios[0], "max": ratios[-1]}
 
 
-def summarize_config(records, noise_cv_pct):
+def speedup_verdict(sp):
+    """Rule 5: faster or slower only if the 95% interval excludes 1."""
+    lo, hi = sp["ci95"]
+    return "faster" if lo > 1 else "slower" if hi < 1 else "not distinguishable from 1.00x"
+
+
+def timing_spikes(records, factor=1.3):
+    """Share of timings more than `factor` times the fastest round of the same
+    (configuration, sample). Needs at least two rounds; a clean run has almost none.
+    """
+    from collections import defaultdict
+    best = defaultdict(lambda: float("inf"))
+    for r in records:
+        best[(r.config, r.sample_id)] = min(best[(r.config, r.sample_id)], r.generate_ms)
+    return sum(r.generate_ms > factor * best[(r.config, r.sample_id)]
+               for r in records) / len(records) if records else 0.0
+
+
+# Integrity limits: a run that breaks either is not trusted and the harness fails.
+MAX_FOREIGN_MB = 400        # another process holding this much GPU memory = shared GPU
+MAX_SPIKE_SHARE = 0.02      # more than 2% of timings far above their own replicates...
+MIN_SPIKES = 5              # ...and at least this many, so one spike in a short run is not enough
+
+
+def integrity(records, drift_pct):
+    """Rule 6: summarise the run's integrity and list every problem found."""
+    foreign = max((r.foreign_mb for r in records), default=0.0)
+    spikes = timing_spikes(records)
+    problems = []
+    if foreign > MAX_FOREIGN_MB:
+        problems.append(f"another process held up to {foreign:.0f} MiB of GPU memory")
+    if spikes > MAX_SPIKE_SHARE and spikes * len(records) >= MIN_SPIKES:
+        problems.append(f"{100 * spikes:.1f}% of timings are spikes over their own replicates")
+    return {"foreign_mb_max": foreign, "spike_share": spikes,
+            "control_drift_pct": drift_pct, "problems": problems, "ok": not problems}
+
+
+def summarize_config(records):
     gen = [r.generate_ms for r in records]
     pre = [r.prefill_ms for r in records]
     k = sum(r.correct for r in records)
@@ -279,7 +326,6 @@ def summarize_config(records, noise_cv_pct):
         "image_tokens_median": statistics.median([r.image_tokens for r in records]),
         "clock_mhz_median": statistics.median([r.clock_mhz for r in records]),
         "temp_c_median": statistics.median([r.temp_c for r in records]),
-        "noise_threshold_pct": 3 * noise_cv_pct,  # rule 4
     }
 
 
@@ -290,40 +336,53 @@ def main():
     ap.add_argument("--samples", type=int, default=100)
     ap.add_argument("--rounds", type=int, default=4)
     ap.add_argument("--configs", default="baseline")
-    ap.add_argument("--noise-cv", type=float, default=4.4,
-                    help="noise measured in gate 0, in %%")
+    ap.add_argument("--noise-cv", type=float, default=None,
+                    help="robust CV measured in gate 0, in %%; recorded with the run")
     ap.add_argument("--quant", default="bf16", help="bf16 | fp16 | int8 | nf4")
     ap.add_argument("--dataset", default="chartqa", help="chartqa | docvqa")
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--out", default="results/gate1.json")
+    ap.add_argument("--out", default="results/harness_run.json")
+    ap.add_argument("--allow-busy-gpu", action="store_true",
+                    help="measure even if another process is using the GPU (results flagged)")
     a = ap.parse_args()
+    busy = None if a.allow_busy_gpu else check_gpu_idle()
+    if busy:
+        raise SystemExit(busy)
 
     configs = [Config.parse(c) for c in a.configs.split(",")]
     samples = load_samples(a.samples, a.seed, a.dataset)
-    score = ((lambda p, s: relaxed_match(p, s['gold'])) if a.dataset == 'chartqa'
-             else (lambda p, s: anls(p, s['golds']) >= 0.5))
+    score = ((lambda p, s: relaxed_match(clean_answer(p), s['gold'])) if a.dataset == 'chartqa'
+             else (lambda p, s: anls(clean_answer(p), s['golds']) >= 0.5))
     runner = Runner(a.model, quant=a.quant)
 
     print(f"model: {a.model} [{a.quant}] | {len(samples)} samples | {len(configs)} configs "
           f"| {a.rounds} rounds")
 
-    # warm up so the first measurement does not count
-    for s in samples[:3]:
-        runner.run(s, configs[0])
+    # warm up every configuration, so no first measurement pays one-off costs
+    for cfg in configs:
+        for s in samples[:2]:
+            runner.run(s, cfg)
 
     sampler = GpuSampler(); sampler.start()
+    mib = 2 ** 20
+    time.sleep(1.0)                                   # first reading, model loaded and idle
+    context_mb = (sampler.rows[-1]["mem_used_mb"] - torch.cuda.memory_reserved() / mib
+                  if sampler.rows else 0.0)
     plan = build_plan(configs, len(samples), a.rounds, a.seed)
     records, t0 = [], time.time()
     for step, (cfg, i, r) in enumerate(plan, 1):
         s = samples[i]
         pred, pre_ms, gen_ms, n_img, n_in = runner.run(s, cfg)
-        tele = sampler.rows[-1] if sampler.rows else {"clock_mhz": 0, "temp_c": 0}
+        tele = sampler.rows[-1] if sampler.rows else {"clock_mhz": 0, "temp_c": 0,
+                                                       "mem_used_mb": 0}
         records.append(Record(
             config=cfg.key(), sample_id=s["sample_id"], round_idx=r,
             correct=score(pred, s), pred=pred, gold=s["gold"],
             prefill_ms=pre_ms, generate_ms=gen_ms,
             image_tokens=n_img, input_tokens=n_in,
-            clock_mhz=tele["clock_mhz"], temp_c=tele["temp_c"]))
+            clock_mhz=tele["clock_mhz"], temp_c=tele["temp_c"],
+            foreign_mb=max(0.0, foreign_memory_mb(
+                tele["mem_used_mb"], torch.cuda.memory_reserved() / mib, context_mb))))
         if step % 25 == 0:
             done = sum(x.correct for x in records)
             print(f"  {step}/{len(plan)} | correct {done}/{len(records)} "
@@ -334,7 +393,7 @@ def main():
     for cfg in configs:
         rs = [r for r in records if r.config == cfg.key()]
         if rs:
-            by_cfg[cfg.key()] = summarize_config(rs, a.noise_cv)
+            by_cfg[cfg.key()] = summarize_config(rs)
 
     # rule 6: check drift between the first and last round of the control configuration
     ctrl = configs[0].key()
@@ -354,8 +413,10 @@ def main():
             if sp:
                 speedups[cfg.key()] = sp
 
+    check = integrity(records, drift)
     out = {"model": a.model, "quant": a.quant, "dataset": a.dataset,
-           "samples": len(samples), "rounds": a.rounds,
+           "samples": len(samples), "rounds": a.rounds, "integrity": check,
+           "noise_cv_pct": a.noise_cv,
            "paired_speedup_vs_baseline": speedups,
            "wall_seconds": time.time() - t0, "configs": by_cfg,
            "control_drift_pct": drift,
@@ -374,14 +435,18 @@ def main():
               f"prefill share {v['prefill_share_pct']:.0f}% | "
               f"image tokens {v['image_tokens_median']:.0f}")
     if speedups:
-        print("\n--- speedup vs baseline (paired on the same samples) ---")
-        thr = 1 + 3 * a.noise_cv / 100
+        print("\n--- speedup vs baseline (paired on the same samples, 95% interval) ---")
         for k, v in speedups.items():
-            ok = "✓" if v["median_speedup"] >= thr else "✗ below noise threshold"
             print(f"{k}: {v['median_speedup']:.2f}x "
-                  f"[{v['p25']:.2f}–{v['p75']:.2f}] {ok}")
+                  f"[{v['ci95'][0]:.2f}–{v['ci95'][1]:.2f}] {speedup_verdict(v)}")
     print(f"control drift: {drift:+.1f}%" if drift is not None else "")
+    print(f"integrity: foreign GPU memory up to {check['foreign_mb_max']:.0f} MiB, "
+          f"timing spikes {100 * check['spike_share']:.1f}%")
     print(f"peak VRAM {out['peak_vram_mb']:.0f} MB | saved {a.out}")
+    if not check["ok"]:
+        for msg in check["problems"]:
+            print(f"INTEGRITY FAILURE: {msg}")
+        raise SystemExit("timings are not trustworthy; rerun on an idle GPU")
 
 
 if __name__ == "__main__":

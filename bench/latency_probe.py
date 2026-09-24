@@ -11,6 +11,8 @@ from pathlib import Path
 import torch
 from PIL import Image, ImageDraw
 
+from bench.metrics import robust_cv
+
 
 def make_image(size=512, seed=0):
     """Synthetic image: no network needed, fixed by seed."""
@@ -24,9 +26,48 @@ def make_image(size=512, seed=0):
     return img
 
 
+QUERY = "clocks.current.graphics,temperature.gpu,power.draw,utilization.gpu,memory.used"
+
+
+def gpu_query():
+    """One nvidia-smi reading: clock, temperature, power, utilisation, memory used."""
+    out = subprocess.run(["nvidia-smi", f"--query-gpu={QUERY}", "--format=csv,noheader,nounits"],
+                         capture_output=True, text=True, timeout=5).stdout.strip()
+    clk, temp, pw, util, mem = [p.strip() for p in out.splitlines()[0].split(",")]
+    return {"t": time.time(), "clock_mhz": float(clk), "temp_c": float(temp),
+            "power_w": float(pw), "util_pct": float(util), "mem_used_mb": float(mem)}
+
+
+def check_gpu_idle(max_mem_mb=500, max_util_pct=10, readings=5):
+    """Refuse to measure on a GPU that another process is using.
+
+    Must run BEFORE this process allocates anything. A concurrent job slows some
+    configurations far more than others (one run lost half its speed on the
+    smallest configuration), and the drift check does not notice it.
+    Returns an error message, or None if the GPU is idle.
+    """
+    rows = []
+    for _ in range(readings):
+        try:
+            rows.append(gpu_query())
+        except Exception:
+            return None                      # no nvidia-smi: nothing to check
+        time.sleep(0.2)
+    mem = statistics.median(r["mem_used_mb"] for r in rows)
+    util = statistics.median(r["util_pct"] for r in rows)
+    if mem > max_mem_mb or util > max_util_pct:
+        return (f"GPU busy before start: {mem:.0f} MiB used, {util:.0f}% utilisation. "
+                f"Stop the other job, or pass --allow-busy-gpu to measure anyway.")
+    return None
+
+
+def foreign_memory_mb(mem_used_mb, own_reserved_mb, context_mb):
+    """GPU memory held by OTHER processes: total used minus ours minus our CUDA context."""
+    return mem_used_mb - own_reserved_mb - context_mb
+
+
 class GpuSampler(threading.Thread):
-    """Sample clock, temperature and power while running."""
-    Q = "clocks.current.graphics,temperature.gpu,power.draw,utilization.gpu"
+    """Sample clock, temperature, power and memory while running."""
 
     def __init__(self, period=0.5):
         super().__init__(daemon=True)
@@ -35,14 +76,7 @@ class GpuSampler(threading.Thread):
     def run(self):
         while not self._ev.is_set():
             try:
-                out = subprocess.run(
-                    ["nvidia-smi", f"--query-gpu={self.Q}",
-                     "--format=csv,noheader,nounits"],
-                    capture_output=True, text=True, timeout=5).stdout.strip()
-                clk, temp, pw, util = [p.strip() for p in out.split(",")]
-                self.rows.append({"t": time.time(), "clock_mhz": float(clk),
-                                  "temp_c": float(temp), "power_w": float(pw),
-                                  "util_pct": float(util)})
+                self.rows.append(gpu_query())
             except Exception:
                 pass
             self._ev.wait(self.period)
@@ -71,6 +105,7 @@ def summarize(xs):
     return {"n": n, "min": xs[0], "p25": q1, "median": med, "p75": q3,
             "p95": xs[min(n - 1, int(0.95 * n))], "max": xs[-1],
             "mean": mean, "std": sd, "cv_pct": 100 * sd / mean if mean else 0.0,
+            "robust_cv_pct": robust_cv(xs) if n >= 4 else 0.0,
             "iqr_pct": 100 * (q3 - q1) / med if med else 0.0}
 
 
@@ -82,7 +117,11 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=32)
     ap.add_argument("--image-size", type=int, default=512)
     ap.add_argument("--out", default="results/gate0_latency.json")
+    ap.add_argument("--allow-busy-gpu", action="store_true")
     a = ap.parse_args()
+    busy = None if a.allow_busy_gpu else check_gpu_idle()
+    if busy:
+        raise SystemExit(busy)
 
     from transformers import AutoProcessor, AutoModelForImageTextToText
 
@@ -108,7 +147,7 @@ def main():
 
     gen = lambda: model.generate(**inputs, max_new_tokens=a.max_new_tokens,
                                  do_sample=False)
-    fwd = lambda: model(**inputs)
+    fwd = lambda: model(**inputs, logits_to_keep=1)      # as generate() computes the first token
 
     for _ in range(a.warmup):
         with torch.no_grad():
@@ -147,7 +186,7 @@ def main():
     d = res["drift"]
     print(f"\n--- generate ({a.max_new_tokens} tokens) ---")
     print(f"median {g['median']:.1f} ms | IQR {g['iqr_pct']:.1f}% of median "
-          f"| CV {g['cv_pct']:.1f}% | p95 {g['p95']:.1f} ms")
+          f"| CV {g['cv_pct']:.1f}% (robust {g['robust_cv_pct']:.1f}%) | p95 {g['p95']:.1f} ms")
     print(f"first half {d['first_half_median']:.1f} ms -> second half "
           f"{d['second_half_median']:.1f} ms "
           f"({100*(d['second_half_median']/d['first_half_median']-1):+.1f}%)")
