@@ -1,10 +1,15 @@
 {
   "model": "HuggingFaceTB/SmolVLM-Instruct",
   "dataset": "docvqa/validation",
-  "n": 100,
-  "anls_mean": 76.72125538290399,
+  "prompt": "en",
+  "n": 300,
+  "anls_mean": 72.41492581856842,
+  "anls_ci95": [
+    67.8804492683859,
+    76.95424950189745
+  ],
   "published_test_anls": 81.6,
-  "gap": -4.878744617096004,
+  "gap": -9.185074181431574,
   "rows": [
     {
       "sample_id": 578,
@@ -118,7 +123,7 @@
       "golds": [
         "$263,800,996"
       ],
-      "anls": 0.8888888888888888
+      "anls": 0.9166666666666666
     },
     {
       "sample_id": 3141,
@@ -188,7 +193,7 @@
         "32,04,000",
         "32,04,000 rupees"
       ],
-      "anls": 0.5714285714285714
+      "anls": 0.0
     },
     {
       "sample_id": 4410,
@@ -307,7 +312,7 @@
       "golds": [
         "4:00 p.m."
       ],
-      "anls": 1.0
+      "anls": 0.8888888888888888
     },
     {
       "sample_id": 3009,
@@ -434,7 +439,7 @@
       "golds": [
         "41,809.82 crores"
       ],
-      "anls": 0.7333333333333334
+      "anls": 0.625
     },
     {
       "sample_id": 3338,
@@ -487,7 +492,7 @@
       "golds": [
         "Baseline and Post Intervention Lipid and Lipoprotein Levels in Postmenopausal Women*"
       ],
-      "anls": 1.0
+      "anls": 0.9880952380952381
     },
     {
       "sample_id": 4416,
@@ -546,7 +551,7 @@
       "golds": [
         "2/6/33"
       ],
-      "anls": 0.8
+      "anls": 0.8571428571428572
     },
     {
       "sample_id": 4771,
@@ -846,7 +851,7 @@
       "golds": [
         "Institute for Communication Research Stanford University"
       ],
-      "anls": 0.9821428571428571
+      "anls": 0.9642857142857143
     },
     {
       "sample_id": 3415,
@@ -862,6 +867,1714 @@
       "pred": "(407) 783-6124.",
       "golds": [
         "(407) 783-6124"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 379,
+      "pred": "President & CEO of Per/View, Inc.",
+      "golds": [
+        "President & CEO of PeerView, Inc",
+        "President & CEO of Peerview,  Inc."
+      ],
+      "anls": 0.9375
+    },
+    {
+      "sample_id": 3469,
+      "pred": "It has a tobacco taste.",
+      "golds": [
+        "It has a tobacco taste"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2610,
+      "pred": "Washington.",
+      "golds": [
+        "Washington"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2063,
+      "pred": "375878.",
+      "golds": [
+        "#375878"
+      ],
+      "anls": 0.8571428571428572
+    },
+    {
+      "sample_id": 215,
+      "pred": "92427CODE.",
+      "golds": [
+        "12427"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 5305,
+      "pred": "Mr. Arden E. Swisher.",
+      "golds": [
+        "Mr. Arden E. Swisher"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 641,
+      "pred": "H2S/mol/min.",
+      "golds": [
+        "100"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1910,
+      "pred": "1094.",
+      "golds": [
+        "1094 (99.5%)",
+        "1094"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4837,
+      "pred": "5.",
+      "golds": [
+        "- 5 -",
+        "5"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1584,
+      "pred": "R. J. Reynolds Tobacco USA.",
+      "golds": [
+        "R. J. Reynolds Tobacco USA",
+        "R. J. REYNOLDS TOBACCO USA"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1330,
+      "pred": "Canada.",
+      "golds": [
+        "canada",
+        "Canada"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2072,
+      "pred": "Thursday.",
+      "golds": [
+        "Thursday",
+        "27 Thursday"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1799,
+      "pred": "119.",
+      "golds": [
+        "42"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 94,
+      "pred": "Holiday Inn Downtown, Jefferson City, Missouri.",
+      "golds": [
+        "Holiday Inn Downtown , Jefferson City , Missouri",
+        "Holiday Inn Downtown, Jefferson City, Missouri",
+        "Holiday Inn Downtown"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1980,
+      "pred": "Water in Boilers.",
+      "golds": [
+        "water in boilers",
+        "Water in Boilers"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1741,
+      "pred": "21.",
+      "golds": [
+        "97"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2580,
+      "pred": "Peggy Joseph.",
+      "golds": [
+        "peggy joseph",
+        "Peggy Joseph"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2251,
+      "pred": "3.",
+      "golds": [
+        "3"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4712,
+      "pred": "Cash Check.",
+      "golds": [
+        "cash or check on pick up"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2186,
+      "pred": "Karen Hughes.",
+      "golds": [
+        "Karen Hughes"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2506,
+      "pred": "1942-1943.",
+      "golds": [
+        "November 1, 1942 - October 31, 1943"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2423,
+      "pred": "27.",
+      "golds": [
+        "40b"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2910,
+      "pred": "2Q89.",
+      "golds": [
+        "1Q98"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2878,
+      "pred": "Patricia Allison.",
+      "golds": [
+        "Patricia Allison"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2303,
+      "pred": "TRANSGLUTAMINATE ACTIVITY IN NORMAL AND TRANSFORMED CELLS.",
+      "golds": [
+        "transglutaminase activity in normal and transformed cells",
+        "Transglutaminase Activity in Normal and Transformed Cells"
+      ],
+      "anls": 0.9824561403508771
+    },
+    {
+      "sample_id": 965,
+      "pred": "Canadian.",
+      "golds": [
+        "Canadian"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 447,
+      "pred": "Karen D. Mittleman, PhD.",
+      "golds": [
+        "Karen D Mittleman, PhD"
+      ],
+      "anls": 0.9565217391304348
+    },
+    {
+      "sample_id": 2050,
+      "pred": "WHITEBOUSE CONFERENCE ON FOOD, NUTRITION AND HEALTH.",
+      "golds": [
+        "White House conference on food, nutrition, and health",
+        "White House conference on food, nutrition and health",
+        "White House"
+      ],
+      "anls": 0.9615384615384616
+    },
+    {
+      "sample_id": 2538,
+      "pred": "Center for Environmental Genetics.",
+      "golds": [
+        "Core Facilities",
+        "Core facilities"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1094,
+      "pred": "$ 71.27.",
+      "golds": [
+        "$ 71.27",
+        "71.27"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4972,
+      "pred": "26.",
+      "golds": [
+        "60"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 4118,
+      "pred": "Dr. or Mrs. William J. Darby.",
+      "golds": [
+        "Dr. or Mrs. William J. Darby"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 5187,
+      "pred": "37,916.",
+      "golds": [
+        "317,916"
+      ],
+      "anls": 0.8571428571428572
+    },
+    {
+      "sample_id": 1337,
+      "pred": "Government/Non-Profit.",
+      "golds": [
+        "Government/Non-Profit",
+        "Government/Non-profit",
+        "70% Government/Non-Profit"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1325,
+      "pred": "Vanguard Kneecheck Components.",
+      "golds": [
+        "VANGUARD KNEE COMPONENTS",
+        "Vanguard knee components"
+      ],
+      "anls": 0.8275862068965517
+    },
+    {
+      "sample_id": 155,
+      "pred": "Hartselle, TN.",
+      "golds": [
+        "Hartsville , TN",
+        "Hartsville, TN",
+        "Hartsville , TN 37074"
+      ],
+      "anls": 0.8571428571428572
+    },
+    {
+      "sample_id": 1771,
+      "pred": "Richard M. Stalvey.",
+      "golds": [
+        "RICHARD M. STALVEY",
+        "Richard M. Stalvey"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3627,
+      "pred": "10.",
+      "golds": [
+        "10"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 412,
+      "pred": "No.",
+      "golds": [
+        "Yes"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2278,
+      "pred": "1028.",
+      "golds": [
+        "1028"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 882,
+      "pred": "Chairman of Bristol-Myers.",
+      "golds": [
+        "chairman of Bristol-Myers",
+        "Chairman of Bristol-Myers"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3685,
+      "pred": "249.",
+      "golds": [
+        "249"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3640,
+      "pred": "DUPONT PLAZA.",
+      "golds": [
+        "Hotel Dupont Plaza"
+      ],
+      "anls": 0.6666666666666667
+    },
+    {
+      "sample_id": 1926,
+      "pred": "C. D. Fleet, Jr.",
+      "golds": [
+        "C. D. Fleet, Jr."
+      ],
+      "anls": 0.9375
+    },
+    {
+      "sample_id": 3464,
+      "pred": "Official Institutional Purchase Order.",
+      "golds": [
+        "OFFICIAL INSTITUTIONAL PURCHASE ORDER",
+        "Official Institutional Purchase order"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 615,
+      "pred": "Time in min.",
+      "golds": [
+        "TIME IN MIN",
+        "Time in min"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4373,
+      "pred": "Nutritional Misinformation.",
+      "golds": [
+        "COMMITTEE ON NUTRITIONAL MISINFORMATION",
+        "Committee on Nutritional misinformation"
+      ],
+      "anls": 0.6666666666666667
+    },
+    {
+      "sample_id": 4571,
+      "pred": "$2.",
+      "golds": [
+        "$2.00",
+        "2.00"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3650,
+      "pred": "401.",
+      "golds": [
+        "401"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2249,
+      "pred": "2.",
+      "golds": [
+        "2"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3107,
+      "pred": "PROFESSOR AND DIRECTOR OF THE PROGRAM IN OCCUPATIONAL THERAPY.",
+      "golds": [
+        "professor and director of the program in occupational therapy",
+        "Professor and Director of the Program in Occupational Therapy"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 462,
+      "pred": "03/31/2008.",
+      "golds": [
+        "03/31/2008"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2982,
+      "pred": "47.3.",
+      "golds": [
+        "476.3"
+      ],
+      "anls": 0.8
+    },
+    {
+      "sample_id": 2688,
+      "pred": "10/28/97.",
+      "golds": [
+        "10/28/97"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 148,
+      "pred": "THE NATURAL ENVIRONMENT RESEARCH COUNCIL.",
+      "golds": [
+        "the natural environment research council",
+        "The Natural Environment Research Council"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3066,
+      "pred": "3677.",
+      "golds": [
+        "3677"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3766,
+      "pred": "K. Vaidyanath.",
+      "golds": [
+        "B. B. CHATTERJEE",
+        "B B CHATTERJEE"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3311,
+      "pred": "MARCH 11, 1963.",
+      "golds": [
+        "MARCH 11, 1963"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 842,
+      "pred": "55.",
+      "golds": [
+        "55"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4415,
+      "pred": "DATA SOURCES - RJR BRANDTRACKER.",
+      "golds": [
+        "data sources - rjr brand tracker",
+        "Data sources - RJR Brand Tracker"
+      ],
+      "anls": 0.96875
+    },
+    {
+      "sample_id": 35,
+      "pred": "38,5000.",
+      "golds": [
+        "10,000"
+      ],
+      "anls": 0.5714285714285714
+    },
+    {
+      "sample_id": 2901,
+      "pred": "February 19, 1979, at 6:30 p.m.",
+      "golds": [
+        "february 19, 1979, at 6:30 p.m.",
+        "February 19, 1979, at 6:30 p.m."
+      ],
+      "anls": 0.967741935483871
+    },
+    {
+      "sample_id": 2082,
+      "pred": "VCU.",
+      "golds": [
+        "Summer Intern Position"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2136,
+      "pred": "Other Topics.",
+      "golds": [
+        "Other Topics",
+        "Other topics"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3543,
+      "pred": "Retrospective Analysis of the HRT and Endometrial Cancer.",
+      "golds": [
+        "Retrospective analysis of the association between HRT and Endometrial Cancer",
+        "Retrospective analysis of the association between HRT and Endometrial and Cancer"
+      ],
+      "anls": 0.736842105263158
+    },
+    {
+      "sample_id": 1021,
+      "pred": "Lebanon.",
+      "golds": [
+        "Lebanon"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1053,
+      "pred": "Dr. Grace A. Goldsmith.",
+      "golds": [
+        "Dr. Grace A. Goldsmith"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1618,
+      "pred": "5-5-86.",
+      "golds": [
+        "5-5-86"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1145,
+      "pred": "GLA: Lipids effects - Actos vs. Avandia (Q2 2004) - Label claim.",
+      "golds": [
+        "Label claim"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2027,
+      "pred": "31.",
+      "golds": [
+        "31"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2600,
+      "pred": "1943.",
+      "golds": [
+        "1943"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4705,
+      "pred": "1972.",
+      "golds": [
+        "1972"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2684,
+      "pred": "Charles B. Rhodes, Jr.",
+      "golds": [
+        "brad rhoades",
+        "Brad Rhoades",
+        "Charles B. Rhoades, Jr. (Brad)"
+      ],
+      "anls": 0.7
+    },
+    {
+      "sample_id": 2312,
+      "pred": "President.",
+      "golds": [
+        "president-elect",
+        "President-Elect"
+      ],
+      "anls": 0.6
+    },
+    {
+      "sample_id": 4633,
+      "pred": "JORDAN.",
+      "golds": [
+        "Jordan"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1458,
+      "pred": "CONFIDENTIAL.",
+      "golds": [
+        "Confidential",
+        "confidential"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1908,
+      "pred": "1094.",
+      "golds": [
+        "1087 (98.8%)",
+        "1087"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 1752,
+      "pred": "1970b, 1974b, 1975.",
+      "golds": [
+        "captafol",
+        "Captafol"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 96,
+      "pred": "Available.",
+      "golds": [
+        "available",
+        "Available"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 624,
+      "pred": "63:1 63:2.",
+      "golds": [
+        "63: 101 - 63: 127",
+        "Sections 63: 101 - 63: 127",
+        "sections 63:101 - 63:127",
+        "63:101 - 63:127"
+      ],
+      "anls": 0.6
+    },
+    {
+      "sample_id": 2074,
+      "pred": "25.",
+      "golds": [
+        "27"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 4950,
+      "pred": "April.",
+      "golds": [
+        "April"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3174,
+      "pred": "2,020.00.",
+      "golds": [
+        "2,200.00"
+      ],
+      "anls": 0.75
+    },
+    {
+      "sample_id": 1638,
+      "pred": "To.",
+      "golds": [
+        "To"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4903,
+      "pred": "Stephanie White/CEO.",
+      "golds": [
+        "Stephanie White/CEO"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3154,
+      "pred": "$ 73824.00.",
+      "golds": [
+        "$ 58,890.00",
+        "58,890.00"
+      ],
+      "anls": 0.5454545454545454
+    },
+    {
+      "sample_id": 4644,
+      "pred": "24.",
+      "golds": [
+        "18"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 40,
+      "pred": "ITC Limited.",
+      "golds": [
+        "ITC LIMITED",
+        "ITC Limited"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2606,
+      "pred": "55455.",
+      "golds": [
+        "55455"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1257,
+      "pred": "TRUSTEES (cont'd).",
+      "golds": [
+        "Trustees"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1756,
+      "pred": "GREAT WESTERN SUGAR DEPARTMENTS.",
+      "golds": [
+        "GREAT WESTERN SUGAR DEPARTMENT HEADS",
+        "Great western sugar department heads"
+      ],
+      "anls": 0.8611111111111112
+    },
+    {
+      "sample_id": 1135,
+      "pred": "William m Kovac.",
+      "golds": [
+        "agencies"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3027,
+      "pred": "27609.",
+      "golds": [
+        "24609"
+      ],
+      "anls": 0.8
+    },
+    {
+      "sample_id": 4369,
+      "pred": "Shri R. R. Kumar.",
+      "golds": [
+        "Shri R. R. Kumar"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2858,
+      "pred": "Step 2.",
+      "golds": [
+        "STEP 2",
+        "Step 2"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2211,
+      "pred": "Robert Gillham.",
+      "golds": [
+        "robert gillham",
+        "Robert Gillham"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4584,
+      "pred": "88%.",
+      "golds": [
+        "89%"
+      ],
+      "anls": 0.6666666666666667
+    },
+    {
+      "sample_id": 243,
+      "pred": "B&W.",
+      "golds": [
+        "KOOL 100"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 461,
+      "pred": "50557 966.",
+      "golds": [
+        "50557 9766"
+      ],
+      "anls": 0.9
+    },
+    {
+      "sample_id": 5322,
+      "pred": "Sandra Bennett.",
+      "golds": [
+        "sandra bennett",
+        "Sandra Bennett"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3519,
+      "pred": "$15,000.00.",
+      "golds": [
+        "$15,000.00"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1185,
+      "pred": "11-17-72.",
+      "golds": [
+        "11-17-70"
+      ],
+      "anls": 0.875
+    },
+    {
+      "sample_id": 3672,
+      "pred": "PRELIMINARY.",
+      "golds": [
+        "Unknown"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2176,
+      "pred": "6304.",
+      "golds": [
+        "63041"
+      ],
+      "anls": 0.8
+    },
+    {
+      "sample_id": 3281,
+      "pred": "DWRi E68772.",
+      "golds": [
+        "DWRITE 067872",
+        "Dwrite 067872"
+      ],
+      "anls": 0.6153846153846154
+    },
+    {
+      "sample_id": 4845,
+      "pred": "500.00.",
+      "golds": [
+        "500.00"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 522,
+      "pred": "October 20 - 24, 1969.",
+      "golds": [
+        "october 20 - 24, 1969",
+        "October 20 - 24, 1969",
+        "october 20-24, 1969"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1077,
+      "pred": "FEB 1, 1972.",
+      "golds": [
+        "feb 1, 1972"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4403,
+      "pred": "Present Pain Intensity.",
+      "golds": [
+        "PRESENT PAIN INTENSITY",
+        "Present pain intensity"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4891,
+      "pred": "American heart association.",
+      "golds": [
+        "American Heart Association"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1627,
+      "pred": "$363.",
+      "golds": [
+        "$363",
+        "(000’s)"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1813,
+      "pred": "5.",
+      "golds": [
+        "5.",
+        "5"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4209,
+      "pred": "2006.",
+      "golds": [
+        "20006"
+      ],
+      "anls": 0.8
+    },
+    {
+      "sample_id": 4327,
+      "pred": "8900.",
+      "golds": [
+        "8909"
+      ],
+      "anls": 0.75
+    },
+    {
+      "sample_id": 4758,
+      "pred": "11-16-44.",
+      "golds": [
+        "404 P.M.",
+        "404"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3646,
+      "pred": "Pharmacist.",
+      "golds": [
+        "Journal of Laboratory and Clinical Medicine"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2834,
+      "pred": "Active.",
+      "golds": [
+        "Active"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 249,
+      "pred": "Td.",
+      "golds": [
+        "c",
+        "C",
+        "consumed by control [c]",
+        "Control [C]",
+        "Control"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 4973,
+      "pred": "Dr. William J. D. Derby.",
+      "golds": [
+        "dr. william j. darby"
+      ],
+      "anls": 0.8260869565217391
+    },
+    {
+      "sample_id": 1089,
+      "pred": "2-7-66.",
+      "golds": [
+        "17/6/66"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 4370,
+      "pred": "24.",
+      "golds": [
+        "8"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3666,
+      "pred": "66.7.",
+      "golds": [
+        "30/60"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 481,
+      "pred": "Orange flavored nutritional beverage powder,SAMSON.",
+      "golds": [
+        "Orange flavored nutritional beverage powder, SAMSON",
+        "SAMSON",
+        "Orange flavored nutritional beverage powder"
+      ],
+      "anls": 0.9803921568627451
+    },
+    {
+      "sample_id": 3305,
+      "pred": "April 21-24, 2004.",
+      "golds": [
+        "APRIL 21-24, 2004",
+        "April 21-24,2004"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3082,
+      "pred": "4, No. 8.",
+      "golds": [
+        "volume 4, no. 8",
+        "Volume 4, No. 8"
+      ],
+      "anls": 0.5333333333333333
+    },
+    {
+      "sample_id": 723,
+      "pred": "Biomet, Inc. Royalty Payment Form.",
+      "golds": [
+        "Biomet, Inc. Royalty Payment Form",
+        "BIOMET, INC. ROYALTY PAYMENT FORM"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1629,
+      "pred": "25.",
+      "golds": [
+        "25",
+        "$25",
+        "(000’s)"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 572,
+      "pred": "18,000.",
+      "golds": [
+        "18,000"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3170,
+      "pred": "60.00.",
+      "golds": [
+        "600.00"
+      ],
+      "anls": 0.8333333333333334
+    },
+    {
+      "sample_id": 3965,
+      "pred": "743.81.",
+      "golds": [
+        "7513.81",
+        "Rupees in lacs"
+      ],
+      "anls": 0.7142857142857143
+    },
+    {
+      "sample_id": 907,
+      "pred": "William J. Pascrell, III.",
+      "golds": [
+        "William J. Pascrell, III"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2010,
+      "pred": "A Roman Numeral Dip His Number.",
+      "golds": [
+        "A roman numeral did his number",
+        "A ROMAN NUMERAL DID HIS NUMBER"
+      ],
+      "anls": 0.9666666666666667
+    },
+    {
+      "sample_id": 4304,
+      "pred": "JAMES SW CARTER.",
+      "golds": [
+        "James W Carter"
+      ],
+      "anls": 0.9333333333333333
+    },
+    {
+      "sample_id": 119,
+      "pred": "ITC.",
+      "golds": [
+        "mint-o Ultra mintz",
+        "mint-o Ultra Mintz"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1455,
+      "pred": "HKI.",
+      "golds": [
+        "HKI"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3180,
+      "pred": "#068-0101.",
+      "golds": [
+        "068-0101",
+        "#068-0101"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1793,
+      "pred": "3.",
+      "golds": [
+        "6/7"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3621,
+      "pred": "% incorporated.",
+      "golds": [
+        "% incorporated"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4861,
+      "pred": "3.5.",
+      "golds": [
+        "16.3"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3612,
+      "pred": "164.",
+      "golds": [
+        "164"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4949,
+      "pred": "04285.",
+      "golds": [
+        "004295"
+      ],
+      "anls": 0.6666666666666667
+    },
+    {
+      "sample_id": 1774,
+      "pred": "56 years.",
+      "golds": [
+        "62"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 5093,
+      "pred": "3.",
+      "golds": [
+        "3"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2909,
+      "pred": "212-687-430.",
+      "golds": [
+        "Research 478"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 433,
+      "pred": "81.",
+      "golds": [
+        "81",
+        "N=81"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1956,
+      "pred": "Married.",
+      "golds": [
+        "Married - Dale"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 1003,
+      "pred": "William J. Darby.",
+      "golds": [
+        "William J. Darby",
+        "william j. darby"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1046,
+      "pred": "Department of Export Promotion.",
+      "golds": [
+        "Duty Entitlement Pass Book"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2958,
+      "pred": "0.01.",
+      "golds": [
+        "0.97"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 1011,
+      "pred": "Memorial College.",
+      "golds": [
+        "Memorial Coliseum",
+        "memorial coliseum"
+      ],
+      "anls": 0.7647058823529411
+    },
+    {
+      "sample_id": 386,
+      "pred": "1970.",
+      "golds": [
+        "1970"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3792,
+      "pred": "Tobacco, Material, Other.",
+      "golds": [
+        "G14-9A and G19-33A"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 2366,
+      "pred": "Jon Brink.",
+      "golds": [
+        "Joan Brink"
+      ],
+      "anls": 0.9
+    },
+    {
+      "sample_id": 3866,
+      "pred": "42.",
+      "golds": [
+        "45"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 1098,
+      "pred": "RfDs.",
+      "golds": [
+        "(RfDs)",
+        "RfDs"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3168,
+      "pred": "APPLICATION FOR RESEARCH CONTRACT - PART II.",
+      "golds": [
+        "APPLICATION FOR RESEARCH CONTRACT",
+        "Application for Research Contract",
+        "RESEARCH CONTRACT",
+        "APPLICATION FOR RESEARCH CONTRACT - PART II"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4116,
+      "pred": "VISITING COMMITTEES.",
+      "golds": [
+        "Visiting"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3990,
+      "pred": "Mr. KK Modi.",
+      "golds": [
+        "Mr. Lalit Kumar Modi"
+      ],
+      "anls": 0.5
+    },
+    {
+      "sample_id": 4596,
+      "pred": "Camel.",
+      "golds": [
+        "Winston"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3363,
+      "pred": "January 6, 2002.",
+      "golds": [
+        "JANUARY 16, 2002",
+        "January 16, 2002"
+      ],
+      "anls": 0.9375
+    },
+    {
+      "sample_id": 1183,
+      "pred": "260.",
+      "golds": [
+        "2600",
+        "2600 PHAs"
+      ],
+      "anls": 0.75
+    },
+    {
+      "sample_id": 4814,
+      "pred": "3.9%.",
+      "golds": [
+        "3.9% of movement",
+        "3 9% of movement"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1227,
+      "pred": "23.0.",
+      "golds": [
+        "23.0"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 538,
+      "pred": "New England Journal of Medicine.",
+      "golds": [
+        "annals of family medicine",
+        "Annals of Family Medicine"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 154,
+      "pred": "INTER-OFFICE CORRESPONDENCE.",
+      "golds": [
+        "INTER-OFFICE CORRESPONDENCE",
+        "Inter-office correspondence"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2088,
+      "pred": "$57.24.",
+      "golds": [
+        "$ 57.24"
+      ],
+      "anls": 0.8571428571428572
+    },
+    {
+      "sample_id": 1620,
+      "pred": "(916)752-2442.",
+      "golds": [
+        "(916) 752-2442",
+        "(916)752-2442"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4316,
+      "pred": "male.",
+      "golds": [
+        "Male",
+        "male"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4360,
+      "pred": "1030.",
+      "golds": [
+        "1030"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4936,
+      "pred": "1.",
+      "golds": [
+        "1"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4801,
+      "pred": "AWAIT.",
+      "golds": [
+        "RETURN"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1846,
+      "pred": "Lexington, KY.",
+      "golds": [
+        "Lexington, KY"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2779,
+      "pred": "Administrative Assistant.",
+      "golds": [
+        "administrative assistant",
+        "Administrative assistant"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 1619,
+      "pred": "11:57.",
+      "golds": [
+        "11:57A",
+        "11:57"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 401,
+      "pred": "Wednesday, November 8, 2000.",
+      "golds": [
+        "Wednesday, November 8, 2000",
+        "Wednesday, November 8, 2000."
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 418,
+      "pred": "Hormone Therapy.",
+      "golds": [
+        "hormone therapy",
+        "Hormone therapy"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3049,
+      "pred": "BLOOMFIELD.",
+      "golds": [
+        "bloomfield",
+        "Bloomfield"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 384,
+      "pred": "Table.",
+      "golds": [
+        "table",
+        "Table"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 783,
+      "pred": "POLICY ON SECURITY.",
+      "golds": [
+        "\"Policy on Confidential Information Management\"",
+        "the \"Policy on Confidential Information Management\"",
+        "Policy on Confidential Information Management"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3635,
+      "pred": "Involuntary smoking.",
+      "golds": [
+        "involuntary smoking",
+        "Involuntary smoking",
+        "\"Involutary smoking\""
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 501,
+      "pred": "Vanguard - E Poly.",
+      "golds": [
+        "Vanguard - E Poly",
+        "Vanguard- E Poly"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2375,
+      "pred": "Bierman.",
+      "golds": [
+        "Bierman, E.L. and Nelson, R."
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 718,
+      "pred": "Intraperitoneal injection.",
+      "golds": [
+        "i. p.",
+        "I. P."
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1995,
+      "pred": "7.",
+      "golds": [
+        "page 7",
+        "Page 7",
+        "7"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3576,
+      "pred": "Manager.",
+      "golds": [
+        "Manager"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3257,
+      "pred": "Barrett-Connor, 1998.",
+      "golds": [
+        "Barrett-Connor, 1998"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 598,
+      "pred": "Smoking.",
+      "golds": [
+        "smoking",
+        "Smoking",
+        "smoking causes lung cancer"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 3097,
+      "pred": "Cuberley Auditorium.",
+      "golds": [
+        "CUBBERLEY AUDITORIUM",
+        "Cubberley Auditorium"
+      ],
+      "anls": 0.95
+    },
+    {
+      "sample_id": 2226,
+      "pred": "Employee Counseling.",
+      "golds": [
+        "Error Correct",
+        "Error correct"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3213,
+      "pred": "Nutrition Survey.",
+      "golds": [
+        "Preliminary"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 4190,
+      "pred": "10.",
+      "golds": [
+        "4"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1979,
+      "pred": "1910.",
+      "golds": [
+        "1910"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 2363,
+      "pred": "0.4.",
+      "golds": [
+        "23",
+        "23%"
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 1247,
+      "pred": "December 9, 1975.",
+      "golds": [
+        "December 9, 1975",
+        "december 9 ,  1975"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4098,
+      "pred": "March 27, 1979.",
+      "golds": [
+        "MARCH 27, 1979",
+        "March 27, 1979"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4772,
+      "pred": "324 6200.",
+      "golds": [
+        "3266200",
+        "326 6200"
+      ],
+      "anls": 0.875
+    },
+    {
+      "sample_id": 1048,
+      "pred": "129191.",
+      "golds": [
+        "129191"
+      ],
+      "anls": 1.0
+    },
+    {
+      "sample_id": 4902,
+      "pred": "Ohio.",
+      "golds": [
+        "N.Y."
+      ],
+      "anls": 0.0
+    },
+    {
+      "sample_id": 3690,
+      "pred": "TUESDAY- JULY 7, 1987.",
+      "golds": [
+        "Tuesday - July 7, 1987"
+      ],
+      "anls": 0.9545454545454546
+    },
+    {
+      "sample_id": 5075,
+      "pred": "Business Responsibility Report.",
+      "golds": [
+        "Business Responsibility Report",
+        "Business responsibility report"
       ],
       "anls": 1.0
     }

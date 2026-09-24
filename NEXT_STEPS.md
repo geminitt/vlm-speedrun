@@ -1,48 +1,62 @@
 # Project status
 
-Updated: 2026-09-24. **All six gates are complete.**
+Updated: 2026-09-25. **Every gate is complete and reproducible with `./speedrun.sh`.**
+The numbers live in [README.md](README.md), which `bench/report.py` generates from
+`results/`; this file deliberately repeats none of them, so it cannot drift from the data.
 
-| Gate | Scope | Result |
+| Gate | Scope | Where the result is |
 |---|---|---|
-| 0 | Noise of the measurement itself | noise 4.4% (CV, 2.2B model), improvement-claim threshold 13.2% |
-| 1 | Accuracy + latency harness | baseline 64.7% ChartQA / 990 ms |
-| 2 | Levers that reduce image tokens | longest edge 1536→768: **1.93×**, −7.3 points (p = 0.002) |
-| 3 | Quantisation | nf4 cuts **55% VRAM**, 8% slower, signs of −4 points (p = 0.081) |
-| 4 | gRPC server | edge 768 gives **2.02 requests/s**, double the baseline |
-| 5 | Sanity check + prompt ablation | DocVQA ANLS 73.8 vs 81.6 published; instruction language has no effect |
+| 0 | Noise of the measurement itself | README, rule 5 · `results/gate0_latency.json` |
+| 1 | Where the time goes | README, "Where the time goes" · `results/breakdown.json` |
+| 2 | Levers that reduce image tokens | README, lever table and figure · `results/gate2_sweep.json`, `gate2_confirm.json` |
+| 3 | Quantisation | README, "Quantisation" · `results/gate3_quant.json`, `gate5_nf4.json` |
+| 4 | gRPC server, native and in Docker | README, "Serving over gRPC" · `results/gate4_*.json` |
+| 5 | DocVQA check and instruction language | README, last two result sections · `results/sanity_docvqa*.json`, `gate6_prompt.json` |
 
-Also: 38 tests, and `speedrun.sh` verified end to end.
+## Audit of 2026-09-25
 
-Verified infrastructure:
+A full review of the repository found errors in the method, the code and the README.
+All are fixed, every result was re-measured in one clean session, and the README table
+of measurement mistakes lists each one. The changes that altered conclusions:
 
-| Component | Status |
-|---|---|
-| Fresh clone runs the server | ✅ gRPC stubs regenerate when missing or version-mismatched |
-| CI environment (`pixi run test`) | ✅ green on GitHub: 38 tests, 33 seconds |
-| Docker image | ✅ 3.49 GB; the build tolerates an unreliable network |
-| Docker with GPU | ✅ runs and was measured; 3–9% from native, below the noise threshold |
+- Token pruning no longer deletes the tile-layout tokens. With that fixed, **which
+  tokens are kept does matter**: largest-norm selection clearly beats evenly spaced,
+  random and pooled selection.
+- The single-tile configuration is about three times faster than the baseline; the
+  earlier, slower number came from a run that shared the GPU with another process.
+- With the official ANLS metric and 300 questions, the DocVQA score sits clearly below
+  the published one; the check now reports that gap instead of passing.
+- Speedups are judged by their 95% interval, not by a single-measurement noise rule.
+
+Guards added so these cannot recur: timing scripts refuse a busy GPU; the harness fails
+a run with foreign GPU memory or many timing spikes; pipeline checks write to
+`results/fast/`; and CI fails if README.md and `results/` disagree.
 
 ## Optional extensions
 
 Not required; ordered by how worthwhile they are:
 
-1. **Attention-score token pruning (FastV-style)** — none of the four current
-   selection methods uses information from the model. Requires changes to the
-   decoder loop.
-2. **Combine edge 768 with nf4 and re-measure serving** — so far each has only been
-   measured separately, offline.
-3. **Add a second model** (e.g. Qwen2.5-VL-3B) to test whether "the vision encoder
-   takes over half the time" holds beyond SmolVLM.
-4. **Server-side batching** — the server currently handles one request at a time;
-   batching could raise throughput on the same hardware.
+1. **Activation quantisation for the vision encoder** (W8A8 or FP8, which this Ada GPU
+   supports) — the encoder is the compute-bound majority of the time, the only place
+   quantisation could buy speed in this workload.
+2. **Attention-score token pruning (FastV-style)** — largest-norm selection already
+   shows that informed selection matters; attention scores are the next signal to try.
+   Still capped by Amdahl's law, since pruning cannot touch the encoder.
+3. **Explain the DocVQA gap** — rerun with the authors' evaluation prompt and image
+   settings to see how much of it is setup rather than the model.
+4. **CUDA graphs or a fused 4-bit kernel** — to turn nf4's smaller weights into faster
+   decoding by removing the CPU launch floor.
+5. **Server-side batching** — the server handles one request at a time; batching
+   raises throughput where decoding dominates, and nf4's freed memory makes room for it.
+6. **A second model** (e.g. Qwen2.5-VL-3B) — to test whether "the vision encoder takes
+   over half the time" holds beyond SmolVLM.
 
 ## Notes for rerunning
 
-- Never run two measurements on one GPU at the same time: latency jumped from 904 ms
-  to 5,247 ms.
-- Always pass `--model`; the default is now the 2.2B model, but be explicit anyway.
-- `FAST=1 ./speedrun.sh` writes to `results/fast/` (ignored by git), so a pipeline
-  check never overwrites reference results. The README figure is drawn from
-  `results/gate2_sweep.json`: `pixi run python -m bench.plot --results results/gate2_sweep.json`
+- The GPU must be idle; timing scripts check this and stop otherwise
+  (`--allow-busy-gpu` overrides, and the harness then flags the run).
+- `START=n ./speedrun.sh` resumes from step n after a failure; `FAST=1` checks the
+  pipeline in about 15 minutes without touching reference results.
+- Edit `README.template.md`, never `README.md`, then run `python -m bench.report --write`.
 - Do not use `pkill -f` with a pattern that also matches the command being typed; it
   kills its own shell. Use a bracket pattern such as `"bench\.qu[a]ntize"`.
