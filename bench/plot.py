@@ -11,7 +11,6 @@ import argparse, json
 from pathlib import Path
 
 import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from bench.metrics import accuracy_ci
@@ -135,6 +134,7 @@ def draw(path, out, theme="light"):
 
 
 if __name__ == "__main__":
+    matplotlib.use("Agg")      # as a script only: importing this module must not change the backend
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", default="results/gate2_sweep.json")
     ap.add_argument("--stem", default="results/tradeoff")
