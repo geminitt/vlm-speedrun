@@ -11,7 +11,16 @@ Cập nhật: 2026-09-24. **Sáu cổng đã hoàn thành.**
 | 4 | Máy chủ gRPC | cạnh 768 cho **2,02 yêu cầu/giây**, gấp đôi bản gốc |
 | 5 | Kiểm tra tỉnh táo + ablation prompt | DocVQA ANLS 73,8 so với 81,6 đã công bố; ngôn ngữ chỉ dẫn không ảnh hưởng |
 
-Kèm theo: 36 test, hai notebook dạy, Dockerfile, CI, `speedrun.sh` đã chạy thử trọn vẹn.
+Kèm theo: 38 test, hai notebook dạy, `speedrun.sh` đã chạy thử trọn vẹn.
+
+Hạ tầng đã kiểm chứng:
+
+| Thành phần | Trạng thái |
+|---|---|
+| Bản clone mới chạy được máy chủ | ✅ mã gRPC tự sinh lại khi thiếu hoặc lệch phiên bản |
+| Môi trường CI (`pixi run test`) | ✅ 1,8 GB thay vì 6,2 GB; 38 test xanh trên máy. **Chưa thấy chạy trên GitHub** |
+| Ảnh Docker | ✅ build được (3,46 GB), đã chạy máy chủ trong container và trả lời đúng một câu hỏi thật trên CPU |
+| Docker có GPU | ❌ máy chưa có NVIDIA Container Toolkit — cài cần `sudo` |
 
 ## Phần mở rộng có thể làm thêm
 
@@ -25,7 +34,8 @@ Không bắt buộc, xếp theo mức đáng làm:
    hoá thị giác chiếm hơn một nửa thời gian" có đúng ngoài SmolVLM không.
 4. **Batching ở máy chủ** — hiện mỗi lần chỉ xử lý một yêu cầu; gộp lô có thể tăng
    thông lượng mà không đổi phần cứng.
-5. **Dựng thử ảnh Docker** — Dockerfile đã viết nhưng chưa build.
+5. **Chạy container có GPU** — cần cài NVIDIA Container Toolkit (apt, cần `sudo`),
+   rồi thêm vào `~/wsl/apt-packages.txt` cho đúng quy ước của máy.
 
 ## Lưu ý khi chạy lại
 

@@ -20,12 +20,28 @@
 
 ![Đánh đổi tốc độ và chất lượng](results/tradeoff_light.png)
 
+*Biểu đồ vẽ từ lần quét 40 mẫu × 3 vòng — lần duy nhất chứa cả hai nhóm đòn bẩy
+trên cùng tập mẫu, nên khoảng tin cậy rộng. Các con số chính trong bảng bên dưới
+dùng tới 300 mẫu; cột "Số mẫu" ghi rõ từng dòng.*
+
 ## Chạy lại toàn bộ bằng một lệnh
 
 ```bash
 ./speedrun.sh            # đầy đủ, khoảng 45–60 phút
 FAST=1 ./speedrun.sh     # rút gọn để kiểm tra pipeline, khoảng 6 phút
+pixi run test            # 38 test trong môi trường CPU nhẹ, vài giây
 ```
+
+Máy chủ suy luận chạy được bằng Docker:
+
+```bash
+docker build -t vlm-speedrun .
+docker run --gpus all -p 50051:50051 -v ~/.cache/huggingface:/models vlm-speedrun
+```
+
+`--gpus all` cần NVIDIA Container Toolkit trên máy chủ Docker. Không có GPU thì
+chạy được trên CPU bằng `--device cpu` (đã kiểm tra với bản 256M: khoảng 15 giây
+mỗi yêu cầu — chạy được nhưng không dùng để phục vụ thật).
 
 Phần cứng dùng để đo: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**,
 chạy trong WSL2. Không cần GPU đám mây, không tốn tiền API.
@@ -53,15 +69,20 @@ bộ chuỗi đầu vào.
 
 Cột p là kiểm định McNemar theo cặp so với bản gốc.
 
-| Cấu hình | Token ảnh | Độ chính xác | Δ | p | Tăng tốc |
-|---|---:|---|---:|---:|---:|
-| Bản gốc (13 ô, cạnh 1536) | 1.053 | 64,7% | — | — | 1,00× |
-| **Giảm cạnh dài còn 768** | 405 | 57,3% | −7,3 | **0,002** | **1,93×** |
-| Một ô duy nhất, không cắt | 81 | 41,0% | −28,0 | <0,0001 | 2,08× |
-| Cắt token còn 50%, cách đều | 526 | 42,5% | — | — | 1,13× |
-| Cắt token còn 25%, cách đều | 263 | 30,0% | — | — | 1,20× |
-| Cắt token còn 25%, **ngẫu nhiên** | 263 | 31,7% | — | — | 1,23× |
-| Cắt token còn 25%, gộp trung bình | 264 | 25,0% | — | — | 1,23× |
+| Cấu hình | Token ảnh | Độ chính xác | Δ | p | Tăng tốc | Số mẫu |
+|---|---:|---|---:|---:|---:|---:|
+| Bản gốc (13 ô, cạnh 1536) | 1.053 | 64,7% | — | — | 1,00× | 300 |
+| **Giảm cạnh dài còn 768** | 405 | 57,3% | −7,3 | **0,002** | **1,93×** | 300 |
+| Một ô duy nhất, không cắt | 81 | 41,0% | −28,0 | <0,0001 | 2,08× | 100 |
+| Cắt token còn 50%, cách đều | 526 | 42,5% | −12,5 | — | 1,13× | 40 |
+| Cắt token còn 25%, cách đều | 263 | 30,0% | −25,0 | — | 1,20× | 40 |
+| Cắt token còn 25%, **ngẫu nhiên** | 263 | 31,7% | −23,3 | — | 1,23× | 40 |
+| Cắt token còn 25%, gộp trung bình | 264 | 25,0% | −30,0 | — | 1,23× | 40 |
+
+Mỗi dòng so theo cặp với bản gốc **của chính lần chạy đó** (40 mẫu: 55,0%; 100 mẫu:
+69,0%; 300 mẫu: 64,7%), nên cột Δ đúng dù bản gốc dao động theo tập mẫu. Các dòng
+40 mẫu chỉ nên đọc ở mức xu hướng; tốc độ thì đo chắc chắn hơn nhiều so với độ chính
+xác, vì mỗi mẫu cho một số đo thời gian nhưng chỉ cho một bit đúng hoặc sai.
 
 Hai kết luận:
 
@@ -188,12 +209,13 @@ bench/
   plot.py              biểu đồ đánh đổi (hai chế độ sáng/tối)
 serve/
   vlm.proto            giao diện gRPC
+  gen_proto.py         sinh mã từ vlm.proto (tự chạy khi thiếu)
   server.py            máy chủ suy luận, có hàng đợi và suy giảm có kiểm soát
   client_bench.py      đo độ trễ đầu-cuối dưới các mức đồng thời
 notebooks/
   00_...ipynb          vì sao một ảnh tốn hơn nghìn token
   01_...ipynb          bố trí thí nghiệm cho công bằng, bốn lỗi đã gặp
-tests/                 36 test cho phần lõi, chạy trên CPU trong 1 giây
+tests/                 38 test cho phần lõi, chạy trên CPU trong vài giây
 results/               JSON kết quả + biểu đồ
 speedrun.sh            một lệnh chạy lại tất cả
 Dockerfile             đóng gói máy chủ suy luận
