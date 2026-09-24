@@ -192,8 +192,7 @@ your own favour. These rules live in `bench/harness.py`, not in a document:
 ## Four measurement mistakes made along the way
 
 Recorded because all four **made the results look better** — exactly the kind of
-error that does not reveal itself. Notebook 01 dissects each one using the recorded
-data.
+error that does not reveal itself.
 
 | Mistake | Symptom | Consequence if missed |
 |---|---|---|
@@ -228,9 +227,6 @@ serve/
   gen_proto.py         generates code from vlm.proto (runs automatically when missing)
   server.py            inference server with a queue and graceful degradation
   client_bench.py      end-to-end latency at several concurrency levels
-notebooks/             teaching notebooks (in Vietnamese)
-  00_...ipynb          why one image costs over a thousand tokens
-  01_...ipynb          designing fair experiments; the four mistakes
 tests/                 38 tests for the core, on CPU in a few seconds
 results/               raw JSON results + figures
 speedrun.sh            one command to rerun everything

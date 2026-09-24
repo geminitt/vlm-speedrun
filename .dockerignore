@@ -1,6 +1,6 @@
 .pixi/
 results/
-notebooks/
+notes/
 *.log
 __pycache__/
 .git/

@@ -11,7 +11,7 @@ Updated: 2026-09-24. **All six gates are complete.**
 | 4 | gRPC server | edge 768 gives **2.02 requests/s**, double the baseline |
 | 5 | Sanity check + prompt ablation | DocVQA ANLS 73.8 vs 81.6 published; instruction language has no effect |
 
-Also: 38 tests, two teaching notebooks, `speedrun.sh` verified end to end.
+Also: 38 tests, and `speedrun.sh` verified end to end.
 
 Verified infrastructure:
 

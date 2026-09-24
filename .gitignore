@@ -14,3 +14,6 @@ results/*.log
 # generated from vlm.proto (recreated by serve/gen_proto.py)
 serve/vlm_pb2.py
 serve/vlm_pb2_grpc.py
+
+# study notes: orphan branch `notes`, checked out here as a worktree
+/notes/
