@@ -1,4 +1,4 @@
-# môi trường pixi (6,3 GB, dựng lại được từ pixi.lock)
+# pixi environments (6.3 GB, rebuilt from pixi.lock)
 .pixi/*
 !.pixi/config.toml
 
@@ -8,9 +8,9 @@ __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
 
-# nhật ký chạy: tái tạo được, và chứa thanh tiến trình rác
+# run logs: reproducible, and full of progress-bar noise
 results/*.log
 
-# mã sinh tự động từ vlm.proto (tái tạo bằng grpc_tools.protoc)
+# generated from vlm.proto (recreated by serve/gen_proto.py)
 serve/vlm_pb2.py
 serve/vlm_pb2_grpc.py

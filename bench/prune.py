@@ -1,18 +1,19 @@
-"""Cắt bớt token ảnh trước khi đưa vào mô hình ngôn ngữ.
+"""Prune image tokens before they reach the language model.
 
-Luồng gốc của SmolVLM (Idefics3):
-    ảnh -> bộ mã hoá thị giác -> (số_ô, 729, 1152)
-        -> connector (pixel shuffle) -> (số_ô, 81, 2048)
-        -> chèn vào chuỗi tại các vị trí token ảnh -> mô hình ngôn ngữ
+SmolVLM (Idefics3) data flow:
+    image -> vision encoder -> (tiles, 729, 1152)
+          -> connector (pixel shuffle) -> (tiles, 81, 2048)
+          -> spliced into the sequence at the image-token positions -> language model
 
-Ta chen vào giữa bước connector và bước chèn: giữ lại một phần token ảnh,
-rồi tự dựng inputs_embeds. Mô hình ngôn ngữ khi đó thấy một chuỗi ngắn hơn.
+We intervene between the connector and the splice: keep a subset of the image
+tokens, then build inputs_embeds ourselves. The language model sees a shorter
+sequence.
 """
 import torch
 
 
 def _image_embeds(model, inputs):
-    """Trả về token ảnh sau connector, dạng (N, hidden)."""
+    """Return the image tokens after the connector, shaped (N, hidden)."""
     inner = model.model
     out = inner.get_image_features(inputs["pixel_values"],
                                    inputs.get("pixel_attention_mask"))
@@ -23,12 +24,12 @@ def _image_embeds(model, inputs):
 
 
 def select(embeds, keep_ratio, method="uniform", scores=None):
-    """Chọn tập con token ảnh.
+    """Select a subset of image tokens.
 
-    uniform : lấy cách đều — giữ nguyên độ phủ không gian của ảnh
-    pool    : gộp trung bình từng nhóm liền kề — không vứt thông tin, chỉ làm nhoè
-    random  : lấy ngẫu nhiên — dùng làm đối chứng, để biết 'uniform' có hơn may rủi không
-    norm    : giữ token có chuẩn lớn nhất — dựa vào độ mạnh tín hiệu
+    uniform : evenly spaced — preserves spatial coverage of the image
+    pool    : average adjacent groups — discards nothing, only blurs
+    random  : random subset — a control arm, to tell whether 'uniform' beats chance
+    norm    : keep the tokens with the largest norm — a signal-strength heuristic
     """
     n = embeds.shape[0]
     k = max(1, int(round(n * keep_ratio)))
@@ -48,14 +49,14 @@ def select(embeds, keep_ratio, method="uniform", scores=None):
     if method == "norm":
         idx = embeds.float().norm(dim=-1).topk(k).indices.sort().values
         return embeds[idx]
-    raise ValueError(f"phương pháp lạ: {method}")
+    raise ValueError(f"unknown method: {method}")
 
 
 def build_inputs(model, inputs, keep_ratio=1.0, method="uniform"):
-    """Dựng inputs_embeds đã cắt token ảnh.
+    """Build inputs_embeds with image tokens pruned.
 
-    Trả về (inputs_embeds, attention_mask, số_token_ảnh_còn_lại).
-    Khi keep_ratio >= 1 thì trả về None để phía gọi dùng đường chạy gốc.
+    Returns (inputs_embeds, attention_mask, number_of_image_tokens_kept).
+    With keep_ratio >= 1 it returns None so the caller uses the original path.
     """
     if keep_ratio >= 1.0:
         return None, None, None
@@ -69,7 +70,7 @@ def build_inputs(model, inputs, keep_ratio=1.0, method="uniform"):
 
     txt_emb = model.get_input_embeddings()(ids)
 
-    # Ghép lại: giữ nguyên thứ tự văn bản, thay toàn bộ khối token ảnh bằng khối đã cắt
+    # Reassemble: keep the text order, replace the whole image-token block with the pruned one
     first = int(is_img.nonzero()[0]) if is_img.any() else 0
     last = int(is_img.nonzero()[-1]) + 1 if is_img.any() else 0
     pieces = [txt_emb[:first], kept, txt_emb[last:]]

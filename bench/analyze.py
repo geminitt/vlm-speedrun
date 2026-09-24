@@ -1,6 +1,6 @@
-"""Phân tích kết quả đã đo: so sánh theo cặp cả tốc độ lẫn độ chính xác.
+"""Analyse recorded results: paired comparison of both speed and accuracy.
 
-Chạy lại được trên file JSON cũ, không cần chạy lại mô hình.
+Runs on existing JSON files; no model needs to be re-run.
 """
 import argparse, json
 
@@ -18,10 +18,10 @@ def main():
     base = keys[0]
     sp = r.get("paired_speedup_vs_baseline", {})
 
-    print(f"{r['model']} | {r['samples']} mẫu × {r['rounds']} vòng "
-          f"| đối chiếu với: {base}\n")
-    head = (f"{'cấu hình':<22}{'token':>7}{'đúng':>7}{'Δ điểm':>8}"
-            f"{'chỉ gốc':>9}{'chỉ mới':>9}{'p':>9}  kết luận")
+    print(f"{r['model']} | {r['samples']} samples × {r['rounds']} rounds "
+          f"| compared against: {base}\n")
+    head = (f"{'config':<22}{'tokens':>7}{'acc':>7}{'Δ pts':>8}"
+            f"{'only base':>10}{'only new':>9}{'p':>9}  verdict")
     print(head); print("-" * len(head))
     acc_base = 100 * r["configs"][base]["accuracy"]
     for k in keys:
@@ -30,20 +30,20 @@ def main():
         tok = c["image_tokens_median"]
         if k == base:
             print(f"{k.split('(')[0]:<22}{tok:>7.0f}{acc:>6.1f}%{'—':>8}"
-                  f"{'—':>9}{'—':>9}{'—':>9}  (đối chiếu)")
+                  f"{'—':>10}{'—':>9}{'—':>9}  (reference)")
             continue
         pa = paired_accuracy(recs, base, k)
         p = pa["p_value"]
         speed = sp.get(k, {}).get("median_speedup", float("nan"))
-        verdict = ("chất lượng GIẢM rõ rệt" if p < a.alpha and pa["only_a_correct"] > pa["only_b_correct"]
-                   else "chất lượng TĂNG rõ rệt" if p < a.alpha
-                   else "không phân biệt được")
+        verdict = ("quality significantly WORSE" if p < a.alpha and pa["only_a_correct"] > pa["only_b_correct"]
+                   else "quality significantly BETTER" if p < a.alpha
+                   else "not distinguishable")
         print(f"{k.split('(')[0]:<22}{tok:>7.0f}{acc:>6.1f}%{acc-acc_base:>+8.1f}"
-              f"{pa['only_a_correct']:>9}{pa['only_b_correct']:>9}{p:>9.4f}"
+              f"{pa['only_a_correct']:>10}{pa['only_b_correct']:>9}{p:>9.4f}"
               f"  {speed:.2f}× · {verdict}")
 
-    print("\nGhi chú: p là kiểm định McNemar trên các cặp bất đồng. "
-          f"Ngưỡng dùng ở đây là {a.alpha}.")
+    print("\nNote: p is a McNemar test on the discordant pairs. "
+          f"Threshold used here: {a.alpha}.")
 
 
 if __name__ == "__main__":

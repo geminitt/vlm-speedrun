@@ -1,25 +1,25 @@
 syntax = "proto3";
 package vlmspeedrun;
 
-// Dịch vụ suy luận cho mô hình thị giác–ngôn ngữ.
-// Dùng gRPC thay vì REST vì tải là nhị phân (ảnh) và yêu cầu độ trễ thấp.
+// Inference service for a vision-language model.
+// gRPC rather than REST because the payload is binary (an image) and latency matters.
 service VlmService {
   rpc Infer (InferRequest) returns (InferReply);
   rpc Health (HealthRequest) returns (HealthReply);
 }
 
 message InferRequest {
-  bytes image = 1;            // ảnh đã mã hoá PNG hoặc JPEG
+  bytes image = 1;            // image encoded as PNG or JPEG
   string question = 2;
-  int32 max_new_tokens = 3;   // 0 = dùng mặc định của máy chủ
-  int32 max_edge = 4;         // 0 = dùng mặc định; 768 = chế độ nhanh
+  int32 max_new_tokens = 3;   // 0 = use the server default
+  int32 max_edge = 4;         // 0 = use the default; 768 = fast mode
 }
 
 message InferReply {
   string answer = 1;
-  int32 image_tokens = 2;     // số token ảnh thực tế đã dùng
-  float server_ms = 3;        // thời gian đo tại máy chủ, không tính mạng
-  float queue_ms = 4;         // thời gian chờ trong hàng đợi
+  int32 image_tokens = 2;     // image tokens actually used
+  float server_ms = 3;        // time measured at the server, excluding network
+  float queue_ms = 4;         // time spent waiting in the queue
 }
 
 message HealthRequest {}

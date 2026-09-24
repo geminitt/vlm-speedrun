@@ -1,9 +1,9 @@
-"""Cổng 0 — đo độ trễ cơ sở và ĐỘ NHIỄU của chính phép đo.
+"""Gate 0 — measure baseline latency and the NOISE of the measurement itself.
 
-Mục đích không phải là "mô hình chạy nhanh bao nhiêu", mà là:
-  nếu ta đo cùng một thứ N lần trên GPU laptop này, các con số lệch nhau bao nhiêu?
-Nếu độ lệch đó lớn hơn mức cải thiện ta định chứng minh sau này, mọi kết luận
-của dự án sẽ vô nghĩa.
+The question is not "how fast is the model" but:
+  if we measure the same thing N times on this laptop GPU, how far apart are the numbers?
+If that spread exceeds the improvement we later want to demonstrate, every
+conclusion in the project would be meaningless.
 """
 import argparse, json, statistics, subprocess, threading, time
 from pathlib import Path
@@ -13,19 +13,19 @@ from PIL import Image, ImageDraw
 
 
 def make_image(size=512, seed=0):
-    """Ảnh tổng hợp, không cần mạng, cố định theo seed."""
+    """Synthetic image: no network needed, fixed by seed."""
     g = torch.Generator().manual_seed(seed)
     arr = (torch.rand(size, size, 3, generator=g) * 96 + 80).to(torch.uint8).numpy()
     img = Image.fromarray(arr)
     d = ImageDraw.Draw(img)
-    for i in range(6):  # vài hình khối để ảnh không chỉ là nhiễu
+    for i in range(6):  # a few shapes so the image is not pure noise
         x, y = 40 + i * 70, 60 + (i % 3) * 120
         d.rectangle([x, y, x + 55, y + 85], fill=(30 + 30 * i, 200 - 20 * i, 120))
     return img
 
 
 class GpuSampler(threading.Thread):
-    """Lấy mẫu xung nhịp, nhiệt độ, công suất trong lúc chạy."""
+    """Sample clock, temperature and power while running."""
     Q = "clocks.current.graphics,temperature.gpu,power.draw,utilization.gpu"
 
     def __init__(self, period=0.5):
@@ -52,14 +52,14 @@ class GpuSampler(threading.Thread):
 
 
 def timed(fn):
-    """Đo bằng CUDA event, không dùng đồng hồ CPU."""
+    """Time with CUDA events, not the CPU clock."""
     start, end = torch.cuda.Event(True), torch.cuda.Event(True)
     torch.cuda.synchronize()
     start.record()
     out = fn()
     end.record()
     torch.cuda.synchronize()
-    return start.elapsed_time(end), out  # mili giây
+    return start.elapsed_time(end), out  # milliseconds
 
 
 def summarize(xs):
@@ -87,22 +87,24 @@ def main():
     from transformers import AutoProcessor, AutoModelForImageTextToText
 
     dev = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"thiết bị: {dev} | {torch.cuda.get_device_name(0) if dev=='cuda' else ''}")
+    print(f"device: {dev} | {torch.cuda.get_device_name(0) if dev=='cuda' else ''}")
     proc = AutoProcessor.from_pretrained(a.model)
     model = AutoModelForImageTextToText.from_pretrained(
         a.model, dtype=torch.bfloat16).to(dev).eval()
 
     img = make_image(a.image_size)
+    # The question text is a fixed experimental input ("Describe this image."): the
+    # recorded gate-0 numbers were measured with it, so it is left untranslated.
     msg = [{"role": "user", "content": [{"type": "image"},
                                         {"type": "text", "text": "Mô tả ảnh này."}]}]
     text = proc.apply_chat_template(msg, add_generation_prompt=True)
     inputs = proc(text=text, images=[img], return_tensors="pt").to(dev)
 
-    # Đếm token ảnh — con số trung tâm của cả dự án
+    # Count image tokens — the central number of the whole project
     ids = inputs["input_ids"][0]
     img_tok_id = getattr(model.config, "image_token_id", None)
     n_img_tok = int((ids == img_tok_id).sum()) if img_tok_id is not None else -1
-    print(f"tổng token đầu vào: {ids.numel()} | token ảnh: {n_img_tok}")
+    print(f"input tokens: {ids.numel()} | image tokens: {n_img_tok}")
 
     gen = lambda: model.generate(**inputs, max_new_tokens=a.max_new_tokens,
                                  do_sample=False)
@@ -143,13 +145,13 @@ def main():
 
     g = res["generate_ms"]
     d = res["drift"]
-    print(f"\n--- generate ({a.max_new_tokens} token) ---")
-    print(f"trung vị {g['median']:.1f} ms | IQR {g['iqr_pct']:.1f}% của trung vị "
+    print(f"\n--- generate ({a.max_new_tokens} tokens) ---")
+    print(f"median {g['median']:.1f} ms | IQR {g['iqr_pct']:.1f}% of median "
           f"| CV {g['cv_pct']:.1f}% | p95 {g['p95']:.1f} ms")
-    print(f"nửa đầu {d['first_half_median']:.1f} ms -> nửa sau "
+    print(f"first half {d['first_half_median']:.1f} ms -> second half "
           f"{d['second_half_median']:.1f} ms "
           f"({100*(d['second_half_median']/d['first_half_median']-1):+.1f}%)")
-    print(f"VRAM đỉnh {res['peak_vram_mb']:.0f} MB | đã lưu {a.out}")
+    print(f"peak VRAM {res['peak_vram_mb']:.0f} MB | saved {a.out}")
 
 
 if __name__ == "__main__":

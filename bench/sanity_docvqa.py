@@ -1,11 +1,11 @@
-"""Kiểm tra tỉnh táo: chạy trên DocVQA rồi đối chiếu với con số đã công bố.
+"""Sanity check: run on DocVQA and compare against the published number.
 
-Nhóm SmolVLM công bố DocVQA (test) = 81,6. Nếu pipeline của ta cho ra con số xa
-hẳn mức đó thì có lỗi hệ thống ở đâu đó — prompt, cách chấm, hay tiền xử lý —
-và mọi kết quả khác trong dự án đều đáng ngờ theo.
+The SmolVLM authors report DocVQA (test) = 81.6. If our pipeline lands far from
+that, something systematic is wrong — prompting, scoring or preprocessing — and
+every other result in the project becomes suspect with it.
 
-Lưu ý: ta chạy trên split validation (test không có nhãn công khai) và dùng đúng
-thước đo ANLS, nhưng số mẫu ít hơn, nên chỉ kỳ vọng khớp ở mức bậc độ lớn.
+Note: we run on the validation split (test labels are not public) with the exact
+ANLS metric, but on fewer samples, so only order-of-magnitude agreement is expected.
 """
 import argparse, json, statistics
 from pathlib import Path
@@ -40,7 +40,7 @@ def main():
             rows.append({"sample_id": s["sample_id"], "pred": pred,
                          "golds": s["golds"], "anls": sc})
             if i % 25 == 0:
-                print(f"  {i}/{len(samples)} | ANLS tạm tính "
+                print(f"  {i}/{len(samples)} | running ANLS "
                       f"{100*statistics.fmean(scores):.1f}")
 
     mean = 100 * statistics.fmean(scores)
@@ -50,13 +50,13 @@ def main():
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2, ensure_ascii=False))
 
-    print(f"\nANLS của ta : {mean:.1f}  ({len(scores)} mẫu, split validation)")
-    print(f"đã công bố  : {PUBLISHED:.1f}  (split test, toàn bộ)")
-    print(f"chênh lệch  : {mean - PUBLISHED:+.1f} điểm")
-    print("kết luận    : " + ("pipeline khớp với con số công bố, không có lỗi hệ thống"
+    print(f"\nour ANLS    : {mean:.1f}  ({len(scores)} samples, validation split)")
+    print(f"published   : {PUBLISHED:.1f}  (full test split)")
+    print(f"gap         : {mean - PUBLISHED:+.1f} points")
+    print("verdict     : " + ("pipeline agrees with the published number, no systematic fault"
                               if abs(mean - PUBLISHED) < 10 else
-                              "LỆCH LỚN — cần soát lại prompt, cách chấm, tiền xử lý"))
-    print(f"đã lưu {a.out}")
+                              "LARGE GAP — review prompting, scoring and preprocessing"))
+    print(f"saved {a.out}")
 
 
 if __name__ == "__main__":

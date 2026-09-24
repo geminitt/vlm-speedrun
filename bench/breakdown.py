@@ -1,8 +1,8 @@
-"""Bóc tách thời gian: bộ mã hoá thị giác, connector, prefill của mô hình
-ngôn ngữ, và phần sinh chữ.
+"""Break latency down into: vision encoder, connector, language-model prefill,
+and decoding.
 
-Câu hỏi: khi chạy một mô hình thị giác–ngôn ngữ trên GPU nhỏ, thời gian thực
-sự nằm ở đâu? Trả lời được câu này mới biết nên tối ưu chỗ nào.
+The question: when a vision-language model runs on a small GPU, where does the
+time actually go? Only after answering that do we know what to optimise.
 """
 import argparse, json, statistics
 from pathlib import Path
@@ -31,8 +31,8 @@ def main():
     n_tok = []
 
     with torch.no_grad():
-        warm = Config("warmup", max_new_tokens=8)   # dùng đúng lớp Config thật,
-        for s in samples[:2]:                        # không dùng đối tượng giả
+        warm = Config("warmup", max_new_tokens=8)   # use the real Config class,
+        for s in samples[:2]:                        # not a stand-in object
             r.run(s, warm)
         for s in samples:
             inputs = r.prepare(s)
@@ -61,11 +61,11 @@ def main():
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
 
-    print(f"\ntoken ảnh: {res['image_tokens_median']:.0f} | "
-          f"tổng generate {total:.0f} ms")
+    print(f"\nimage tokens: {res['image_tokens_median']:.0f} | "
+          f"total generate {total:.0f} ms")
     for k in ("vision", "connector", "llm_prefill", "decode"):
         print(f"  {k:12s} {med[k]:7.1f} ms  ({res['share_pct'][k]:5.1f}%)")
-    print(f"đã lưu {a.out}")
+    print(f"saved {a.out}")
 
 
 if __name__ == "__main__":

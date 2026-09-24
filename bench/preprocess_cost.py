@@ -1,8 +1,8 @@
-"""Đo chi phí tiền xử lý ảnh phía CPU — phần bị bỏ quên trong mọi bộ đo trước.
+"""Measure CPU-side image preprocessing — the part left out of every earlier benchmark.
 
-Bộ đo ở cổng 1 và 2 gọi processor TRƯỚC khi bấm giờ, nên chi phí cắt ô, thay đổi
-kích thước và chuẩn hoá ảnh không xuất hiện trong bất kỳ con số nào. Trong một
-dịch vụ thật thì người dùng phải trả cả phần đó.
+The gate 1 and 2 harness calls the processor BEFORE the clock starts, so the cost
+of tiling, resizing and normalising the image never appears in any number. A real
+service pays for it anyway.
 """
 import argparse, json, statistics, time
 from pathlib import Path
@@ -29,10 +29,10 @@ def main():
         cfg = Config("x", max_edge=edge)
         prep, gpu = [], []
         for s in samples[:2]:
-            runner.run(s, cfg)                       # làm nóng
+            runner.run(s, cfg)                       # warm up
         for s in samples:
             t0 = time.perf_counter()
-            inputs = runner.prepare(s, cfg)          # CPU: đổi cỡ, cắt ô, chuẩn hoá
+            inputs = runner.prepare(s, cfg)          # CPU: resize, tile, normalise
             prep.append((time.perf_counter() - t0) * 1000)
             with torch.no_grad():
                 ms, _ = timed(lambda: runner.model.generate(
@@ -43,13 +43,13 @@ def main():
                           "total_ms": total,
                           "preprocess_share_pct": 100 * statistics.median(prep) / total}
         v = res[str(edge)]
-        print(f"cạnh {edge}: tiền xử lý {v['preprocess_ms']['median']:.0f} ms "
+        print(f"edge {edge}: preprocess {v['preprocess_ms']['median']:.0f} ms "
               f"| GPU {v['gpu_ms']['median']:.0f} ms "
-              f"| tiền xử lý chiếm {v['preprocess_share_pct']:.0f}% tổng {total:.0f} ms")
+              f"| preprocess is {v['preprocess_share_pct']:.0f}% of {total:.0f} ms total")
 
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
-    print(f"đã lưu {a.out}")
+    print(f"saved {a.out}")
 
 
 if __name__ == "__main__":

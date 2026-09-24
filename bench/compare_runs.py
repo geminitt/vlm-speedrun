@@ -1,8 +1,8 @@
-"""So sánh hai lần chạy khác nhau trên CÙNG tập mẫu.
+"""Compare two separate runs on the SAME sample set.
 
-Dùng khi hai cấu hình không thể xen kẽ trong một lần chạy — ví dụ bf16 và nf4,
-vì mỗi lúc chỉ nạp được một mô hình vào card 6 GB. Khi đó ta mất lợi thế xen kẽ
-theo thời gian, nhưng vẫn giữ được so sánh theo cặp trên từng mẫu.
+Used when two configurations cannot be interleaved in one run — for example bf16
+versus nf4, because only one model fits on a 6 GB card at a time. We lose the
+benefit of interleaving over time but keep the per-sample paired comparison.
 """
 import argparse, json, statistics
 
@@ -17,9 +17,9 @@ def records(path, key):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--a", required=True, help="file kết quả A")
-    ap.add_argument("--b", required=True, help="file kết quả B")
-    ap.add_argument("--key", default="baseline", help="tên cấu hình cần so")
+    ap.add_argument("--a", required=True, help="results file A")
+    ap.add_argument("--b", required=True, help="results file B")
+    ap.add_argument("--key", default="baseline", help="configuration key to compare")
     ap.add_argument("--label-a", default="A")
     ap.add_argument("--label-b", default="B")
     x = ap.parse_args()
@@ -46,15 +46,15 @@ def main():
 
     pa = 100 * sum(acc_a[i] for i in common) / len(common)
     pb = 100 * sum(acc_b[i] for i in common) / len(common)
-    print(f"cấu hình: {x.key} | {len(common)} mẫu chung\n")
-    print(f"{x.label_a:>12}: {pa:5.1f}% đúng | VRAM {ra.get('peak_vram_mb', 0):.0f} MB")
-    print(f"{x.label_b:>12}: {pb:5.1f}% đúng | VRAM {rb.get('peak_vram_mb', 0):.0f} MB")
-    print(f"\nchênh lệch    : {pb - pa:+.1f} điểm "
-          f"(chỉ {x.label_a} đúng: {only_a} · chỉ {x.label_b} đúng: {only_b} · p = {p:.4f})")
-    print(f"tốc độ        : {x.label_b} nhanh hơn {statistics.median(ratios):.2f}× "
+    print(f"configuration: {x.key} | {len(common)} shared samples\n")
+    print(f"{x.label_a:>12}: {pa:5.1f}% correct | VRAM {ra.get('peak_vram_mb', 0):.0f} MB")
+    print(f"{x.label_b:>12}: {pb:5.1f}% correct | VRAM {rb.get('peak_vram_mb', 0):.0f} MB")
+    print(f"\ndifference    : {pb - pa:+.1f} points "
+          f"(only {x.label_a} correct: {only_a} · only {x.label_b} correct: {only_b} · p = {p:.4f})")
+    print(f"speed         : {x.label_b} faster by {statistics.median(ratios):.2f}× "
           f"[{ratios[n//4]:.2f}–{ratios[(3*n)//4]:.2f}]")
-    print(f"kết luận      : " + ("chất lượng khác biệt rõ rệt" if p < 0.05
-                                 else "không phân biệt được về chất lượng"))
+    print(f"verdict       : " + ("quality differs significantly" if p < 0.05
+                                 else "quality not distinguishable"))
 
 
 if __name__ == "__main__":

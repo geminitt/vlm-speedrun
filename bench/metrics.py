@@ -1,9 +1,9 @@
-"""Thước đo chất lượng cho ChartQA.
+"""Quality metrics.
 
-ChartQA chấm bằng *relaxed accuracy*: đáp án số được coi là đúng nếu sai lệch
-tương đối không quá 5%; đáp án chữ thì so khớp sau khi chuẩn hoá.
-Lý do: câu hỏi trên biểu đồ thường yêu cầu đọc giá trị bằng mắt, nên đòi khớp
-tuyệt đối là vô lý.
+ChartQA is scored with *relaxed accuracy*: a numeric answer counts as correct if
+its relative error is at most 5%; a text answer must match after normalisation.
+The tolerance exists because chart questions usually require reading values off
+the plot by eye, so demanding an exact match would be unreasonable.
 """
 import re
 
@@ -11,7 +11,7 @@ _NUM = re.compile(r"-?\d+(?:[.,]\d+)?")
 
 
 def to_number(s):
-    """Rút số đầu tiên trong chuỗi. Trả về None nếu không có số."""
+    """Extract the first number in a string. Returns None if there is none."""
     if s is None:
         return None
     s = s.strip().replace(",", "")
@@ -22,7 +22,7 @@ def to_number(s):
         v = float(m.group(0))
     except ValueError:
         return None
-    if "%" in s:  # "45%" và "45" coi như cùng một giá trị
+    if "%" in s:  # "45%" and "45" are treated as the same value
         pass
     return v
 
@@ -31,11 +31,11 @@ def normalize_text(s):
     s = (s or "").strip().lower()
     s = re.sub(r"[^\w\s%.-]", "", s)
     s = re.sub(r"\s+", " ", s).strip()
-    return s.strip(" .")  # bỏ dấu câu ở hai đầu: "Yes." -> "yes"
+    return s.strip(" .")  # drop surrounding punctuation: "Yes." -> "yes"
 
 
 def relaxed_match(pred, gold, tol=0.05):
-    """True nếu dự đoán khớp đáp án theo chuẩn relaxed accuracy của ChartQA."""
+    """True if the prediction matches the answer under ChartQA relaxed accuracy."""
     p_num, g_num = to_number(pred), to_number(gold)
     if g_num is not None and p_num is not None:
         if g_num == 0:
@@ -52,10 +52,10 @@ def relaxed_accuracy(preds, golds, tol=0.05):
 
 
 def wilson_interval(k, n, z=1.96):
-    """Khoảng tin cậy 95% cho một tỉ lệ (phương pháp Wilson).
+    """95% confidence interval for a proportion (Wilson method).
 
-    Dùng thay cho công thức chuẩn vì nó vẫn đúng khi n nhỏ hoặc tỉ lệ gần 0/1.
-    Trả về (cận dưới, cận trên).
+    Used instead of the normal approximation because it stays valid when n is
+    small or the proportion is close to 0 or 1. Returns (lower, upper).
     """
     if n == 0:
         return (0.0, 0.0)
@@ -67,15 +67,15 @@ def wilson_interval(k, n, z=1.96):
 
 
 def mcnemar(b, c):
-    """Kiểm định McNemar cho hai bộ phân loại chạy trên CÙNG tập mẫu.
+    """McNemar test for two classifiers evaluated on the SAME samples.
 
-    b = số mẫu A đúng nhưng B sai
-    c = số mẫu A sai nhưng B đúng
-    Các mẫu cả hai cùng đúng hoặc cùng sai không mang thông tin so sánh, nên
-    bị loại khỏi phép kiểm — đó chính là chỗ phép kiểm này mạnh hơn việc so
-    hai khoảng tin cậy độc lập.
+    b = number of samples A gets right and B gets wrong
+    c = number of samples A gets wrong and B gets right
+    Samples both get right or both get wrong carry no comparative information and
+    are left out — which is exactly why this test is more powerful than comparing
+    two independent confidence intervals.
 
-    Trả về p-value hai phía, tính chính xác bằng phân phối nhị thức với p=0,5.
+    Returns the two-sided p-value, computed exactly from the binomial with p = 0.5.
     """
     from math import comb
     n = b + c
@@ -87,7 +87,7 @@ def mcnemar(b, c):
 
 
 def paired_accuracy(records, key_a, key_b):
-    """So sánh độ chính xác của hai cấu hình theo từng mẫu."""
+    """Compare the accuracy of two configurations sample by sample."""
     from collections import defaultdict
     per = defaultdict(dict)
     for r in records:
@@ -99,7 +99,7 @@ def paired_accuracy(records, key_a, key_b):
     for sid, d in per.items():
         if key_a not in d or key_b not in d:
             continue
-        a_ok = sum(d[key_a]) * 2 >= len(d[key_a])   # đa số các vòng
+        a_ok = sum(d[key_a]) * 2 >= len(d[key_a])   # majority over rounds
         b_ok = sum(d[key_b]) * 2 >= len(d[key_b])
         if a_ok and not b_ok:
             b += 1
@@ -116,7 +116,7 @@ def paired_accuracy(records, key_a, key_b):
 
 
 def levenshtein(a, b):
-    """Khoảng cách chỉnh sửa giữa hai chuỗi."""
+    """Edit distance between two strings."""
     if a == b:
         return 0
     if not a or not b:
@@ -131,13 +131,13 @@ def levenshtein(a, b):
 
 
 def anls(pred, golds, threshold=0.5):
-    """ANLS — thước đo chuẩn của DocVQA.
+    """ANLS — the standard DocVQA metric.
 
-    Với mỗi đáp án chuẩn, tính độ tương đồng 1 − khoảng_cách/độ_dài_lớn_nhất.
-    Lấy giá trị lớn nhất; nếu dưới ngưỡng thì tính 0 điểm.
+    For each reference answer, compute the similarity 1 - distance / max_length.
+    Take the best; below the threshold the score is 0.
 
-    Lý do dùng ANLS thay vì so khớp tuyệt đối: đáp án trong tài liệu là chữ do người
-    đọc từ ảnh, nên sai một ký tự do OCR không nên bị tính là sai hoàn toàn.
+    ANLS is used instead of exact match because document answers are text read off
+    an image, so a single OCR-level character error should not count as fully wrong.
     """
     if isinstance(golds, str):
         golds = [golds]

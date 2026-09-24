@@ -1,7 +1,7 @@
-"""Đo độ trễ đầu-cuối của máy chủ dưới các mức đồng thời khác nhau.
+"""Measure the server's end-to-end latency at several concurrency levels.
 
-Câu hỏi cần trả lời: khi nhiều người dùng gọi cùng lúc trên MỘT GPU, độ trễ đuôi
-p95 phình ra bao nhiêu, và thông lượng có tăng không?
+The question: when several users call at once on ONE GPU, how much does p95 tail
+latency grow, and does throughput increase at all?
 """
 import argparse, io, json, statistics, time
 from concurrent import futures
@@ -12,7 +12,7 @@ import grpc
 from bench.harness import load_samples
 from bench.latency_probe import summarize
 from serve.gen_proto import ensure_stubs
-ensure_stubs()                      # bản clone mới chưa có mã sinh từ .proto
+ensure_stubs()                      # a fresh clone has no code generated from .proto yet
 from serve import vlm_pb2, vlm_pb2_grpc  # noqa: E402
 
 
@@ -43,12 +43,12 @@ def main():
         ("grpc.max_send_message_length", 32 * 1024 * 1024)])
     stub = vlm_pb2_grpc.VlmServiceStub(ch)
     h = stub.Health(vlm_pb2.HealthRequest(), timeout=60)
-    print(f"máy chủ: {h.model} trên {h.device}")
+    print(f"server: {h.model} on {h.device}")
 
     samples = load_samples(a.samples, seed=1)
     payloads = [(encode(s["image"]), s["query"]) for s in samples]
 
-    # làm nóng
+    # warm up
     one_call(stub, *payloads[0], a.max_edge, a.timeout)
 
     res = {}
@@ -65,12 +65,12 @@ def main():
                        "server_ms": summarize(srv),
                        "throughput_rps": len(lat) / wall}
         e = res[str(c)]["end_to_end_ms"]
-        print(f"đồng thời {c}: trung vị {e['median']:.0f} ms | p95 {e['p95']:.0f} ms "
-              f"| thông lượng {res[str(c)]['throughput_rps']:.2f} yêu cầu/giây")
+        print(f"concurrency {c}: median {e['median']:.0f} ms | p95 {e['p95']:.0f} ms "
+              f"| throughput {res[str(c)]['throughput_rps']:.2f} req/s")
 
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
-    print(f"đã lưu {a.out}")
+    print(f"saved {a.out}")
 
 
 if __name__ == "__main__":

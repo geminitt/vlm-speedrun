@@ -1,9 +1,9 @@
-"""Máy chủ suy luận gRPC cho mô hình thị giác–ngôn ngữ.
+"""gRPC inference server for a vision-language model.
 
-Ba tính chất cần có của một máy chủ suy luận, và chỗ cài đặt chúng:
-  - hàng đợi có giới hạn: từ chối sớm khi quá tải thay vì để độ trễ phình vô hạn
-  - đo thời gian tại máy chủ: tách phần tính toán khỏi phần mạng
-  - suy giảm có kiểm soát: hết hạn thời gian thì trả lỗi rõ ràng, không treo
+Three properties an inference server needs, and where they live:
+  - a bounded queue: reject early under overload instead of letting latency grow unbounded
+  - server-side timing: separate compute from network
+  - graceful degradation: return a clear error on failure instead of hanging
 """
 import argparse, io, threading, time
 from concurrent import futures
@@ -13,7 +13,7 @@ import torch
 from PIL import Image
 
 from serve.gen_proto import ensure_stubs
-ensure_stubs()                      # bản clone mới chưa có mã sinh từ .proto
+ensure_stubs()                      # a fresh clone has no code generated from .proto yet
 from serve import vlm_pb2, vlm_pb2_grpc  # noqa: E402
 
 
@@ -26,8 +26,8 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
         self.default_tokens = max_new_tokens
         self.device = device
         self.model_id = model_id
-        # Một GPU chỉ phục vụ được một yêu cầu tại một thời điểm; khoá để các
-        # yêu cầu xếp hàng có trật tự thay vì tranh nhau bộ nhớ.
+        # One GPU serves one request at a time; the lock makes requests queue in
+        # order instead of competing for memory.
         self.lock = threading.Lock()
 
     def Health(self, request, context):
@@ -40,7 +40,7 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
         try:
             img = Image.open(io.BytesIO(request.image)).convert("RGB")
         except Exception as e:
-            context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"ảnh không đọc được: {e}")
+            context.abort(grpc.StatusCode.INVALID_ARGUMENT, f"unreadable image: {e}")
 
         cfg = self.Config("serve",
                           max_edge=request.max_edge or self.default_edge,
@@ -54,7 +54,7 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
                 pred, n_img, _ = self.runner.infer(sample, cfg)
             except torch.cuda.OutOfMemoryError:
                 torch.cuda.empty_cache()
-                context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED, "hết bộ nhớ GPU")
+                context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED, "out of GPU memory")
             server_ms = (time.perf_counter() - t0) * 1000
 
         return vlm_pb2.InferReply(answer=pred, image_tokens=n_img,
@@ -72,8 +72,8 @@ def serve(args):
         VlmService(args.model, args.max_edge, args.max_new_tokens, device), server)
     server.add_insecure_port(f"[::]:{args.port}")
     server.start()
-    print(f"máy chủ sẵn sàng trên cổng {args.port} | mô hình {args.model} "
-          f"| thiết bị {device} | cạnh dài tối đa {args.max_edge}", flush=True)
+    print(f"server ready on port {args.port} | model {args.model} "
+          f"| device {device} | max edge {args.max_edge}", flush=True)
     server.wait_for_termination()
 
 

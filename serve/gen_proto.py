@@ -1,10 +1,10 @@
-"""Sinh mã Python từ vlm.proto.
+"""Generate Python code from vlm.proto.
 
-Hai file vlm_pb2.py và vlm_pb2_grpc.py không nằm trong git vì chúng là mã sinh tự
-động. File này đảm bảo chúng luôn được tạo lại khi thiếu, để một bản clone mới vẫn
-chạy được máy chủ.
+vlm_pb2.py and vlm_pb2_grpc.py are not tracked in git because they are generated.
+This module makes sure they are recreated whenever they are missing, so a fresh
+clone can still run the server.
 
-    python -m serve.gen_proto        # sinh lại một cách tường minh
+    python -m serve.gen_proto        # regenerate explicitly
 """
 import re
 from pathlib import Path
@@ -21,9 +21,9 @@ def generate():
         f"--python_out={HERE}", f"--grpc_python_out={HERE}", str(PROTO),
     ])
     if code != 0:
-        raise RuntimeError(f"protoc thất bại với mã {code}")
-    # protoc sinh ra import tuyệt đối "import vlm_pb2", chỉ chạy được khi thư mục
-    # serve/ nằm trong sys.path. Đổi thành import tương đối trong package.
+        raise RuntimeError(f"protoc failed with exit code {code}")
+    # protoc emits an absolute "import vlm_pb2", which only works when serve/ is on
+    # sys.path. Rewrite it as a relative import inside the package.
     grpc_file = OUTPUTS[1]
     src = grpc_file.read_text()
     grpc_file.write_text(src.replace("import vlm_pb2 as vlm__pb2",
@@ -35,16 +35,16 @@ def _version(v):
 
 
 def _generated_grpc_version():
-    """Phiên bản grpcio mà mã sinh ra đòi hỏi, ghi sẵn trong file do protoc tạo."""
+    """The grpcio version the generated code requires, as recorded by protoc."""
     m = re.search(r"GRPC_GENERATED_VERSION = '([\d.]+)'", OUTPUTS[1].read_text())
     return m.group(1) if m else None
 
 
 def ensure_stubs():
-    """Sinh lại stub khi thiếu, cũ hơn file .proto, hoặc lệch phiên bản grpcio.
+    """Regenerate the stubs when missing, older than the .proto, or grpcio-mismatched.
 
-    Trường hợp lệch phiên bản xảy ra khi máy có hai môi trường: stub sinh bởi
-    grpcio-tools bản mới hơn sẽ từ chối chạy với grpcio bản cũ hơn.
+    A version mismatch happens on machines with two environments: stubs generated
+    by a newer grpcio-tools refuse to load under an older grpcio.
     """
     src_time = PROTO.stat().st_mtime
     if all(p.exists() and p.stat().st_mtime >= src_time for p in OUTPUTS):
@@ -57,4 +57,4 @@ def ensure_stubs():
 
 if __name__ == "__main__":
     generate()
-    print("đã sinh:", ", ".join(p.name for p in OUTPUTS))
+    print("generated:", ", ".join(p.name for p in OUTPUTS))

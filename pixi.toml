@@ -29,8 +29,8 @@ bitsandbytes = ">=0.50.2, <0.51"
 grpcio = ">=1.84.0, <2"
 grpcio-tools = ">=1.84.0, <2"
 
-# Môi trường CI: chỉ gồm thứ mà bộ test cần. Bản PyTorch CPU từ conda-forge nhẹ hơn
-# hẳn bản CUDA của môi trường mặc định, nên CI không phải tải vài GB thư viện GPU.
+# CI environment: only what the tests import. CPU PyTorch from conda-forge makes it
+# about 1.8 GB instead of the 6.2 GB default environment with CUDA PyTorch.
 [feature.ci.dependencies]
 python = "3.12.*"
 pytorch-cpu = "*"

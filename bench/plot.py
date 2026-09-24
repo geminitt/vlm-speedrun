@@ -1,10 +1,10 @@
-"""Vẽ đường đánh đổi giữa độ chính xác và tốc độ.
+"""Plot the accuracy-versus-speed trade-off.
 
-Quy ước trình bày:
-  - màu mã hoá NHÓM ĐÒN BẨY (gốc / giảm ô ảnh / cắt token), không mã hoá thứ hạng
-  - mỗi điểm đều có nhãn trực tiếp, vì bảng màu có một slot tương phản thấp
-  - thanh sai số là khoảng tin cậy 95% của độ chính xác (Wilson)
-  - lưới và trục lùi về sau, dữ liệu nổi lên trước
+Presentation rules:
+  - colour encodes the LEVER FAMILY (baseline / fewer tiles / token pruning), never rank
+  - every point carries a direct label, because the palette has one low-contrast slot
+  - error bars are the 95% Wilson confidence interval of accuracy
+  - grid and axes recede, the data comes forward
 """
 import argparse, json
 from pathlib import Path
@@ -19,9 +19,9 @@ THEMES = {
     "dark": dict(surface="#1a1a19", ink="#ffffff", ink2="#c3c2b7", grid="#34332f",
                  series=("#3987e5", "#d95926", "#199e70")),
 }
-FAMILIES = ["Gốc", "Giảm số ô ảnh", "Cắt token sau mã hoá"]
-# Nhãn đặt so le theo bậc thang. Điểm ở nửa trái luôn dán nhãn về bên phải để
-# không bị cắt ở mép, điểm ở nửa phải thì ngược lại.
+FAMILIES = ["Baseline", "Fewer image tiles", "Prune tokens after encoding"]
+# Labels are staggered like steps. Points in the left half are always labelled to
+# the right so they are not clipped at the edge, and vice versa.
 RIGHT = [(13, 12), (13, -12), (13, 34), (13, -32), (13, 56), (13, -52)]
 LEFT = [(-13, 10), (-13, -6), (-13, 24), (-13, -20)]
 
@@ -72,7 +72,7 @@ def draw(path, out, theme="light"):
                     fmt="o", ms=9, lw=0, elinewidth=1.6, capsize=3,
                     color=t["series"][f], ecolor=t["series"][f], alpha=0.95,
                     markeredgecolor=t["surface"], markeredgewidth=1.5, label=name)
-        for d in pts:                       # nhãn trực tiếp, so le để không chồng nhau
+        for d in pts:                       # direct labels, staggered so they do not overlap
             if d["speed"] < d["x_mid"]:
                 dx, dy = RIGHT[d["slot"] % len(RIGHT)]; ha = "left"
             else:
@@ -86,14 +86,14 @@ def draw(path, out, theme="light"):
     base = next(d for d in rows if d["fam"] == 0)
     ax.axhline(base["acc"], color=t["grid"], lw=1.2, ls="--", zorder=0)
     ax.axhspan(base["lo"], base["hi"], color=t["grid"], alpha=0.5, zorder=0)
-    ax.annotate("khoảng tin cậy của bản gốc", (ax.get_xlim()[1], base["hi"]),
+    ax.annotate("baseline confidence interval", (ax.get_xlim()[1], base["hi"]),
                 xytext=(-4, 4), textcoords="offset points", ha="right",
                 fontsize=8, color=t["ink2"])
 
-    ax.set_xlabel("Tăng tốc so với bản gốc (lần, so theo cặp)", color=t["ink2"], fontsize=10)
-    ax.set_ylabel("Độ chính xác ChartQA (%)", color=t["ink2"], fontsize=10)
-    ax.set_title(f"Đánh đổi tốc độ và chất lượng — {r['model'].split('/')[-1]}"
-                 f" trên GPU 6 GB\n{r['samples']} mẫu × {r['rounds']} vòng",
+    ax.set_xlabel("Speedup over baseline (×, paired)", color=t["ink2"], fontsize=10)
+    ax.set_ylabel("ChartQA accuracy (%)", color=t["ink2"], fontsize=10)
+    ax.set_title(f"Speed versus quality — {r['model'].split('/')[-1]}"
+                 f" on a 6 GB GPU\n{r['samples']} samples × {r['rounds']} rounds",
                  color=t["ink"], fontsize=12, loc="left", pad=12)
     ax.grid(True, color=t["grid"], lw=0.8, alpha=0.9)
     ax.set_axisbelow(True)
@@ -109,7 +109,7 @@ def draw(path, out, theme="light"):
     ax.margins(x=0.13, y=0.18)
     fig.tight_layout()
     fig.savefig(out, facecolor=t["surface"])
-    print(f"đã lưu {out}")
+    print(f"saved {out}")
 
 
 if __name__ == "__main__":
