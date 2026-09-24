@@ -1,0 +1,72 @@
+"""Bóc tách thời gian: bộ mã hoá thị giác, connector, prefill của mô hình
+ngôn ngữ, và phần sinh chữ.
+
+Câu hỏi: khi chạy một mô hình thị giác–ngôn ngữ trên GPU nhỏ, thời gian thực
+sự nằm ở đâu? Trả lời được câu này mới biết nên tối ưu chỗ nào.
+"""
+import argparse, json, statistics
+from pathlib import Path
+
+import torch
+
+from bench.harness import Runner, Config, load_samples, PROMPT
+from bench.latency_probe import summarize, timed
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", default="HuggingFaceTB/SmolVLM-Instruct")
+    ap.add_argument("--samples", type=int, default=12)
+    ap.add_argument("--repeats", type=int, default=3)
+    ap.add_argument("--max-new-tokens", type=int, default=32)
+    ap.add_argument("--out", default="results/breakdown.json")
+    a = ap.parse_args()
+
+    r = Runner(a.model)
+    model, inner = r.model, r.model.model
+    samples = load_samples(a.samples, seed=0)
+
+    parts = {"vision": [], "connector": [], "llm_prefill": [], "decode": [],
+             "total_generate": []}
+    n_tok = []
+
+    with torch.no_grad():
+        warm = Config("warmup", max_new_tokens=8)   # dùng đúng lớp Config thật,
+        for s in samples[:2]:                        # không dùng đối tượng giả
+            r.run(s, warm)
+        for s in samples:
+            inputs = r.prepare(s)
+            ids = inputs["input_ids"][0]
+            for _ in range(a.repeats):
+                t_vis, out = timed(lambda: inner.vision_model(
+                    pixel_values=inputs["pixel_values"].flatten(0, 1).to(model.dtype)))
+                vis = out.last_hidden_state if hasattr(out, "last_hidden_state") else out
+                t_con, feats = timed(lambda: inner.connector(vis))
+                t_pre, _ = timed(lambda: model(**inputs))
+                t_gen, _ = timed(lambda: model.generate(
+                    **inputs, do_sample=False, max_new_tokens=a.max_new_tokens))
+                parts["vision"].append(t_vis)
+                parts["connector"].append(t_con)
+                parts["llm_prefill"].append(max(0.0, t_pre - t_vis - t_con))
+                parts["decode"].append(max(0.0, t_gen - t_pre))
+                parts["total_generate"].append(t_gen)
+            n_tok.append(int((ids == r.img_token_id).sum()))
+
+    med = {k: statistics.median(v) for k, v in parts.items()}
+    total = med["total_generate"]
+    res = {"model": a.model, "image_tokens_median": statistics.median(n_tok),
+           "median_ms": med,
+           "share_pct": {k: 100 * v / total for k, v in med.items() if k != "total_generate"},
+           "detail": {k: summarize(v) for k, v in parts.items()}}
+    Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    Path(a.out).write_text(json.dumps(res, indent=2))
+
+    print(f"\ntoken ảnh: {res['image_tokens_median']:.0f} | "
+          f"tổng generate {total:.0f} ms")
+    for k in ("vision", "connector", "llm_prefill", "decode"):
+        print(f"  {k:12s} {med[k]:7.1f} ms  ({res['share_pct'][k]:5.1f}%)")
+    print(f"đã lưu {a.out}")
+
+
+if __name__ == "__main__":
+    main()
