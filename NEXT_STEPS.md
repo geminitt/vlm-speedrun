@@ -1,44 +1,47 @@
-# Trạng thái dự án
+# Project status
 
-Cập nhật: 2026-09-24. **Sáu cổng đã hoàn thành.**
+Updated: 2026-09-24. **All six gates are complete.**
 
-| Cổng | Nội dung | Kết quả |
+| Gate | Scope | Result |
 |---|---|---|
-| 0 | Đo nhiễu của phép đo | nhiễu 8,5%, ngưỡng tuyên bố cải thiện 25,5% |
-| 1 | Bộ đo độ chính xác + độ trễ | đường cơ sở 64,7% ChartQA / 990 ms |
-| 2 | Đòn bẩy giảm token ảnh | giảm cạnh 1536→768: **1,93×**, mất 7,3 điểm (p = 0,002) |
-| 3 | Lượng tử hoá | nf4 giảm **55% VRAM**, chậm 8%, có dấu hiệu mất 4 điểm (p = 0,081) |
-| 4 | Máy chủ gRPC | cạnh 768 cho **2,02 yêu cầu/giây**, gấp đôi bản gốc |
-| 5 | Kiểm tra tỉnh táo + ablation prompt | DocVQA ANLS 73,8 so với 81,6 đã công bố; ngôn ngữ chỉ dẫn không ảnh hưởng |
+| 0 | Noise of the measurement itself | noise 8.5%, improvement-claim threshold 25.5% |
+| 1 | Accuracy + latency harness | baseline 64.7% ChartQA / 990 ms |
+| 2 | Levers that reduce image tokens | longest edge 1536→768: **1.93×**, −7.3 points (p = 0.002) |
+| 3 | Quantisation | nf4 cuts **55% VRAM**, 8% slower, signs of −4 points (p = 0.081) |
+| 4 | gRPC server | edge 768 gives **2.02 requests/s**, double the baseline |
+| 5 | Sanity check + prompt ablation | DocVQA ANLS 73.8 vs 81.6 published; instruction language has no effect |
 
-Kèm theo: 38 test, hai notebook dạy, `speedrun.sh` đã chạy thử trọn vẹn.
+Also: 38 tests, two teaching notebooks, `speedrun.sh` verified end to end.
 
-Hạ tầng đã kiểm chứng:
+Verified infrastructure:
 
-| Thành phần | Trạng thái |
+| Component | Status |
 |---|---|
-| Bản clone mới chạy được máy chủ | ✅ mã gRPC tự sinh lại khi thiếu hoặc lệch phiên bản |
-| Môi trường CI (`pixi run test`) | ✅ xanh trên GitHub: 38 test, 33 giây |
-| Ảnh Docker | ✅ 3,49 GB, build chịu được mạng chập chờn |
-| Docker có GPU | ✅ chạy và đo được; chênh với chạy trực tiếp 3–9%, dưới ngưỡng nhiễu |
+| Fresh clone runs the server | ✅ gRPC stubs regenerate when missing or version-mismatched |
+| CI environment (`pixi run test`) | ✅ green on GitHub: 38 tests, 33 seconds |
+| Docker image | ✅ 3.49 GB; the build tolerates an unreliable network |
+| Docker with GPU | ✅ runs and was measured; 3–9% from native, below the noise threshold |
 
-## Phần mở rộng có thể làm thêm
+## Optional extensions
 
-Không bắt buộc, xếp theo mức đáng làm:
+Not required; ordered by how worthwhile they are:
 
-1. **Cắt token theo điểm attention (kiểu FastV)** — bốn cách chọn hiện tại đều
-   không dùng thông tin từ mô hình. Cần can thiệp vào vòng lặp decoder.
-2. **Ghép cạnh 768 với nf4 rồi đo lại phần phục vụ** — hiện mới đo riêng từng cái
-   ở phần ngoại tuyến.
-3. **Thêm một mô hình thứ hai** (ví dụ Qwen2.5-VL-3B) để kiểm tra kết luận "bộ mã
-   hoá thị giác chiếm hơn một nửa thời gian" có đúng ngoài SmolVLM không.
-4. **Batching ở máy chủ** — hiện mỗi lần chỉ xử lý một yêu cầu; gộp lô có thể tăng
-   thông lượng mà không đổi phần cứng.
+1. **Attention-score token pruning (FastV-style)** — none of the four current
+   selection methods uses information from the model. Requires changes to the
+   decoder loop.
+2. **Combine edge 768 with nf4 and re-measure serving** — so far each has only been
+   measured separately, offline.
+3. **Add a second model** (e.g. Qwen2.5-VL-3B) to test whether "the vision encoder
+   takes over half the time" holds beyond SmolVLM.
+4. **Server-side batching** — the server currently handles one request at a time;
+   batching could raise throughput on the same hardware.
 
-## Lưu ý khi chạy lại
+## Notes for rerunning
 
-- Không chạy hai phép đo cùng lúc trên một GPU: độ trễ vọt từ 904 ms lên 5.247 ms.
-- Luôn truyền `--model`; mặc định đã đổi sang bản 2.2B nhưng vẫn nên ghi rõ.
-- `FAST=1 ./speedrun.sh` ghi đè biểu đồ bằng dữ liệu 12 mẫu. Sau khi chạy nhanh,
-  vẽ lại bằng: `pixi run python -m bench.plot --results results/gate2_sweep.json`
-- Không dùng `pkill -f` với chuỗi trùng nội dung lệnh đang gõ, nó sẽ tự giết shell.
+- Never run two measurements on one GPU at the same time: latency jumped from 904 ms
+  to 5,247 ms.
+- Always pass `--model`; the default is now the 2.2B model, but be explicit anyway.
+- `FAST=1 ./speedrun.sh` overwrites the figures with 12-sample data. After a fast
+  run, redraw them with: `pixi run python -m bench.plot --results results/gate2_sweep.json`
+- Do not use `pkill -f` with a pattern that also matches the command being typed; it
+  kills its own shell. Use a bracket pattern such as `"bench\.qu[a]ntize"`.
