@@ -16,14 +16,16 @@
 > reaches only 1.13–1.26×**, whereas **halving the input resolution reaches 1.93×
 > and doubles serving throughput**, at a cost of 7.3 accuracy points. nf4
 > quantisation **cuts memory by 55%**, but is 8% slower and shows signs of losing
-> about 4 points (p = 0.081) — it buys memory, not speed.
+> about 4 points (p = 0.081) — with bitsandbytes, quantisation buys memory, not
+> speed.
 
 ![Speed versus quality trade-off](results/tradeoff_light.png)
 
 *The figure comes from the 40-sample × 3-round sweep — the only run containing both
-lever families on the same samples, so its confidence intervals are wide. The main
-numbers in the tables below use up to 300 samples; the "Samples" column states each
-row's sample size.*
+lever families on the same samples. Its error bars are 95% Wilson intervals with
+n = 40: the three rounds repeat the same questions and give the same verdicts, so they
+add no information about accuracy. The main numbers in the tables below use up to 300
+samples; the "Samples" column states each row's sample size.*
 
 ## Reproduce everything with one command
 
@@ -49,7 +51,7 @@ as the native run:
 | 768 | 503 ms · 2.02 req/s | 517 ms · 1.95 req/s | +3% |
 | 1536 | 939 ms · 1.03 req/s | 1,020 ms · 0.96 req/s | +9% |
 
-Both differences are below the 25.5% noise threshold, so Docker cannot be said to be
+Both differences are below the 13.2% noise threshold, so Docker cannot be said to be
 slower. Without a GPU the server runs with `--device cpu` (256M model: about
 15 seconds per request).
 
@@ -69,7 +71,7 @@ Model: **SmolVLM-2.2B**. Data: **ChartQA** (scored with *relaxed accuracy*) and
 | **Vision encoder** | 453 ms | **52.7%** |
 | Connector | 2.6 ms | 0.3% |
 | Language-model prefill | 252 ms | 29.3% |
-| Generating 32 tokens | 142 ms | 16.5% |
+| Generating the answer (up to 32 tokens; answers end after about 6) | 142 ms | 16.5% |
 | *(CPU-side image preprocessing)* | *29 ms* | *3%* |
 
 An 800×557 image is split into **13 tiles** and yields **1,053 image tokens** — 84%
@@ -114,8 +116,22 @@ Two conclusions:
 | int8 | **2,340 ms** | 3,008 MB | 100% | 3.16 |
 | **nf4** | 922 ms | **1,905 MB** | 100% | 6.78 |
 
-**Quantisation here buys memory, not speed.** bitsandbytes int8 is even 2.6× slower,
-because of the dequantisation overhead in every matrix multiplication.
+**bitsandbytes quantisation buys memory here, not speed.** Neither format reduces the
+arithmetic, and each adds work:
+
+- **int8** (LLM.int8) quantises the activations on every call, splits out outlier
+  features into a separate fp16 matrix multiplication, then dequantises and merges the
+  two results. That extra work makes it 2.6× slower.
+- **nf4** only quantises the weights, so every call first dequantises them back to
+  bf16. In the vision encoder and the prefill, which are compute-bound and take about
+  80% of the time, that is pure overhead. In decoding, the 4-bit kernel does cut GPU
+  time per token roughly in half, but a decoding step launches about a thousand small
+  kernels. Once the GPU work shrinks below the CPU time needed to launch them, the
+  GPU waits for the CPU and the saving disappears.
+
+Quantisation that targets this workload's bottleneck would quantise activations too
+(W8A8 or FP8, which this Ada GPU supports) with fused kernels. That was not tested
+here.
 
 nf4 measured in depth on **300 samples**, paired against bf16 on the same samples:
 
@@ -186,13 +202,14 @@ your own favour. These rules live in `bench/harness.py`, not in a document:
 2. **Rounds are replicates over the same sample set**, so comparisons can be paired
 3. **Configurations are interleaved and shuffled**, with a seed for reproducibility
 4. **Report the median and interquartile range**, never mean ± standard deviation
-5. **Only claim an improvement above three times the measured noise** — 25.5% on this machine
+5. **Only claim an improvement above three times the measured noise** — 13.2% for the 2.2B model on this machine (CV 4.4%)
 6. **Record invariants and machine state** with every measurement (image tokens, clocks, temperature)
 
-## Four measurement mistakes made along the way
+## Measurement mistakes made along the way
 
-Recorded because all four **made the results look better** — exactly the kind of
-error that does not reveal itself.
+Recorded because every one of them **made the results look better or more certain
+than they were** — exactly the kind of error that does not reveal itself. The last two
+were found later, while writing the study notes, and are fixed in the code.
 
 | Mistake | Symptom | Consequence if missed |
 |---|---|---|
@@ -200,10 +217,15 @@ error that does not reveal itself.
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
 | Concluding "no difference" from 100 samples | p = 0.18 | with 300 samples the same effect gives p = 0.002 — **the conclusion reverses** |
 | Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
+| Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than 40 questions allow |
+| Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of 13.2% | real improvements of 13–25% would have been dismissed |
 
 The fourth leaves a lesson of its own: **the image-token count is invariant** to the
 numeric format. When it changes, you are measuring something other than what you
-think.
+think. The last two share one: **n is the number of independent observations, not the
+number of rows in a file**, and every constant used for a decision must be measured
+under the conditions it is used in. Quick pipeline checks (`FAST=1`) now write to
+`results/fast/` so they can no longer overwrite reference results.
 
 ---
 
@@ -237,7 +259,10 @@ Dockerfile             packages the inference server
 
 - One model, one benchmark family, one GPU. Nothing is claimed for other setups.
 - The laptop GPU clocks cannot be locked (`nvidia-smi` reports active power and
-  thermal capping), so a baseline noise of about 8.5% is unavoidable.
+  thermal capping), so a baseline noise of about 4.4% (CV) is unavoidable.
+- Quantisation was tested only through bitsandbytes (weight-only nf4 and LLM.int8).
+  Activation quantisation (W8A8, FP8), CUDA graphs and fused 4-bit kernels, which
+  target the bottlenecks found here, were not.
 - The SmolVLM authors do not publish a ChartQA score, so the main benchmark has no
   independent reference number; the DocVQA check above is the substitute.
 - Token pruning was tried with four simple selection methods only; attention-based

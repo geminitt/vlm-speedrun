@@ -4,7 +4,7 @@ Updated: 2026-09-24. **All six gates are complete.**
 
 | Gate | Scope | Result |
 |---|---|---|
-| 0 | Noise of the measurement itself | noise 8.5%, improvement-claim threshold 25.5% |
+| 0 | Noise of the measurement itself | noise 4.4% (CV, 2.2B model), improvement-claim threshold 13.2% |
 | 1 | Accuracy + latency harness | baseline 64.7% ChartQA / 990 ms |
 | 2 | Levers that reduce image tokens | longest edge 1536→768: **1.93×**, −7.3 points (p = 0.002) |
 | 3 | Quantisation | nf4 cuts **55% VRAM**, 8% slower, signs of −4 points (p = 0.081) |
@@ -41,7 +41,8 @@ Not required; ordered by how worthwhile they are:
 - Never run two measurements on one GPU at the same time: latency jumped from 904 ms
   to 5,247 ms.
 - Always pass `--model`; the default is now the 2.2B model, but be explicit anyway.
-- `FAST=1 ./speedrun.sh` overwrites the figures with 12-sample data. After a fast
-  run, redraw them with: `pixi run python -m bench.plot --results results/gate2_sweep.json`
+- `FAST=1 ./speedrun.sh` writes to `results/fast/` (ignored by git), so a pipeline
+  check never overwrites reference results. The README figure is drawn from
+  `results/gate2_sweep.json`: `pixi run python -m bench.plot --results results/gate2_sweep.json`
 - Do not use `pkill -f` with a pattern that also matches the command being typed; it
   kills its own shell. Use a bracket pattern such as `"bench\.qu[a]ntize"`.
