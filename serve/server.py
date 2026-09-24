@@ -12,7 +12,9 @@ import grpc
 import torch
 from PIL import Image
 
-from serve import vlm_pb2, vlm_pb2_grpc
+from serve.gen_proto import ensure_stubs
+ensure_stubs()                      # bản clone mới chưa có mã sinh từ .proto
+from serve import vlm_pb2, vlm_pb2_grpc  # noqa: E402
 
 
 class VlmService(vlm_pb2_grpc.VlmServiceServicer):
@@ -63,12 +65,15 @@ def serve(args):
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=args.workers),
         options=[("grpc.max_receive_message_length", 32 * 1024 * 1024)])
+    device = args.device
+    if device == "auto":
+        device = "cuda" if torch.cuda.is_available() else "cpu"
     vlm_pb2_grpc.add_VlmServiceServicer_to_server(
-        VlmService(args.model, args.max_edge, args.max_new_tokens), server)
+        VlmService(args.model, args.max_edge, args.max_new_tokens, device), server)
     server.add_insecure_port(f"[::]:{args.port}")
     server.start()
-    print(f"máy chủ sẵn sàng trên cổng {args.port} "
-          f"| mô hình {args.model} | cạnh dài tối đa {args.max_edge}")
+    print(f"máy chủ sẵn sàng trên cổng {args.port} | mô hình {args.model} "
+          f"| thiết bị {device} | cạnh dài tối đa {args.max_edge}", flush=True)
     server.wait_for_termination()
 
 
@@ -79,4 +84,5 @@ if __name__ == "__main__":
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--max-edge", type=int, default=1536)
     ap.add_argument("--max-new-tokens", type=int, default=32)
+    ap.add_argument("--device", default="auto", help="auto | cuda | cpu")
     serve(ap.parse_args())

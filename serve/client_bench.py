@@ -11,7 +11,9 @@ import grpc
 
 from bench.harness import load_samples
 from bench.latency_probe import summarize
-from serve import vlm_pb2, vlm_pb2_grpc
+from serve.gen_proto import ensure_stubs
+ensure_stubs()                      # bản clone mới chưa có mã sinh từ .proto
+from serve import vlm_pb2, vlm_pb2_grpc  # noqa: E402
 
 
 def encode(img):
