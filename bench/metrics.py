@@ -19,12 +19,19 @@ def to_number(s):
     if not m:
         return None
     try:
-        v = float(m.group(0))
+        return float(m.group(0))        # "45%" and "45" give the same value
     except ValueError:
         return None
-    if "%" in s:  # "45%" and "45" are treated as the same value
-        pass
-    return v
+
+
+def clean_answer(s):
+    """Answer extraction before scoring: trim, and drop one trailing full stop.
+
+    Under the project's instruction the model ends short answers with a full stop
+    ("Cameroon."). That is punctuation of the reply, not part of the answer.
+    """
+    s = (s or "").strip()
+    return s[:-1].rstrip() if s.endswith(".") else s
 
 
 def normalize_text(s):
@@ -83,6 +90,33 @@ def accuracy_ci(records):
     n = len(per)
     k = sum(sum(v) / len(v) for v in per.values())
     return wilson_interval(k, n), n
+
+
+def robust_cv(xs):
+    """Noise as a robust coefficient of variation, in %: IQR / 1.349 / median.
+
+    For a normal distribution the IQR spans 1.349 standard deviations, so this
+    estimates the CV while ignoring rare outliers — one slow run can double the
+    plain CV (standard deviation / mean) of sixty otherwise steady ones.
+    """
+    import statistics
+    q = statistics.quantiles(sorted(xs), n=4)
+    return 100 * (q[2] - q[0]) / 1.349 / statistics.median(xs)
+
+
+def bootstrap_ci(values, stat=None, n_boot=10_000, seed=0, level=0.95):
+    """Percentile bootstrap interval for a statistic of independent samples.
+
+    Resamples the samples with replacement n_boot times and takes the central
+    `level` share of the recomputed statistic. stat defaults to the mean.
+    """
+    import random
+    stat = stat or (lambda xs: sum(xs) / len(xs))
+    rng = random.Random(seed)
+    boots = sorted(stat(rng.choices(values, k=len(values))) for _ in range(n_boot))
+    lo = boots[int((1 - level) / 2 * n_boot)]
+    hi = boots[int((1 + level) / 2 * n_boot) - 1]
+    return lo, hi
 
 
 def mcnemar(b, c):
@@ -157,13 +191,16 @@ def anls(pred, golds, threshold=0.5):
 
     ANLS is used instead of exact match because document answers are text read off
     an image, so a single OCR-level character error should not count as fully wrong.
+    Normalisation follows the official metric: lowercase and collapse whitespace,
+    nothing else (punctuation counts). Pass the prediction through clean_answer first.
     """
     if isinstance(golds, str):
         golds = [golds]
-    p = normalize_text(pred)
+    norm = lambda s: " ".join((s or "").lower().split())
+    p = norm(pred)
     best = 0.0
     for g in golds:
-        g = normalize_text(g)
+        g = norm(g)
         if not p and not g:
             best = max(best, 1.0); continue
         d = levenshtein(p, g)

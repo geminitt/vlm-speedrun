@@ -5,7 +5,9 @@ that, something systematic is wrong — prompting, scoring or preprocessing — 
 every other result in the project becomes suspect with it.
 
 Note: we run on the validation split (test labels are not public) with the exact
-ANLS metric, but on fewer samples, so only order-of-magnitude agreement is expected.
+ANLS metric, on a sample. The verdict therefore asks whether the published number
+lies inside the bootstrap 95% interval of our estimate — a fixed tolerance would
+say nothing about how much a sample of this size can resolve.
 """
 import argparse, json, statistics
 from pathlib import Path
@@ -13,7 +15,7 @@ from pathlib import Path
 import torch
 
 from bench.harness import Runner, Config, load_samples
-from bench.metrics import anls
+from bench.metrics import anls, bootstrap_ci, clean_answer
 
 PUBLISHED = 81.6
 
@@ -35,7 +37,7 @@ def main():
     with torch.no_grad():
         for i, s in enumerate(samples, 1):
             pred, n_img, _ = runner.infer(s, cfg)
-            sc = anls(pred, s["golds"])
+            sc = anls(clean_answer(pred), s["golds"])
             scores.append(sc)
             rows.append({"sample_id": s["sample_id"], "pred": pred,
                          "golds": s["golds"], "anls": sc})
@@ -44,18 +46,20 @@ def main():
                       f"{100*statistics.fmean(scores):.1f}")
 
     mean = 100 * statistics.fmean(scores)
-    res = {"model": a.model, "dataset": "docvqa/validation", "n": len(scores),
-           "anls_mean": mean, "published_test_anls": PUBLISHED,
-           "gap": mean - PUBLISHED, "rows": rows}
+    lo, hi = (100 * v for v in bootstrap_ci(scores))
+    res = {"model": a.model, "dataset": "docvqa/validation", "prompt": a.prompt,
+           "n": len(scores), "anls_mean": mean, "anls_ci95": [lo, hi],
+           "published_test_anls": PUBLISHED, "gap": mean - PUBLISHED, "rows": rows}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2, ensure_ascii=False))
 
-    print(f"\nour ANLS    : {mean:.1f}  ({len(scores)} samples, validation split)")
+    print(f"\nour ANLS    : {mean:.1f}  95% CI [{lo:.1f}, {hi:.1f}]  ({len(scores)} samples, validation split)")
     print(f"published   : {PUBLISHED:.1f}  (full test split)")
     print(f"gap         : {mean - PUBLISHED:+.1f} points")
-    print("verdict     : " + ("pipeline agrees with the published number, no systematic fault"
-                              if abs(mean - PUBLISHED) < 10 else
-                              "LARGE GAP — review prompting, scoring and preprocessing"))
+    print("verdict     : " + ("published number inside our 95% interval: no evidence of a systematic fault"
+                              if lo <= PUBLISHED <= hi else
+                              "published number OUTSIDE our 95% interval: a systematic gap is likely "
+                              "(split, prompt, scoring or preprocessing)"))
     print(f"saved {a.out}")
 
 

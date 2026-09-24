@@ -118,3 +118,24 @@ def test_accuracy_ci_averages_rounds_that_disagree():
     (lo, hi), n = accuracy_ci(recs)
     assert n == 2
     assert (lo, hi) == wilson_interval(1.5, 2)
+
+
+def test_anls_keeps_punctuation_like_the_official_metric():
+    from bench.metrics import anls
+    # official DocVQA ANLS only lowercases and collapses whitespace
+    assert anls("u.s.", ["us"]) < 1.0
+    assert anls("  New   York ", ["new york"]) == 1.0
+
+
+def test_trailing_full_stop_is_removed_before_scoring():
+    from bench.metrics import anls, clean_answer
+    assert clean_answer(" Cameroon. ") == "Cameroon"
+    assert clean_answer("2.5") == "2.5"
+    assert anls(clean_answer("Cameroon."), ["Cameroon"]) == 1.0
+
+
+def test_bootstrap_interval_brackets_the_mean():
+    from bench.metrics import bootstrap_ci
+    xs = [0.0] * 30 + [1.0] * 70
+    lo, hi = bootstrap_ci(xs, n_boot=2000)
+    assert lo < 0.7 < hi and hi - lo < 0.25
