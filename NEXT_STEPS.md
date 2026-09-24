@@ -45,7 +45,9 @@ Not required; ordered by how worthwhile they are:
 3. **Explain the DocVQA gap** — rerun with the authors' evaluation prompt and image
    settings to see how much of it is setup rather than the model.
 4. **CUDA graphs or a fused 4-bit kernel** — to turn nf4's smaller weights into faster
-   decoding by removing the CPU launch floor.
+   decoding by removing the CPU-side work that sets the pace of each step. A timeline
+   profile (Nsight Systems) would first show whether that work is kernel launches or
+   synchronisation.
 5. **Server-side batching** — the server handles one request at a time; batching
    raises throughput where decoding dominates, and nf4's freed memory makes room for it.
 6. **A second model** (e.g. Qwen2.5-VL-3B) — to test whether "the vision encoder takes

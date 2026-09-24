@@ -128,10 +128,10 @@ arithmetic, and each adds work:
   two results. That extra work makes it {{int8_slowdown}} slower.
 - **nf4** only quantises the weights, so every call first dequantises them back to
   bf16. In the vision encoder and the prefill, which are compute-bound, that is pure
-  overhead. In decoding, the 4-bit kernel does cut GPU time per token roughly in half,
-  but a decoding step launches about a thousand small kernels; once the GPU work
-  shrinks below the CPU time needed to launch them, the GPU waits for the CPU and the
-  saving disappears.
+  overhead. In decoding, the 4-bit kernels do cut GPU time per token roughly in half,
+  but the GPU then sits idle for most of each step: a decoding step issues about a
+  thousand small kernels, plus bitsandbytes' Python on every nf4 call, and that
+  CPU-side work — not the GPU — sets the pace, so the saving disappears.
 
 Quantisation that targets this workload's bottleneck would quantise activations too
 (W8A8 or FP8, which this Ada GPU supports) with fused kernels. That was not tested
