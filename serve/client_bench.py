@@ -32,7 +32,8 @@ def one_call(stub, payload, question, max_edge, timeout):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--target", default="localhost:50051")
-    ap.add_argument("--samples", type=int, default=16)
+    ap.add_argument("--samples", type=int, default=40,
+                    help="requests per concurrency level; 40 makes p95 a real percentile")
     ap.add_argument("--concurrency", default="1,2,4")
     ap.add_argument("--max-edge", type=int, default=0)
     ap.add_argument("--timeout", type=float, default=120.0)
@@ -42,7 +43,7 @@ def main():
     ch = grpc.insecure_channel(a.target, options=[
         ("grpc.max_send_message_length", 32 * 1024 * 1024)])
     stub = vlm_pb2_grpc.VlmServiceStub(ch)
-    h = stub.Health(vlm_pb2.HealthRequest(), timeout=60)
+    h = stub.Health(vlm_pb2.HealthRequest(), timeout=300, wait_for_ready=True)  # server may still be loading
     print(f"server: {h.model} on {h.device}")
 
     samples = load_samples(a.samples, seed=1)

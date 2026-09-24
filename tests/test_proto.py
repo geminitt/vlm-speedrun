@@ -19,3 +19,12 @@ def test_stubs_use_a_relative_import():
     from serve.gen_proto import ensure_stubs, OUTPUTS
     ensure_stubs()
     assert "from . import vlm_pb2" in OUTPUTS[1].read_text()
+
+
+def test_admission_rejects_beyond_the_bound_and_frees_slots():
+    from serve.admission import Admission
+    adm = Admission(max_in_flight=2)
+    assert adm.try_enter() and adm.try_enter()
+    assert not adm.try_enter()            # third request is rejected at once
+    adm.leave()
+    assert adm.try_enter()                # a finished request frees its slot

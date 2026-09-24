@@ -12,7 +12,7 @@ message InferRequest {
   bytes image = 1;            // image encoded as PNG or JPEG
   string question = 2;
   int32 max_new_tokens = 3;   // 0 = use the server default
-  int32 max_edge = 4;         // 0 = use the default; 768 = fast mode
+  int32 max_edge = 4;         // 0 = server default; otherwise 768, 1152 or 1536 (768 = fast mode)
 }
 
 message InferReply {
