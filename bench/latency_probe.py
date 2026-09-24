@@ -76,7 +76,7 @@ def summarize(xs):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="HuggingFaceTB/SmolVLM-256M-Instruct")
+    ap.add_argument("--model", default="HuggingFaceTB/SmolVLM-Instruct")
     ap.add_argument("--runs", type=int, default=60)
     ap.add_argument("--warmup", type=int, default=10)
     ap.add_argument("--max-new-tokens", type=int, default=32)

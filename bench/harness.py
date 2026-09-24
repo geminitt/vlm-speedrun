@@ -290,7 +290,7 @@ def main():
     ap.add_argument("--samples", type=int, default=100)
     ap.add_argument("--rounds", type=int, default=4)
     ap.add_argument("--configs", default="baseline")
-    ap.add_argument("--noise-cv", type=float, default=8.5,
+    ap.add_argument("--noise-cv", type=float, default=4.4,
                     help="noise measured in gate 0, in %%")
     ap.add_argument("--quant", default="bf16", help="bf16 | fp16 | int8 | nf4")
     ap.add_argument("--dataset", default="chartqa", help="chartqa | docvqa")

@@ -17,3 +17,6 @@ serve/vlm_pb2_grpc.py
 
 # study notes: orphan branch `notes`, checked out here as a worktree
 /notes/
+
+# FAST=1 pipeline checks; reference results live directly in results/
+results/fast/
