@@ -20,3 +20,6 @@ serve/vlm_pb2_grpc.py
 
 # FAST=1 pipeline checks; reference results live directly in results/
 results/fast/
+
+# harness checkpoints of runs in progress (removed when a run completes)
+results/**/*.partial.jsonl

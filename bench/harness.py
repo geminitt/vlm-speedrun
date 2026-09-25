@@ -282,6 +282,43 @@ def speedup_verdict(sp):
     return "faster" if lo > 1 else "slower" if hi < 1 else "not distinguishable from 1.00x"
 
 
+def open_checkpoint(path, signature):
+    """Resume support for long runs: records are appended to `path` as they are measured.
+
+    The first line holds the run's signature (model, data, plan). If an existing file
+    has the same signature, its records are returned so the run skips what is done;
+    otherwise the file starts afresh. A line torn by a power cut is dropped.
+    Returns (records already done, write) where write(record) appends and syncs.
+    """
+    import os
+    path = Path(path)
+    done = []
+    if path.exists():
+        lines = path.read_text().splitlines()
+        try:
+            same = json.loads(lines[0]) == signature
+        except (IndexError, json.JSONDecodeError):
+            same = False
+        if same:
+            for line in lines[1:]:
+                try:
+                    done.append(Record(**json.loads(line)))
+                except (json.JSONDecodeError, TypeError):
+                    break                                   # torn tail: stop here
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w") as f:                              # rewrite: header + clean records
+        f.write(json.dumps(signature) + "\n")
+        for r in done:
+            f.write(json.dumps(asdict(r), ensure_ascii=False) + "\n")
+
+    def write(record):
+        with open(path, "a") as f:
+            f.write(json.dumps(asdict(record), ensure_ascii=False) + "\n")
+            f.flush()
+            os.fsync(f.fileno())
+    return done, write
+
+
 def timing_spikes(records, factor=1.3):
     """Share of timings more than `factor` times the fastest round of the same
     (configuration, sample). Needs at least two rounds; a clean run has almost none.
@@ -368,15 +405,27 @@ def main():
         for s in samples[:2]:
             runner.run(s, cfg)
 
+    # checkpoint: a run interrupted by a shutdown resumes where it stopped
+    signature = {"model": a.model, "quant": a.quant, "dataset": a.dataset, "metric": a.metric,
+                 "samples": len(samples), "rounds": a.rounds, "seed": a.seed,
+                 "configs": [c.key() for c in configs]}
+    ckpt = Path(a.out).with_suffix(".partial.jsonl")
+    restored, checkpoint = open_checkpoint(ckpt, signature)
+    finished = {(r.config, r.sample_id, r.round_idx) for r in restored}
+    if restored:
+        print(f"resuming from {ckpt}: {len(restored)} measurements already done")
+
     sampler = GpuSampler(); sampler.start()
     mib = 2 ** 20
     time.sleep(1.0)                                   # first reading, model loaded and idle
     context_mb = (sampler.rows[-1]["mem_used_mb"] - torch.cuda.memory_reserved() / mib
                   if sampler.rows else 0.0)
     plan = build_plan(configs, len(samples), a.rounds, a.seed)
-    records, t0 = [], time.time()
+    records, t0 = list(restored), time.time()
     for step, (cfg, i, r) in enumerate(plan, 1):
         s = samples[i]
+        if (cfg.key(), s["sample_id"], r) in finished:
+            continue
         pred, pre_ms, gen_ms, n_img, n_in = runner.run(s, cfg)
         tele = sampler.rows[-1] if sampler.rows else {"clock_mhz": 0, "temp_c": 0,
                                                        "mem_used_mb": 0}
@@ -388,10 +437,11 @@ def main():
             clock_mhz=tele["clock_mhz"], temp_c=tele["temp_c"], subset=s["subset"],
             foreign_mb=max(0.0, foreign_memory_mb(
                 tele["mem_used_mb"], torch.cuda.memory_reserved() / mib, context_mb))))
+        checkpoint(records[-1])
         if step % 25 == 0:
             done = sum(x.correct for x in records)
             print(f"  {step}/{len(plan)} | correct {done}/{len(records)} "
-                  f"| {records[-1].generate_ms:.0f} ms | {tele['temp_c']:.0f}°C")
+                  f"| {records[-1].generate_ms:.0f} ms | {tele['temp_c']:.0f}°C", flush=True)
     sampler.stop(); sampler.join(timeout=2)
 
     by_cfg = {}
@@ -422,6 +472,7 @@ def main():
     out = {"model": a.model, "quant": a.quant, "dataset": a.dataset,
            "metric": a.metric if a.dataset == "chartqa" else "anls>=0.5",
            "samples": len(samples), "rounds": a.rounds, "integrity": check,
+           "resumed_records": len(restored),
            "noise_cv_pct": a.noise_cv,
            "paired_speedup_vs_baseline": speedups,
            "wall_seconds": time.time() - t0, "configs": by_cfg,
@@ -430,6 +481,7 @@ def main():
            "records": [asdict(r) for r in records]}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(out, indent=2, ensure_ascii=False))
+    ckpt.unlink(missing_ok=True)                          # the full result is safely written
 
     print("\n=== RESULTS ===")
     for k, v in by_cfg.items():

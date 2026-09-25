@@ -126,3 +126,83 @@ def test_speedup_of_one_is_not_distinguishable():
         recs.append(_rec("base", s, 200.0))
         recs.append(_rec("same", s, 200.0 * jitter))
     assert speedup_verdict(paired_speedup(recs, "base", "same")) == "not distinguishable from 1.00x"
+
+
+# --- checkpointing: a long run survives the machine shutting down ------------------
+
+def test_checkpoint_round_trip_and_signature_check(tmp_path):
+    from bench.harness import open_checkpoint
+    path = tmp_path / "run.partial.jsonl"
+    sig = {"model": "m", "samples": 3, "configs": ["baseline", "edge768(edge=768)"]}
+    done, write = open_checkpoint(path, sig)
+    assert done == []
+    write(_rec("baseline", 0, 100.0)); write(_rec("baseline", 1, 110.0))
+    done, _ = open_checkpoint(path, sig)                 # a restart with the same run
+    assert [(r.config, r.sample_id, r.generate_ms) for r in done] == [("baseline", 0, 100.0),
+                                                                        ("baseline", 1, 110.0)]
+    done, _ = open_checkpoint(path, dict(sig, samples=4))  # a different run starts afresh
+    assert done == []
+
+
+def test_a_torn_last_line_is_ignored(tmp_path):
+    from bench.harness import open_checkpoint
+    path = tmp_path / "run.partial.jsonl"
+    sig = {"model": "m"}
+    _, write = open_checkpoint(path, sig)
+    write(_rec("baseline", 0, 100.0))
+    with open(path, "a") as f:
+        f.write('{"config": "baseline", "sample_')            # power lost mid-write
+    done, _ = open_checkpoint(path, sig)
+    assert len(done) == 1
+
+
+def test_main_resumes_after_an_interruption_and_writes_the_result(tmp_path, monkeypatch):
+    """End to end on a fake model: stop midway, rerun, finish, and write the result."""
+    import json
+    import pytest
+    import torch
+    import bench.harness as h
+
+    samples = [{"sample_id": i, "image": None, "query": f"q{i}", "gold": "1", "golds": ["1"],
+                "subset": "human"} for i in range(8)]
+    calls = {"n": 0, "stop_after": 14}
+
+    class FakeRunner:
+        def __init__(self, *a, **k):
+            pass
+
+        def run(self, sample, cfg):
+            calls["n"] += 1
+            if calls["stop_after"] and calls["n"] > calls["stop_after"]:
+                raise KeyboardInterrupt                       # the machine shuts down
+            return "1", 50.0, 100.0 + sample["sample_id"], 81, 100
+
+    class FakeSampler:
+        rows = []
+        def start(self): pass
+        def stop(self): pass
+        def join(self, timeout=None): pass
+
+    monkeypatch.setattr(h, "load_samples", lambda n, seed, dataset: samples[:n])
+    monkeypatch.setattr(h, "Runner", FakeRunner)
+    monkeypatch.setattr(h, "GpuSampler", FakeSampler)
+    monkeypatch.setattr(h, "check_gpu_idle", lambda: None)
+    monkeypatch.setattr(h.time, "sleep", lambda s: None)
+    monkeypatch.setattr(torch.cuda, "memory_reserved", lambda: 0)
+    monkeypatch.setattr(torch.cuda, "max_memory_allocated", lambda: 0)
+    out = tmp_path / "run.json"
+    argv = ["harness", "--samples", "8", "--rounds", "2", "--configs", "baseline,edge768",
+            "--out", str(out)]
+    monkeypatch.setattr("sys.argv", argv)
+
+    with pytest.raises(KeyboardInterrupt):
+        h.main()                                              # 4 warm-up calls + 10 measurements
+    assert not out.exists() and out.with_suffix(".partial.jsonl").exists()
+
+    calls.update(n=0, stop_after=0)
+    h.main()                                                  # resume and finish
+    result = json.loads(out.read_text())
+    assert result["resumed_records"] == 10
+    assert len(result["records"]) == 8 * 2 * 2   # 32 steps: passes the progress line at 25
+    assert len({(r["config"], r["sample_id"], r["round_idx"]) for r in result["records"]}) == 32
+    assert not out.with_suffix(".partial.jsonl").exists()
