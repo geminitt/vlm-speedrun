@@ -25,8 +25,9 @@ if [[ "${FAST:-0}" == "1" ]]; then
 else
   OUT=results
   PROBE_RUNS=60; BREAKDOWN_SAMPLES=12; PREP_SAMPLES=16
-  # step 4 uses the whole ChartQA validation split: a loss of about 3 points needs
-  # ~1,500 questions for 80% power; 1,920 gives about 0.95
+  # step 4 uses the whole ChartQA validation split, the most questions available:
+  # for the observed loss of 2.2 points, 1,920 questions give a power of about 0.73
+  # (80% would need about 2,400)
   CONFIRM_SAMPLES=1920; NF4_SAMPLES=300; SWEEP_SAMPLES=100; PROMPT_SAMPLES=200; DOCVQA_SAMPLES=300
   QUANT_SAMPLES=16; SERVE_REQUESTS=40; ROUNDS=2
 fi
