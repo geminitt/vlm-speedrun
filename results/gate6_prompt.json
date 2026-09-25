@@ -26,10 +26,10 @@
     "baseline": {
       "n": 400,
       "n_samples": 200,
-      "accuracy": 0.67,
+      "accuracy": 0.57,
       "accuracy_ci95": [
-        0.602165564130804,
-        0.7314267938569671
+        0.500703604055383,
+        0.636657955116052
       ],
       "generate_ms": {
         "n": 400,
@@ -66,10 +66,10 @@
     "prompten(prompt=en)": {
       "n": 400,
       "n_samples": 200,
-      "accuracy": 0.66,
+      "accuracy": 0.595,
       "accuracy_ci95": [
-        0.5918836703220929,
-        0.7220856077840445
+        0.5257958199999483,
+        0.6606234388755706
       ],
       "generate_ms": {
         "n": 400,
@@ -120,7 +120,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1395.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -135,7 +136,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1515.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -150,7 +152,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1260.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -165,7 +168,8 @@
       "input_tokens": 1606,
       "clock_mhz": 1485.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -180,7 +184,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1455.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -195,7 +200,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1440.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -210,7 +216,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1500.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -225,7 +232,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1485.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -240,13 +248,14 @@
       "input_tokens": 1238,
       "clock_mhz": 1470.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1032,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "32.3%.",
       "gold": "32.3",
       "prefill_ms": 671.2932739257812,
@@ -255,7 +264,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1515.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -270,7 +280,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1365.0,
       "temp_c": 60.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -285,7 +296,8 @@
       "input_tokens": 1601,
       "clock_mhz": 1410.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -300,7 +312,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1725.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -315,7 +328,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1290.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -330,7 +344,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1455.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -345,7 +360,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -360,13 +376,14 @@
       "input_tokens": 1208,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1589,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "16.000.000.",
       "gold": "16",
       "prefill_ms": 714.8117065429688,
@@ -375,7 +392,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1440.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -390,7 +408,8 @@
       "input_tokens": 1577,
       "clock_mhz": 1455.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -405,7 +424,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1170.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -420,7 +440,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -435,7 +456,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1365.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -450,13 +472,14 @@
       "input_tokens": 1208,
       "clock_mhz": 1455.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 455,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "Brazil, Slovenia, Switzerland, Japan.",
       "gold": "[Brazil, Slovenia, Switzerland, Japan]",
       "prefill_ms": 708.2513427734375,
@@ -465,7 +488,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1440.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -480,7 +504,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1440.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -495,7 +520,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1470.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -510,7 +536,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1440.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -525,7 +552,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -540,7 +568,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -555,7 +584,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1605.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -570,7 +600,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1485.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -585,7 +616,8 @@
       "input_tokens": 1225,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -600,13 +632,14 @@
       "input_tokens": 1213,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1035,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "45.2%.",
       "gold": "45.2",
       "prefill_ms": 696.9351806640625,
@@ -615,7 +648,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -630,7 +664,8 @@
       "input_tokens": 1609,
       "clock_mhz": 1440.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -645,13 +680,14 @@
       "input_tokens": 1215,
       "clock_mhz": 1410.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1055,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "45.36 percent.",
       "gold": "45.4",
       "prefill_ms": 660.5823974609375,
@@ -660,7 +696,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -675,7 +712,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1050.0,
       "temp_c": 61.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -690,7 +728,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1260.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -705,7 +744,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -720,7 +760,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -735,7 +776,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1485.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -750,7 +792,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1485.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -765,7 +808,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -780,7 +824,8 @@
       "input_tokens": 1579,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -795,7 +840,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1590.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -810,7 +856,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -825,7 +872,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1545.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -840,7 +888,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1515.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -855,7 +904,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1470.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -870,7 +920,8 @@
       "input_tokens": 1603,
       "clock_mhz": 1290.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -885,7 +936,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -900,7 +952,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1485.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -915,7 +968,8 @@
       "input_tokens": 1578,
       "clock_mhz": 1380.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -930,13 +984,14 @@
       "input_tokens": 1211,
       "clock_mhz": 1500.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1651,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "8,636.",
       "gold": "8636",
       "prefill_ms": 693.4307861328125,
@@ -945,13 +1000,14 @@
       "input_tokens": 1211,
       "clock_mhz": 795.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1385,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "40.3 billion yen.",
       "gold": "40.3",
       "prefill_ms": 777.9628295898438,
@@ -960,7 +1016,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1215.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -975,7 +1032,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -990,7 +1048,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1005,7 +1064,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1020,7 +1080,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1035,7 +1096,8 @@
       "input_tokens": 1250,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1050,7 +1112,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1065,7 +1128,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1530.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1080,7 +1144,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1095,7 +1160,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1110,7 +1176,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1125,7 +1192,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1140,7 +1208,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1155,7 +1224,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1170,7 +1240,8 @@
       "input_tokens": 1251,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1185,7 +1256,8 @@
       "input_tokens": 1255,
       "clock_mhz": 1515.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1200,7 +1272,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1215,7 +1288,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1230,7 +1304,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1260.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1245,7 +1320,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1260,7 +1336,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1275,7 +1352,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1830.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1290,7 +1368,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1305,7 +1384,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1185.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1320,7 +1400,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1290.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1335,7 +1416,8 @@
       "input_tokens": 1206,
       "clock_mhz": 1260.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1350,7 +1432,8 @@
       "input_tokens": 1223,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1365,7 +1448,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1260.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1380,7 +1464,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1485.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1395,7 +1480,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1410,7 +1496,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1425,7 +1512,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1440,7 +1528,8 @@
       "input_tokens": 1227,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1455,7 +1544,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1470,7 +1560,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1350.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1485,7 +1576,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1500,7 +1592,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1515,7 +1608,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1530,7 +1624,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1545,7 +1640,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1560,7 +1656,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1575,7 +1672,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1590,7 +1688,8 @@
       "input_tokens": 1204,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1605,7 +1704,8 @@
       "input_tokens": 1251,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1620,7 +1720,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1635,13 +1736,14 @@
       "input_tokens": 1236,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 76,
       "round_idx": 0,
-      "correct": false,
+      "correct": true,
       "pred": "43.68%.",
       "gold": "0.4368",
       "prefill_ms": 689.8080444335938,
@@ -1650,7 +1752,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1665,7 +1768,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1680,13 +1784,14 @@
       "input_tokens": 1242,
       "clock_mhz": 1350.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1816,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,279.1.",
       "gold": "1286.2",
       "prefill_ms": 689.8212280273438,
@@ -1695,7 +1800,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1710,7 +1816,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1725,7 +1832,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1740,7 +1848,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1500.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1755,7 +1864,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1770,7 +1880,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1785,7 +1896,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1800,7 +1912,8 @@
       "input_tokens": 1252,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1815,7 +1928,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1830,7 +1944,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1845,7 +1960,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1860,7 +1976,8 @@
       "input_tokens": 1604,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1875,7 +1992,8 @@
       "input_tokens": 1250,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1890,7 +2008,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1350.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1905,7 +2024,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1920,7 +2040,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1935,7 +2056,8 @@
       "input_tokens": 1229,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1950,7 +2072,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -1965,7 +2088,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -1980,7 +2104,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -1995,7 +2120,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2010,7 +2136,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2025,7 +2152,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2040,7 +2168,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2055,7 +2184,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2070,7 +2200,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2085,7 +2216,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1320.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2100,7 +2232,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1560.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2115,7 +2248,8 @@
       "input_tokens": 1584,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2130,7 +2264,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1065.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2145,7 +2280,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2160,7 +2296,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2175,13 +2312,14 @@
       "input_tokens": 1584,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1039,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,437.4.",
       "gold": "1437.4",
       "prefill_ms": 692.7607421875,
@@ -2190,7 +2328,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2205,7 +2344,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2220,7 +2360,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2235,7 +2376,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2250,7 +2392,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2265,7 +2408,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1215.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2280,7 +2424,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2295,7 +2440,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2310,13 +2456,14 @@
       "input_tokens": 1237,
       "clock_mhz": 1125.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1182,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "26.72 billion Swiss francs.",
       "gold": "26.72",
       "prefill_ms": 707.5645141601562,
@@ -2325,13 +2472,14 @@
       "input_tokens": 1225,
       "clock_mhz": 1545.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1039,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,437.4.",
       "gold": "1437.4",
       "prefill_ms": 751.5023803710938,
@@ -2340,13 +2488,14 @@
       "input_tokens": 1235,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1651,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "8,636.",
       "gold": "8636",
       "prefill_ms": 734.2638549804688,
@@ -2355,7 +2504,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2370,7 +2520,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2385,7 +2536,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2400,7 +2552,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2415,7 +2568,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2430,7 +2584,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1245.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2445,7 +2600,8 @@
       "input_tokens": 1574,
       "clock_mhz": 1890.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2460,13 +2616,14 @@
       "input_tokens": 1605,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1055,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "44.7 percent.",
       "gold": "45.4",
       "prefill_ms": 692.4652099609375,
@@ -2475,7 +2632,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2490,7 +2648,8 @@
       "input_tokens": 1576,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2505,7 +2664,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2520,7 +2680,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2535,7 +2696,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2550,7 +2712,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2565,7 +2728,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2580,7 +2744,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2595,7 +2760,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2610,7 +2776,8 @@
       "input_tokens": 1241,
       "clock_mhz": 2190.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2625,7 +2792,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2640,7 +2808,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2655,7 +2824,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2670,7 +2840,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1365.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2685,7 +2856,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2700,7 +2872,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2715,7 +2888,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2730,7 +2904,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2745,13 +2920,14 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1816,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,286.2.",
       "gold": "1286.2",
       "prefill_ms": 713.1053466796875,
@@ -2760,7 +2936,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2775,7 +2952,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2790,7 +2968,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2805,7 +2984,8 @@
       "input_tokens": 1230,
       "clock_mhz": 1350.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2820,7 +3000,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2835,7 +3016,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1470.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2850,7 +3032,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2865,7 +3048,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2880,7 +3064,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2895,13 +3080,14 @@
       "input_tokens": 1206,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1032,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "32.3%.",
       "gold": "32.3",
       "prefill_ms": 678.7431640625,
@@ -2910,7 +3096,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1410.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -2925,7 +3112,8 @@
       "input_tokens": 1601,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2940,7 +3128,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2955,7 +3144,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -2970,7 +3160,8 @@
       "input_tokens": 1252,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -2985,7 +3176,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1290.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3000,7 +3192,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3015,7 +3208,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1395.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3030,7 +3224,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3045,7 +3240,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3060,7 +3256,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1365.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3075,7 +3272,8 @@
       "input_tokens": 1611,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3090,7 +3288,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3105,7 +3304,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3120,7 +3320,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1290.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3135,13 +3336,14 @@
       "input_tokens": 1210,
       "clock_mhz": 1365.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1814,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "24.74 billion euros.",
       "gold": "24.63",
       "prefill_ms": 913.9334106445312,
@@ -3150,7 +3352,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3165,7 +3368,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3180,7 +3384,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1290.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3195,7 +3400,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3210,7 +3416,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1260.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3225,7 +3432,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1335.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3240,13 +3448,14 @@
       "input_tokens": 1234,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1061,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "94,015.",
       "gold": "94015",
       "prefill_ms": 678.1398315429688,
@@ -3255,7 +3464,8 @@
       "input_tokens": 1248,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3270,7 +3480,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3285,7 +3496,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1515.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3300,7 +3512,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3315,7 +3528,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3330,7 +3544,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3345,13 +3560,14 @@
       "input_tokens": 1218,
       "clock_mhz": 1425.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 824,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "Beer.",
       "gold": "Beer*",
       "prefill_ms": 690.4688110351562,
@@ -3360,7 +3576,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3375,7 +3592,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3390,7 +3608,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3405,7 +3624,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3420,13 +3640,14 @@
       "input_tokens": 1236,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 455,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "Brazil, Slovenia, Switzerland, Japan.",
       "gold": "[Brazil, Slovenia, Switzerland, Japan]",
       "prefill_ms": 702.1770629882812,
@@ -3435,7 +3656,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3450,7 +3672,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3465,7 +3688,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3480,7 +3704,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1380.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3495,7 +3720,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3510,7 +3736,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3525,7 +3752,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3540,7 +3768,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3555,7 +3784,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3570,13 +3800,14 @@
       "input_tokens": 1207,
       "clock_mhz": 1455.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 274,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "37%.",
       "gold": "37",
       "prefill_ms": 921.7764282226562,
@@ -3585,7 +3816,8 @@
       "input_tokens": 1602,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3600,7 +3832,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3615,7 +3848,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3630,13 +3864,14 @@
       "input_tokens": 1212,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1224,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "4,961.4.",
       "gold": "4961.4",
       "prefill_ms": 680.3309326171875,
@@ -3645,7 +3880,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3660,7 +3896,8 @@
       "input_tokens": 1580,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3675,7 +3912,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3690,7 +3928,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3705,7 +3944,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3720,7 +3960,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3735,7 +3976,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3750,7 +3992,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3765,13 +4008,14 @@
       "input_tokens": 1219,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1005,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "27.8%.",
       "gold": "27.8",
       "prefill_ms": 692.5061645507812,
@@ -3780,7 +4024,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1575.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3795,7 +4040,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3810,7 +4056,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3825,7 +4072,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3840,7 +4088,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3855,7 +4104,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1770.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3870,7 +4120,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1215.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3885,7 +4136,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3900,7 +4152,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3915,7 +4168,8 @@
       "input_tokens": 1248,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3930,7 +4184,8 @@
       "input_tokens": 1576,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -3945,7 +4200,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3960,7 +4216,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -3975,7 +4232,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1290.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -3990,7 +4248,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4005,13 +4264,14 @@
       "input_tokens": 1212,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1246,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,100.",
       "gold": "1100",
       "prefill_ms": 923.0763549804688,
@@ -4020,7 +4280,8 @@
       "input_tokens": 1599,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4035,7 +4296,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1530.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4050,7 +4312,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4065,7 +4328,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1335.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4080,7 +4344,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4095,13 +4360,14 @@
       "input_tokens": 1259,
       "clock_mhz": 1605.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1486,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "14,933.",
       "gold": "14933",
       "prefill_ms": 911.9862670898438,
@@ -4110,13 +4376,14 @@
       "input_tokens": 1589,
       "clock_mhz": 1545.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1486,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "14,933.",
       "gold": "14933",
       "prefill_ms": 977.4299926757812,
@@ -4125,7 +4392,8 @@
       "input_tokens": 1614,
       "clock_mhz": 1320.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4140,7 +4408,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1560.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4155,7 +4424,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4170,7 +4440,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4185,7 +4456,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4200,7 +4472,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4215,13 +4488,14 @@
       "input_tokens": 1232,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1063,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "44,869.",
       "gold": "44689",
       "prefill_ms": 768.1596069335938,
@@ -4230,7 +4504,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4245,7 +4520,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4260,7 +4536,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4275,7 +4552,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1170.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4290,7 +4568,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4305,7 +4584,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4320,7 +4600,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4335,7 +4616,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4350,7 +4632,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4365,7 +4648,8 @@
       "input_tokens": 1205,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4380,7 +4664,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4395,7 +4680,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4410,7 +4696,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4425,7 +4712,8 @@
       "input_tokens": 1586,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4440,7 +4728,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4455,7 +4744,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4470,7 +4760,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4485,13 +4776,14 @@
       "input_tokens": 1239,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 76,
       "round_idx": 0,
-      "correct": false,
+      "correct": true,
       "pred": "43.68%.",
       "gold": "0.4368",
       "prefill_ms": 685.0552978515625,
@@ -4500,7 +4792,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4515,7 +4808,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4530,7 +4824,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4545,7 +4840,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4560,7 +4856,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4575,7 +4872,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4590,7 +4888,8 @@
       "input_tokens": 1259,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4605,13 +4904,14 @@
       "input_tokens": 1242,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 990,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "18.3, 18.7.",
       "gold": "18.7",
       "prefill_ms": 699.6551513671875,
@@ -4620,7 +4920,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4635,7 +4936,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4650,7 +4952,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4665,7 +4968,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4680,7 +4984,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4695,7 +5000,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4710,7 +5016,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4725,7 +5032,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -4740,13 +5048,14 @@
       "input_tokens": 1239,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1516,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "82.39 billion U.S. dollars.",
       "gold": "82.39",
       "prefill_ms": 923.2152099609375,
@@ -4755,7 +5064,8 @@
       "input_tokens": 1599,
       "clock_mhz": 2355.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4770,7 +5080,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4785,7 +5096,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4800,7 +5112,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4815,7 +5128,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4830,7 +5144,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4845,7 +5160,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4860,7 +5176,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4875,7 +5192,8 @@
       "input_tokens": 1250,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4890,7 +5208,8 @@
       "input_tokens": 1210,
       "clock_mhz": 2265.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4905,7 +5224,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4920,13 +5240,14 @@
       "input_tokens": 1212,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1061,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "94,015.",
       "gold": "94015",
       "prefill_ms": 698.16748046875,
@@ -4935,7 +5256,8 @@
       "input_tokens": 1223,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4950,7 +5272,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4965,7 +5288,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -4980,7 +5304,8 @@
       "input_tokens": 1577,
       "clock_mhz": 1440.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -4995,13 +5320,14 @@
       "input_tokens": 1242,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1035,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "45.2 percent.",
       "gold": "45.2",
       "prefill_ms": 695.6116943359375,
@@ -5010,7 +5336,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1275.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5025,7 +5352,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5040,7 +5368,8 @@
       "input_tokens": 1602,
       "clock_mhz": 1290.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5055,7 +5384,8 @@
       "input_tokens": 1232,
       "clock_mhz": 2145.0,
       "temp_c": 62.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5070,7 +5400,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1350.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5085,7 +5416,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5100,7 +5432,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5115,7 +5448,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5130,7 +5464,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1185.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5145,13 +5480,14 @@
       "input_tokens": 1224,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 463,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "2014-2016.",
       "gold": "2014",
       "prefill_ms": 673.6063232421875,
@@ -5160,7 +5496,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5175,7 +5512,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5190,7 +5528,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5205,7 +5544,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5220,7 +5560,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5235,7 +5576,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5250,7 +5592,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5265,7 +5608,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1365.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5280,7 +5624,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5295,7 +5640,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1725.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5310,7 +5656,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5325,7 +5672,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5340,7 +5688,8 @@
       "input_tokens": 1251,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5355,7 +5704,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5370,7 +5720,8 @@
       "input_tokens": 1225,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5385,7 +5736,8 @@
       "input_tokens": 1581,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5400,7 +5752,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5415,7 +5768,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5430,7 +5784,8 @@
       "input_tokens": 1206,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5445,7 +5800,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5460,7 +5816,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5475,7 +5832,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5490,7 +5848,8 @@
       "input_tokens": 1230,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5505,7 +5864,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5520,7 +5880,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5535,7 +5896,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5550,7 +5912,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5565,13 +5928,14 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 280,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "46% of Americans say they are not confident that companies will take responsibility when they misuse consumers’ data.",
       "gold": "47",
       "prefill_ms": 943.0460815429688,
@@ -5580,7 +5944,8 @@
       "input_tokens": 1604,
       "clock_mhz": 2130.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5595,7 +5960,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5610,7 +5976,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5625,7 +5992,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5640,7 +6008,8 @@
       "input_tokens": 1227,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5655,7 +6024,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5670,7 +6040,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1575.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5685,7 +6056,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5700,7 +6072,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5715,7 +6088,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5730,7 +6104,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5745,7 +6120,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5760,7 +6136,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1065.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5775,7 +6152,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5790,7 +6168,8 @@
       "input_tokens": 1579,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5805,7 +6184,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5820,7 +6200,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1275.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5835,7 +6216,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5850,7 +6232,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1530.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5865,7 +6248,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5880,7 +6264,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -5895,7 +6280,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5910,13 +6296,14 @@
       "input_tokens": 1215,
       "clock_mhz": 1605.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 824,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "Beer.",
       "gold": "Beer*",
       "prefill_ms": 690.6310424804688,
@@ -5925,7 +6312,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5940,7 +6328,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5955,7 +6344,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -5970,7 +6360,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -5985,7 +6376,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6000,7 +6392,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6015,13 +6408,14 @@
       "input_tokens": 1207,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1246,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "1,100.",
       "gold": "1100",
       "prefill_ms": 915.4707641601562,
@@ -6030,7 +6424,8 @@
       "input_tokens": 1574,
       "clock_mhz": 1530.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6045,13 +6440,14 @@
       "input_tokens": 1239,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1292,
       "round_idx": 0,
-      "correct": true,
+      "correct": false,
       "pred": "23,481.",
       "gold": "23481",
       "prefill_ms": 711.7032470703125,
@@ -6060,7 +6456,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1830.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6075,7 +6472,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6090,7 +6488,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6105,13 +6504,14 @@
       "input_tokens": 1609,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1651,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "8,636.",
       "gold": "8636",
       "prefill_ms": 684.166748046875,
@@ -6120,7 +6520,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6135,7 +6536,8 @@
       "input_tokens": 1225,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6150,7 +6552,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6165,7 +6568,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6180,7 +6584,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6195,13 +6600,14 @@
       "input_tokens": 1236,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1055,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "45.36 percent.",
       "gold": "45.4",
       "prefill_ms": 709.7994384765625,
@@ -6210,7 +6616,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6225,7 +6632,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1305.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6240,7 +6648,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6255,7 +6664,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1500.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6270,7 +6680,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6285,13 +6696,14 @@
       "input_tokens": 1218,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 76,
       "round_idx": 1,
-      "correct": false,
+      "correct": true,
       "pred": "43.68%.",
       "gold": "0.4368",
       "prefill_ms": 676.40283203125,
@@ -6300,7 +6712,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6315,7 +6728,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6330,7 +6744,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6345,7 +6760,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1695.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6360,7 +6776,8 @@
       "input_tokens": 1230,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6375,7 +6792,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6390,7 +6808,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1095.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6405,13 +6824,14 @@
       "input_tokens": 1250,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 274,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "37%.",
       "gold": "37",
       "prefill_ms": 920.8302001953125,
@@ -6420,7 +6840,8 @@
       "input_tokens": 1602,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6435,7 +6856,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6450,7 +6872,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6465,7 +6888,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6480,7 +6904,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6495,7 +6920,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1545.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6510,7 +6936,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6525,13 +6952,14 @@
       "input_tokens": 1609,
       "clock_mhz": 1530.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1385,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "40.3 billion yen.",
       "gold": "40.3",
       "prefill_ms": 722.2531127929688,
@@ -6540,7 +6968,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6555,7 +6984,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6570,7 +7000,8 @@
       "input_tokens": 1230,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6585,7 +7016,8 @@
       "input_tokens": 1601,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6600,7 +7032,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1485.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6615,13 +7048,14 @@
       "input_tokens": 1243,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 76,
       "round_idx": 1,
-      "correct": false,
+      "correct": true,
       "pred": "43.68%.",
       "gold": "0.4368",
       "prefill_ms": 745.8637084960938,
@@ -6630,7 +7064,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1290.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6645,7 +7080,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6660,7 +7096,8 @@
       "input_tokens": 1577,
       "clock_mhz": 1230.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6675,7 +7112,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6690,7 +7128,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6705,7 +7144,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6720,7 +7160,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6735,7 +7176,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6750,7 +7192,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6765,13 +7208,14 @@
       "input_tokens": 1229,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 824,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "Beer.",
       "gold": "Beer*",
       "prefill_ms": 754.0172119140625,
@@ -6780,7 +7224,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1185.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6795,7 +7240,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6810,7 +7256,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6825,7 +7272,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6840,7 +7288,8 @@
       "input_tokens": 1604,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6855,7 +7304,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6870,7 +7320,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6885,7 +7336,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6900,7 +7352,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -6915,7 +7368,8 @@
       "input_tokens": 1580,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6930,7 +7384,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6945,7 +7400,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -6960,7 +7416,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6975,7 +7432,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -6990,7 +7448,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7005,7 +7464,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7020,7 +7480,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7035,7 +7496,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7050,7 +7512,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1470.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7065,7 +7528,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7080,7 +7544,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1740.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7095,7 +7560,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7110,13 +7576,14 @@
       "input_tokens": 1213,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1039,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,437.4.",
       "gold": "1437.4",
       "prefill_ms": 713.427734375,
@@ -7125,7 +7592,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7140,7 +7608,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7155,7 +7624,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7170,7 +7640,8 @@
       "input_tokens": 1220,
       "clock_mhz": 2325.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7185,7 +7656,8 @@
       "input_tokens": 1250,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7200,7 +7672,8 @@
       "input_tokens": 1251,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7215,7 +7688,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7230,7 +7704,8 @@
       "input_tokens": 1611,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7245,7 +7720,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7260,13 +7736,14 @@
       "input_tokens": 1605,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1814,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "24.74 billion euros.",
       "gold": "24.63",
       "prefill_ms": 916.2687377929688,
@@ -7275,7 +7752,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7290,13 +7768,14 @@
       "input_tokens": 1213,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1005,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "27.8%.",
       "gold": "27.8",
       "prefill_ms": 727.3429565429688,
@@ -7305,7 +7784,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7320,7 +7800,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7335,7 +7816,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1605.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7350,13 +7832,14 @@
       "input_tokens": 1206,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1035,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "45.2 percent.",
       "gold": "45.2",
       "prefill_ms": 698.53369140625,
@@ -7365,7 +7848,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7380,7 +7864,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7395,7 +7880,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7410,13 +7896,14 @@
       "input_tokens": 1237,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1589,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "16.000.000.",
       "gold": "16",
       "prefill_ms": 713.5357055664062,
@@ -7425,7 +7912,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7440,7 +7928,8 @@
       "input_tokens": 1205,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7455,7 +7944,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7470,7 +7960,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7485,7 +7976,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7500,7 +7992,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7515,7 +8008,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1845.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7530,7 +8024,8 @@
       "input_tokens": 1223,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7545,7 +8040,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7560,7 +8056,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7575,7 +8072,8 @@
       "input_tokens": 1227,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7590,7 +8088,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7605,7 +8104,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7620,7 +8120,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7635,7 +8136,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7650,13 +8152,14 @@
       "input_tokens": 1245,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1182,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "26.72 billion Swiss francs.",
       "gold": "26.72",
       "prefill_ms": 707.1724853515625,
@@ -7665,13 +8168,14 @@
       "input_tokens": 1225,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1246,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,100.",
       "gold": "1100",
       "prefill_ms": 924.967529296875,
@@ -7680,7 +8184,8 @@
       "input_tokens": 1599,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7695,7 +8200,8 @@
       "input_tokens": 1579,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7710,7 +8216,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7725,7 +8232,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7740,7 +8248,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7755,7 +8264,8 @@
       "input_tokens": 1204,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7770,7 +8280,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7785,7 +8296,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7800,7 +8312,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7815,7 +8328,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7830,7 +8344,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7845,13 +8360,14 @@
       "input_tokens": 1209,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 455,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "Brazil, Slovenia, Switzerland, Japan.",
       "gold": "[Brazil, Slovenia, Switzerland, Japan]",
       "prefill_ms": 688.653076171875,
@@ -7860,7 +8376,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -7875,7 +8392,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7890,7 +8408,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7905,7 +8424,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7920,7 +8440,8 @@
       "input_tokens": 1586,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7935,7 +8456,8 @@
       "input_tokens": 1574,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7950,7 +8472,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7965,7 +8488,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -7980,7 +8504,8 @@
       "input_tokens": 1249,
       "clock_mhz": 2190.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -7995,13 +8520,14 @@
       "input_tokens": 1206,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 463,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "2014-2016.",
       "gold": "2014",
       "prefill_ms": 691.5786743164062,
@@ -8010,7 +8536,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8025,7 +8552,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8040,7 +8568,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8055,7 +8584,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1680.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8070,7 +8600,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8085,7 +8616,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8100,7 +8632,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8115,7 +8648,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8130,7 +8664,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8145,7 +8680,8 @@
       "input_tokens": 1581,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8160,7 +8696,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8175,13 +8712,14 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1816,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,279.1.",
       "gold": "1286.2",
       "prefill_ms": 690.35009765625,
@@ -8190,7 +8728,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8205,7 +8744,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1140.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8220,7 +8760,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8235,7 +8776,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8250,7 +8792,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8265,7 +8808,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8280,7 +8824,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8295,13 +8840,14 @@
       "input_tokens": 1217,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1035,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "45.2%.",
       "gold": "45.2",
       "prefill_ms": 694.1446533203125,
@@ -8310,13 +8856,14 @@
       "input_tokens": 1215,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1039,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,437.4.",
       "gold": "1437.4",
       "prefill_ms": 704.6517944335938,
@@ -8325,7 +8872,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8340,7 +8888,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8355,7 +8904,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8370,7 +8920,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8385,7 +8936,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8400,7 +8952,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8415,7 +8968,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8430,7 +8984,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8445,7 +9000,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1410.0,
       "temp_c": 66.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8460,7 +9016,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8475,7 +9032,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8490,7 +9048,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8505,7 +9064,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8520,7 +9080,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1530.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8535,7 +9096,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8550,7 +9112,8 @@
       "input_tokens": 1247,
       "clock_mhz": 2220.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8565,7 +9128,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8580,7 +9144,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8595,7 +9160,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8610,7 +9176,8 @@
       "input_tokens": 1251,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8625,7 +9192,8 @@
       "input_tokens": 1259,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8640,7 +9208,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8655,7 +9224,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8670,7 +9240,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8685,7 +9256,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8700,7 +9272,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8715,7 +9288,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8730,7 +9304,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8745,7 +9320,8 @@
       "input_tokens": 1584,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8760,7 +9336,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8775,7 +9352,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8790,7 +9368,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8805,7 +9384,8 @@
       "input_tokens": 1259,
       "clock_mhz": 1815.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8820,7 +9400,8 @@
       "input_tokens": 1577,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8835,7 +9416,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8850,7 +9432,8 @@
       "input_tokens": 1607,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8865,7 +9448,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -8880,7 +9464,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8895,7 +9480,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8910,7 +9496,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8925,7 +9512,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8940,7 +9528,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -8955,7 +9544,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8970,7 +9560,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -8985,7 +9576,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9000,7 +9592,8 @@
       "input_tokens": 1579,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9015,7 +9608,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1530.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9030,7 +9624,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9045,7 +9640,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1425.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9060,7 +9656,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9075,7 +9672,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9090,7 +9688,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9105,13 +9704,14 @@
       "input_tokens": 1224,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1246,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,100.",
       "gold": "1100",
       "prefill_ms": 915.8389892578125,
@@ -9120,7 +9720,8 @@
       "input_tokens": 1574,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9135,7 +9736,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9150,7 +9752,8 @@
       "input_tokens": 1252,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9165,7 +9768,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9180,7 +9784,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9195,7 +9800,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9210,7 +9816,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9225,7 +9832,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9240,7 +9848,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9255,7 +9864,8 @@
       "input_tokens": 1578,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9270,7 +9880,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1695.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9285,7 +9896,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1290.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9300,7 +9912,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9315,7 +9928,8 @@
       "input_tokens": 1226,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9330,7 +9944,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9345,7 +9960,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9360,7 +9976,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9375,7 +9992,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9390,7 +10008,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9405,7 +10024,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9420,7 +10040,8 @@
       "input_tokens": 1255,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9435,13 +10056,14 @@
       "input_tokens": 1212,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 280,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "46% of Americans say they are not confident that companies will take responsibility when they misuse consumers’ data.",
       "gold": "47",
       "prefill_ms": 957.455078125,
@@ -9450,7 +10072,8 @@
       "input_tokens": 1604,
       "clock_mhz": 1950.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9465,7 +10088,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9480,7 +10104,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9495,7 +10120,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9510,7 +10136,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1365.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9525,7 +10152,8 @@
       "input_tokens": 1248,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9540,7 +10168,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9555,7 +10184,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9570,13 +10200,14 @@
       "input_tokens": 1239,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1224,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "4,961.4.",
       "gold": "4961.4",
       "prefill_ms": 688.8130493164062,
@@ -9585,7 +10216,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1290.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9600,13 +10232,14 @@
       "input_tokens": 1232,
       "clock_mhz": 1545.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1816,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "1,286.2.",
       "gold": "1286.2",
       "prefill_ms": 706.2938842773438,
@@ -9615,7 +10248,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9630,7 +10264,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9645,7 +10280,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9660,7 +10296,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9675,7 +10312,8 @@
       "input_tokens": 1576,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9690,7 +10328,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9705,7 +10344,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9720,7 +10360,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9735,13 +10376,14 @@
       "input_tokens": 1244,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1061,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "94,015.",
       "gold": "94015",
       "prefill_ms": 680.4501953125,
@@ -9750,7 +10392,8 @@
       "input_tokens": 1248,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9765,7 +10408,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9780,7 +10424,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1545.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9795,7 +10440,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9810,7 +10456,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9825,7 +10472,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9840,7 +10488,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9855,7 +10504,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9870,7 +10520,8 @@
       "input_tokens": 1253,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9885,7 +10536,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9900,7 +10552,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9915,7 +10568,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -9930,7 +10584,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9945,7 +10600,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9960,7 +10616,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -9975,7 +10632,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1380.0,
       "temp_c": 66.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -9990,7 +10648,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10005,7 +10664,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10020,7 +10680,8 @@
       "input_tokens": 1231,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10035,7 +10696,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10050,7 +10712,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10065,7 +10728,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10080,7 +10744,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10095,7 +10760,8 @@
       "input_tokens": 1600,
       "clock_mhz": 1380.0,
       "temp_c": 66.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10110,7 +10776,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10125,7 +10792,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10140,7 +10808,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10155,7 +10824,8 @@
       "input_tokens": 1236,
       "clock_mhz": 2085.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10170,7 +10840,8 @@
       "input_tokens": 1601,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10185,7 +10856,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10200,7 +10872,8 @@
       "input_tokens": 1602,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10215,7 +10888,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1485.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10230,13 +10904,14 @@
       "input_tokens": 1251,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 455,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "Brazil, Slovenia, Switzerland, Japan.",
       "gold": "[Brazil, Slovenia, Switzerland, Japan]",
       "prefill_ms": 723.752685546875,
@@ -10245,7 +10920,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10260,7 +10936,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10275,7 +10952,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10290,7 +10968,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1575.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10305,13 +10984,14 @@
       "input_tokens": 1212,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1486,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "14,933.",
       "gold": "14933",
       "prefill_ms": 941.9469604492188,
@@ -10320,7 +11000,8 @@
       "input_tokens": 1589,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10335,7 +11016,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10350,7 +11032,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10365,7 +11048,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10380,7 +11064,8 @@
       "input_tokens": 1246,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10395,7 +11080,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10410,7 +11096,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10425,13 +11112,14 @@
       "input_tokens": 1245,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1651,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "8,636.",
       "gold": "8636",
       "prefill_ms": 690.1678466796875,
@@ -10440,7 +11128,8 @@
       "input_tokens": 1211,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10455,7 +11144,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10470,7 +11160,8 @@
       "input_tokens": 1603,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10485,7 +11176,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10500,7 +11192,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10515,7 +11208,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10530,7 +11224,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10545,7 +11240,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10560,7 +11256,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10575,7 +11272,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10590,7 +11288,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10605,7 +11304,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10620,13 +11320,14 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 990,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "18.3, 18.7.",
       "gold": "18.7",
       "prefill_ms": 681.7418823242188,
@@ -10635,7 +11336,8 @@
       "input_tokens": 1244,
       "clock_mhz": 2130.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10650,7 +11352,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10665,13 +11368,14 @@
       "input_tokens": 1209,
       "clock_mhz": 1920.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1292,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "23,481.",
       "gold": "23481",
       "prefill_ms": 676.5242919921875,
@@ -10680,7 +11384,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10695,7 +11400,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10710,7 +11416,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1950.0,
       "temp_c": 63.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10725,7 +11432,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10740,7 +11448,8 @@
       "input_tokens": 1582,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10755,7 +11464,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10770,7 +11480,8 @@
       "input_tokens": 1209,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10785,13 +11496,14 @@
       "input_tokens": 1250,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1032,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "32.3%.",
       "gold": "32.3",
       "prefill_ms": 703.7313842773438,
@@ -10800,7 +11512,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10815,7 +11528,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10830,7 +11544,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10845,7 +11560,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10860,7 +11576,8 @@
       "input_tokens": 1220,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10875,7 +11592,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10890,7 +11608,8 @@
       "input_tokens": 1233,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -10905,7 +11624,8 @@
       "input_tokens": 1247,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -10920,7 +11640,8 @@
       "input_tokens": 1252,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10935,7 +11656,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10950,7 +11672,8 @@
       "input_tokens": 1206,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10965,7 +11688,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10980,7 +11704,8 @@
       "input_tokens": 1213,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -10995,7 +11720,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11010,7 +11736,8 @@
       "input_tokens": 1575,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11025,7 +11752,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11040,7 +11768,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11055,7 +11784,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11070,7 +11800,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11085,7 +11816,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11100,7 +11832,8 @@
       "input_tokens": 1227,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11115,7 +11848,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11130,7 +11864,8 @@
       "input_tokens": 1219,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11145,7 +11880,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1455.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11160,7 +11896,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11175,7 +11912,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11190,7 +11928,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1380.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11205,7 +11944,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11220,13 +11960,14 @@
       "input_tokens": 1238,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1032,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "32.3%.",
       "gold": "32.3",
       "prefill_ms": 689.7662963867188,
@@ -11235,7 +11976,8 @@
       "input_tokens": 1224,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11250,7 +11992,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11265,7 +12008,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11280,7 +12024,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11295,7 +12040,8 @@
       "input_tokens": 1576,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11310,13 +12056,14 @@
       "input_tokens": 1243,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1486,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "14,933.",
       "gold": "14933",
       "prefill_ms": 941.9877319335938,
@@ -11325,7 +12072,8 @@
       "input_tokens": 1614,
       "clock_mhz": 1845.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11340,7 +12088,8 @@
       "input_tokens": 1208,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11355,7 +12104,8 @@
       "input_tokens": 1249,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11370,7 +12120,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11385,13 +12136,14 @@
       "input_tokens": 1221,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1055,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "44.7 percent.",
       "gold": "45.4",
       "prefill_ms": 686.0540771484375,
@@ -11400,7 +12152,8 @@
       "input_tokens": 1245,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11415,7 +12168,8 @@
       "input_tokens": 1241,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11430,7 +12184,8 @@
       "input_tokens": 1215,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11445,7 +12200,8 @@
       "input_tokens": 1584,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11460,7 +12216,8 @@
       "input_tokens": 1236,
       "clock_mhz": 1515.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11475,7 +12232,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11490,7 +12248,8 @@
       "input_tokens": 1218,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11505,7 +12264,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1290.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11520,7 +12280,8 @@
       "input_tokens": 1207,
       "clock_mhz": 1320.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11535,7 +12296,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1320.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11550,7 +12312,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11565,7 +12328,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11580,7 +12344,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11595,7 +12360,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1410.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11610,7 +12376,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11625,7 +12392,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1500.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11640,13 +12408,14 @@
       "input_tokens": 1214,
       "clock_mhz": 1545.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
       "sample_id": 1061,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "94,015.",
       "gold": "94015",
       "prefill_ms": 678.2100830078125,
@@ -11655,7 +12424,8 @@
       "input_tokens": 1223,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11670,13 +12440,14 @@
       "input_tokens": 1245,
       "clock_mhz": 1590.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
       "sample_id": 1063,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "44,869.",
       "gold": "44689",
       "prefill_ms": 731.72216796875,
@@ -11685,7 +12456,8 @@
       "input_tokens": 1244,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11700,7 +12472,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11715,7 +12488,8 @@
       "input_tokens": 1239,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11730,13 +12504,14 @@
       "input_tokens": 1220,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 824,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "Beer.",
       "gold": "Beer*",
       "prefill_ms": 699.2286376953125,
@@ -11745,7 +12520,8 @@
       "input_tokens": 1232,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11760,7 +12536,8 @@
       "input_tokens": 1225,
       "clock_mhz": 1455.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11775,7 +12552,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11790,7 +12568,8 @@
       "input_tokens": 1221,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11805,7 +12584,8 @@
       "input_tokens": 1210,
       "clock_mhz": 1365.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11820,13 +12600,14 @@
       "input_tokens": 1224,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
       "sample_id": 1516,
       "round_idx": 1,
-      "correct": true,
+      "correct": false,
       "pred": "82.39 billion U.S. dollars.",
       "gold": "82.39",
       "prefill_ms": 925.5366821289062,
@@ -11835,7 +12616,8 @@
       "input_tokens": 1599,
       "clock_mhz": 1425.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11850,7 +12632,8 @@
       "input_tokens": 1216,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11865,7 +12648,8 @@
       "input_tokens": 1228,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11880,7 +12664,8 @@
       "input_tokens": 1212,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11895,7 +12680,8 @@
       "input_tokens": 1235,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11910,7 +12696,8 @@
       "input_tokens": 1606,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11925,7 +12712,8 @@
       "input_tokens": 1609,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -11940,7 +12728,8 @@
       "input_tokens": 1237,
       "clock_mhz": 1305.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11955,7 +12744,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1605.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -11970,7 +12760,8 @@
       "input_tokens": 1217,
       "clock_mhz": 1440.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -11985,7 +12776,8 @@
       "input_tokens": 1234,
       "clock_mhz": 1350.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -12000,7 +12792,8 @@
       "input_tokens": 1242,
       "clock_mhz": 1665.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -12015,7 +12808,8 @@
       "input_tokens": 1243,
       "clock_mhz": 1380.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -12030,7 +12824,8 @@
       "input_tokens": 1240,
       "clock_mhz": 1470.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "prompten(prompt=en)",
@@ -12045,7 +12840,8 @@
       "input_tokens": 1222,
       "clock_mhz": 1395.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "human"
     },
     {
       "config": "baseline",
@@ -12060,7 +12856,8 @@
       "input_tokens": 1238,
       "clock_mhz": 1335.0,
       "temp_c": 64.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -12075,7 +12872,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1410.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "prompten(prompt=en)",
@@ -12090,7 +12888,8 @@
       "input_tokens": 1214,
       "clock_mhz": 1395.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     },
     {
       "config": "baseline",
@@ -12105,7 +12904,9 @@
       "input_tokens": 1246,
       "clock_mhz": 1350.0,
       "temp_c": 65.0,
-      "foreign_mb": 0.0
+      "foreign_mb": 0.0,
+      "subset": "augmented"
     }
-  ]
+  ],
+  "metric": "relaxed"
 }

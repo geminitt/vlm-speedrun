@@ -20,10 +20,10 @@
 > shrink the prefill: Amdahl's law caps it near 1.37×, and it measured
 > **1.10–1.23×**. Which tokens are kept does matter — keeping the
 > largest-norm quarter loses far less accuracy than keeping an evenly spaced quarter —
-> but no pruning variant comes close to **halving the input resolution: 1.93×
-> faster, with 1.85× the serving throughput**, at a cost of
-> 7.3 accuracy points (p = 0.002, 300 questions). nf4 quantisation with
-> bitsandbytes **cuts memory by 57%** but runs 7% slower: it buys
+> but no pruning variant comes close to **halving the input resolution: 1.92×
+> faster, with 1.92× the serving throughput**, at a cost of 2.2 accuracy points (p = 0.011, 1,920 questions).
+> nf4 quantisation with
+> bitsandbytes **cuts memory by 56%** but runs 5% slower: it buys
 > memory, not speed.
 
 ![Speed versus quality trade-off](results/tradeoff_light.png)
@@ -34,11 +34,11 @@ Error bars are 95% Wilson intervals with one observation per question.*
 ## Reproduce everything with one command
 
 ```bash
-./speedrun.sh              # every result in this README, about 3 hours on a 6 GB GPU
+./speedrun.sh              # every result in this README, about 5 hours on a 6 GB GPU
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
-START=5 ./speedrun.sh      # resume from step 5
-pixi run test              # 57 tests in a light CPU environment, a few seconds
+START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
+pixi run test              # 67 tests in a light CPU environment, a few seconds
 ```
 
 The script runs every measurement, redraws the figure and regenerates this README
@@ -56,17 +56,19 @@ docker run --gpus all -p 50051:50051 -v ~/.cache/huggingface:/models vlm-speedru
 WSL (Docker Desktop does not). Measured in a GPU container with the same parameters
 as the native run, one request at a time:
 
-| Longest edge | Native | In Docker | Difference |
+| Longest edge | Native | In Docker | Latency difference [95% CI] |
 |---:|---:|---:|---:|
-| 768 | 523 ms · 1.89 req/s | 518 ms · 1.91 req/s | −1% |
-| 1536 | 920 ms · 1.02 req/s | 983 ms · 0.97 req/s | +7% |
+| 768 | 543 ms · 1.83 req/s | 530 ms · 1.87 req/s | −2% [−9, +5] |
+| 1536 | 993 ms · 0.95 req/s | 1,018 ms · 0.94 req/s | +3% [−2, +7] |
 
-Both differences are below the 18.1% noise threshold, so Docker cannot be said to be slower. Without a GPU the server runs with `--device cpu`.
+Both intervals include zero, so Docker cannot be said to be slower. Without a GPU the server runs with `--device cpu`.
 
 Hardware: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**, under WSL2.
 No cloud GPU, no API spend.
-Model: **SmolVLM-2.2B**. Data: **ChartQA** (scored with *relaxed accuracy*) and
-**DocVQA** (scored with *ANLS*, used for the sanity check).
+Model: **SmolVLM-2.2B**. Data: **ChartQA**, validation split (960 human-written and 960
+generated questions), scored with the benchmark's *relaxed accuracy*; and **DocVQA**,
+scored with the official *ANLS*, for the sanity check. Samples are drawn from the split in
+a fixed shuffled order, so every run shares its first questions with the longer runs.
 
 ---
 
@@ -92,48 +94,77 @@ short answer is bound by memory bandwidth (the study notes measure both).
 ### Levers that reduce image tokens
 
 All configurations run on the same 100 questions, interleaved and shuffled.
-Δ and p (McNemar) are paired against the baseline on the same questions; speedup is the
-median over questions of the paired time ratio, with a bootstrap 95% interval.
+Δ and p (McNemar) are paired against the baseline on the same questions; p (Holm) corrects
+for the 11 comparisons against one baseline. Speedup is the median over
+questions of the paired time ratio, with a bootstrap 95% interval.
 
-| Configuration | Image tokens | Accuracy [95% CI] | Δ points | p | Speedup [95% CI] |
-|---|---:|---|---:|---:|---:|
-| Baseline (13 tiles, longest edge 1536) | 1,053 | 69.0% [59–77] | — | — | 1.00× |
-| Longest edge 1152 | 810 | 64.0% [54–73] | −5.0 | 0.302 | 1.21× [1.19–1.24] |
-| Longest edge 960 | 810 | 66.0% [56–75] | −3.0 | 0.581 | 1.21× [1.19–1.23] |
-| **Longest edge 768** | 405 | 63.0% [53–72] | −6.0 | 0.180 | 1.91× [1.84–1.95] |
-| Longest edge 576 | 405 | 63.0% [53–72] | −6.0 | 0.180 | 1.89× [1.84–1.93] |
-| Single tile, no splitting | 81 | 41.0% [32–51] | −28.0 | < 0.0001 | 3.29× [3.14–3.48] |
-| Prune to 50% per tile, uniform | 520 | 54.0% [44–63] | −15.0 | < 0.001 | 1.10× [1.09–1.11] |
-| Prune to 25% per tile, uniform | 260 | 28.0% [20–37] | −41.0 | < 0.0001 | 1.17× [1.15–1.19] |
-| Prune to 25% per tile, random | 260 | 37.0% [28–47] | −32.0 | < 0.0001 | 1.17× [1.16–1.19] |
-| Prune to 25% per tile, 2-D mean pooling | 260 | 25.0% [18–34] | −44.0 | < 0.0001 | 1.17× [1.16–1.19] |
-| Prune to 25% per tile, largest norm | 260 | 55.0% [45–64] | −14.0 | 0.003 | 1.16× [1.15–1.17] |
-| Prune to 7.7% per tile, uniform | 78 | 19.0% [13–28] | −50.0 | < 0.0001 | 1.23× [1.20–1.24] |
+| Configuration | Image tokens | Accuracy [95% CI] | Δ points | p | p (Holm) | Speedup [95% CI] |
+|---|---:|---|---:|---:|---:|---:|
+| Baseline (13 tiles, longest edge 1536) | 1,053 | 60.0% [50–69] | — | — | — | 1.00× |
+| Longest edge 1152 | 810 | 55.0% [45–64] | −5.0 | 0.267 | 1.000 | 1.21× [1.19–1.24] |
+| Longest edge 960 (upscaled to 1152) | 810 | 57.0% [47–66] | −3.0 | 0.581 | 1.000 | 1.21× [1.19–1.23] |
+| **Longest edge 768** | 405 | 59.0% [49–68] | −1.0 | 1.000 | 1.000 | 1.91× [1.84–1.95] |
+| Longest edge 576 (upscaled to 768) | 405 | 56.0% [46–65] | −4.0 | 0.424 | 1.000 | 1.89× [1.84–1.93] |
+| Single tile, no splitting | 81 | 32.0% [24–42] | −28.0 | < 0.0001 | < 0.0001 | 3.29× [3.14–3.48] |
+| Prune to 50% per tile, uniform | 520 | 44.0% [35–54] | −16.0 | < 0.001 | 0.002 | 1.10× [1.09–1.11] |
+| Prune to 25% per tile, uniform | 260 | 26.0% [18–35] | −34.0 | < 0.0001 | < 0.0001 | 1.17× [1.15–1.19] |
+| Prune to 25% per tile, random | 260 | 31.0% [23–41] | −29.0 | < 0.0001 | < 0.001 | 1.17× [1.16–1.19] |
+| Prune to 25% per tile, 2-D mean pooling | 260 | 23.0% [16–32] | −37.0 | < 0.0001 | < 0.0001 | 1.17× [1.16–1.19] |
+| Prune to 25% per tile, largest norm | 260 | 49.0% [39–59] | −11.0 | 0.052 | 0.261 | 1.16× [1.15–1.17] |
+| Prune to 7.7% per tile, uniform | 78 | 18.0% [12–27] | −42.0 | < 0.0001 | < 0.0001 | 1.23× [1.20–1.24] |
 
 Three conclusions:
 
 - **Fewer tiles beats token pruning.** Halving the longest edge (13 → 5 tiles) is
   1.91× faster; every pruning variant stays at 1.10–1.23×,
   because pruning after the encoder still pays the full cost of the vision encoder.
-  The best pruning variant (largest-norm, 25%) keeps 55.0% accuracy at
-  1.16×, while edge 768 keeps 63.0% at 1.91×
-  (the accuracy difference between the two: p = 0.185).
+  The best pruning variant (largest-norm, 25%) keeps 49.0% accuracy at
+  1.16×, while edge 768 keeps 59.0% at 1.91×
+  (the accuracy difference between the two: p = 0.110).
 - **Which tokens are kept matters.** At the same 25% budget, largest-norm selection beats
-  evenly spaced selection (33 vs 6 discordant, p < 0.0001) and random selection
+  evenly spaced selection (30 vs 7 discordant, p < 0.001) and random selection
   (25 vs 7 discordant, p = 0.002); keeping the largest-norm quarter is as accurate as keeping an
-  evenly spaced half (p = 1.000). Evenly spaced, random and 2-D
-  mean pooling are not distinguishable from each other (18 vs 9 discordant, p = 0.122;
-  12 vs 15 discordant, p = 0.701).
+  evenly spaced half (p = 0.359). Evenly spaced, random and 2-D
+  mean pooling are not distinguishable from each other (14 vs 9 discordant, p = 0.405;
+  10 vs 13 discordant, p = 0.678).
 - **A single tile is the fastest option, and the most expensive one.** 3.29×
   faster, but −28.0 points: at 384×384 the digits on a chart become unreadable.
 
-### The main lever on more questions
+### The main lever on the whole validation split
 
-On 300 questions, longest edge 768 runs **1.93×** faster
-[1.90–1.97] and changes accuracy from 64.7% to
-57.3%: **−7.3 points** [−12.0, −3.0], p
-= 0.002 (35 vs 13 discordant questions). A real trade-off,
-not a free lunch.
+The accuracy cost of the main lever is small, so it needs many questions: on the whole
+split of 1920 questions, longest edge 768 runs **1.92×** faster
+[1.91–1.93] and changes accuracy from 55.2% to
+53.0%: **−2.2 points** [−3.9, −0.6], p
+= 0.011 (150 vs 108 discordant questions) — a real trade-off.
+
+By question type:
+
+|  | Baseline | Edge 768 | Difference |
+|---|---:|---:|---|
+| Human-written questions (960) | 47.9% | 45.9% | −2.0 points, p = 0.104 |
+| Generated questions (960) | 62.5% | 60.1% | −2.4 points, p = 0.058 |
+
+### Which conclusions depend on the scoring
+
+ChartQA's relaxed accuracy has two known quirks: a number must be the whole answer
+("82.39 billion U.S. dollars" is wrong for 82.39), and the 5% tolerance also applies to
+years (2019 counts for 2017). The project first used a more lenient metric that fished
+the first number out of any answer; on the baseline it reads 63.8% instead of
+55.2%. Every main comparison under three metrics — difference in points,
+paired McNemar p:
+
+| Comparison | Relaxed accuracy (primary) | Years exact | Earlier lenient metric |
+|---|---|---|---|
+| Edge 768 vs baseline (1920 questions) | −2.2, p = 0.011 | −2.3, p = 0.008 | −4.2, p < 0.0001 |
+| Single tile vs baseline (100) | −28.0, p < 0.0001 | −28.0, p < 0.0001 | −28.0, p < 0.0001 |
+| Prune 25% uniform vs baseline (100) | −34.0, p < 0.0001 | −34.0, p < 0.0001 | −41.0, p < 0.0001 |
+| Largest-norm vs uniform, 25% (100) | +23.0, p < 0.001 | +24.0, p < 0.001 | +27.0, p < 0.0001 |
+| nf4 vs bf16 (300) | −1.7, p = 0.533 | −2.0, p = 0.461 | −4.0, p = 0.081 |
+| English vs Vietnamese instruction (200) | +2.5, p = 0.424 | +3.0, p = 0.307 | −1.0, p = 0.804 |
+
+Conclusions that hold under all three are stated as findings; the ones that do not are
+reported with their uncertainty.
 
 ### Quantisation
 
@@ -169,13 +200,13 @@ card, so they run one after the other; the comparison is paired per question):
 
 |  | bf16 | nf4 | Difference |
 |---|---:|---:|---|
-| Accuracy (baseline) | 64.7% | 60.7% | −4.0 points, p = 0.081 |
-| Accuracy (edge 768) | 57.3% | 54.3% | −3.0 points, p = 0.200 |
-| Speed, paired (baseline) | 1.00× | 0.93× | **7% slower** |
-| Speed, paired (edge 768) | 1.00× | 0.86× | **16% slower** |
-| Peak VRAM | 5,062 MB | **2,169 MB** | **−57%** |
+| Accuracy (baseline) | 55.0% | 53.3% | −1.7 points, p = 0.533 |
+| Accuracy (edge 768) | 52.0% | 49.0% | −3.0 points, p = 0.188 |
+| Speed, paired (baseline) | 1.00× | 0.95× | **5% slower** |
+| Speed, paired (edge 768) | 1.00× | 0.88× | **14% slower** |
+| Peak VRAM | 4,891 MB | **2,169 MB** | **−56%** |
 
-The accuracy change of −4.0 points is not significant at the 0.05 level (p = 0.081).
+The accuracy change of −1.7 points is not distinguishable from no change (p = 0.533).
 
 ### Serving over gRPC
 
@@ -183,17 +214,17 @@ The accuracy change of −4.0 points is not significant at the 0.05 level (p = 0
 
 | Longest edge | Concurrency | Median | p95 | Server compute | Throughput |
 |---:|---:|---:|---:|---:|---:|
-| 1536 | 1 | 920 ms | 1,456 ms | 915 ms | 1.02 req/s |
-| 1536 | 2 | 1,860 ms | 2,468 ms | 942 ms | 1.02 req/s |
-| 1536 | 4 | 3,811 ms | 4,983 ms | 934 ms | 1.01 req/s |
-| **768** | 1 | **523 ms** | 794 ms | 518 ms | **1.89 req/s** |
-| 768 | 2 | 1,022 ms | 1,448 ms | 512 ms | 1.89 req/s |
-| 768 | 4 | 1,972 ms | 2,386 ms | 487 ms | 1.99 req/s |
+| 1536 | 1 | 993 ms | 1,534 ms | 988 ms | 0.95 req/s |
+| 1536 | 2 | 2,023 ms | 2,747 ms | 1,012 ms | 0.94 req/s |
+| 1536 | 4 | 3,912 ms | 4,740 ms | 931 ms | 1.01 req/s |
+| **768** | 1 | **543 ms** | 814 ms | 538 ms | **1.83 req/s** |
+| 768 | 2 | 1,013 ms | 1,301 ms | 511 ms | 1.92 req/s |
+| 768 | 4 | 2,076 ms | 2,463 ms | 497 ms | 1.91 req/s |
 
 Server-side compute time is **flat across concurrency levels**; everything added is
 queue wait. One GPU serves one request at a time, so **raising concurrency does not
 raise throughput, it only inflates latency**. Reducing the resolution multiplies
-throughput by 1.85×, close to the 1.93× measured offline. The server
+throughput by 1.92×, close to the 1.92× measured offline. The server
 admits at most `--max-queue` requests (default 8) and rejects the rest at once with
 `RESOURCE_EXHAUSTED`, so overload shows up as a clear error instead of unbounded latency.
 
@@ -226,7 +257,7 @@ in English. That is a reasonable suspicion, so it was measured rather than assum
 
 | Dataset | Vietnamese instruction | English instruction | Paired test |
 |---|---:|---:|---|
-| ChartQA (200 samples) | 67.0% | 66.0% | McNemar: 9 vs 7 discordant, p = 0.804 |
+| ChartQA (200 samples) | 57.0% | 59.5% | McNemar: 10 vs 15 discordant, p = 0.424 |
 | DocVQA (300 samples) | 71.7 ANLS | 72.4 ANLS | sign test: 20 vs 13, p = 0.296; difference +0.7 [−1.6, +3.0] |
 
 On ChartQA the two instructions are not distinguishable; on DocVQA they are
@@ -245,10 +276,10 @@ your own favour. These rules live in `bench/harness.py`, not in a document:
 2. **Rounds are replicates over the same sample set**, so comparisons can be paired
 3. **Configurations are interleaved and shuffled**, with a seed for reproducibility
 4. **Report the median and interquartile range**, never mean ± standard deviation
-5. **Claim a speedup only when its 95% interval excludes 1.** Paired medians over many
-   questions are precise; a single run-to-run comparison, as in the Docker check, needs
-   three times the measured noise — 18.1% on this machine (robust CV
-   6.0% over 60 runs of one input).
+5. **Claim a difference only when its 95% interval excludes "no difference"**, and correct
+   for multiple comparisons (Holm) when many configurations face one baseline. For
+   reference, a single measurement varies with a robust CV of 6.0% on this machine
+   (60 runs of one input) — why one run against one run proves little.
 6. **Record invariants and machine state, and check each run's integrity** — image tokens,
    clock, temperature, control drift, timing spikes against each sample's own replicates,
    and GPU memory held by other processes. Timing scripts refuse to start on a busy GPU,
@@ -264,12 +295,13 @@ audit of the whole repository, and every one is fixed in the code.
 |---|---|---|
 | Vision encoder outside the timed region on the optimised path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
-| Concluding "no difference" from 100 samples | p = 0.18 | with 300 samples the same effect gives p = 0.002 — **the conclusion reverses** |
+| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same; how many questions a small effect needs is computed above, not guessed |
 | Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
 | DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a real gap to the published score was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
+| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | baseline about 10 points above the benchmark metric | edge 768's accuracy cost looked large and certain (−7.3, p = 0.002 on 300 questions); with the benchmark metric it is small and needs the whole split |
 | Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than the data allow |
 | Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of the measured one | real improvements below 25% would have been dismissed |
 | A single-measurement noise rule applied to paired medians over hundreds of questions, with a CV that one outlier can inflate | a clear 1.21× speedup marked "below noise threshold" | real improvements dismissed; now judged by the speedup's 95% interval, and noise by a robust CV |
@@ -307,7 +339,7 @@ serve/
   admission.py         admission control: reject at once beyond the queue bound
   server.py            inference server: bounded queue, clear errors, server-side timing
   client_bench.py      end-to-end latency at several concurrency levels
-tests/                 57 tests for the core, on CPU in a few seconds
+tests/                 67 tests for the core, on CPU in a few seconds
 results/               raw JSON results + figures; results/history/ keeps the runs that
                        document the mistakes above
 speedrun.sh            one command to rerun every result and regenerate this README
@@ -325,6 +357,8 @@ Dockerfile             packages the inference server
 - bf16 and nf4 cannot share a 6 GB card, so they run one after the other rather than
   interleaved; the comparison is paired per sample but not protected against drift
   between the two runs.
+- The lever sweep uses 100 questions: enough for the large effects it reports, not for
+  differences of a few points between configurations.
 - The SmolVLM authors do not publish a ChartQA score, so the main benchmark has no
   independent reference number; the DocVQA check above is the substitute, on the
   validation split rather than the test split they report.
