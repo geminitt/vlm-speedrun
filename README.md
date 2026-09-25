@@ -14,7 +14,7 @@ Read them in order; each notebook only uses concepts introduced earlier.
 | `02_do_thoi_gian_tren_gpu` | timing GPU work: asynchronous execution, warm-up, noise, clocks, drift, profiler, Amdahl's law | yes |
 | `03_ben_trong_bo_ma_hoa_thi_giac` | the vision encoder: tiling, patch embedding, ViT, pixel shuffle, FLOP counting | yes |
 | `04_prefill_decode_kv_cache` | autoregressive decoding, KV cache, compute vs bandwidth limits, roofline | yes |
-| `05_so_thuc_va_luong_tu_hoa` | floating-point formats, absmax and NF4 quantisation, LLM.int8, why nf4 is not faster here | yes |
+| `05_so_thuc_va_luong_tu_hoa` | floating-point formats, absmax and NF4 quantization, LLM.int8, why nf4 is not faster here | yes |
 | `06_phuc_vu_mo_hinh` | serving: gRPC and protobuf, latency vs throughput, Little's law, M/G/1 queues, capacity under an SLO | no |
 | `07_tong_hop_don_bay` | synthesis: where the time goes and which levers are worth pulling | yes |
 

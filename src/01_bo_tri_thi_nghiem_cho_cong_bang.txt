@@ -105,11 +105,11 @@ lấn át hiệu ứng thật. Một ví dụ đồ chơi cho thấy nó có th�
 
 ### CODE
 cost = {"small image": 100.0, "medium image": 400.0, "large image": 1000.0}
-optimised = {k: v / 2 for k, v in cost.items()}                     # truly 2x faster everywhere
+optimized = {k: v / 2 for k, v in cost.items()}                     # truly 2x faster everywhere
 group_a = statistics.median([cost["small image"], cost["medium image"]])
-group_b = statistics.median([optimised["medium image"], optimised["large image"]])
+group_b = statistics.median([optimized["medium image"], optimized["large image"]])
 print(f"different questions per config : {group_a / group_b:.2f}x  (wrong)")
-print(f"paired, per question           : {statistics.median(cost[k] / optimised[k] for k in cost):.2f}x  (right)")
+print(f"paired, per question           : {statistics.median(cost[k] / optimized[k] for k in cost):.2f}x  (right)")
 
 ### MD
 So hai nhóm khác nhau cho **0,71×** — kết luận rằng kỹ thuật làm mọi thứ **chậm đi** — trong khi

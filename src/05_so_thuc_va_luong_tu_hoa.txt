@@ -195,7 +195,7 @@ lại phải lưu nhiều $\Delta$ hơn. Đo trên lớp thật với ba cách c
 
 ### CODE
 def absmax_quant(w, bits, group):
-    """Symmetric absmax quantisation. group: 'tensor', 'row' or an int block size."""
+    """Symmetric absmax quantization. group: 'tensor', 'row' or an int block size."""
     qmax = 2 ** (bits - 1) - 1
     w = w.float()
     if group == "tensor":
@@ -405,7 +405,7 @@ normed = (Wg.float().reshape(-1, 64) / absmax).flatten().cpu().numpy()
 plt.hist(normed, bins=200, density=True, alpha=0.6, label="weights / block absmax")
 for v in levels.tolist():
     plt.axvline(v, c="C3", lw=0.8)
-plt.xlabel("normalised weight (red lines: the 16 NF4 levels)"); plt.legend(); plt.tight_layout(); plt.show()
+plt.xlabel("normalized weight (red lines: the 16 NF4 levels)"); plt.legend(); plt.tight_layout(); plt.show()
 
 ### MD
 ### 5.3. Chi phí của absmax, và lượng tử hoá kép
