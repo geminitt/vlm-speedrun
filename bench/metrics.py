@@ -1,9 +1,12 @@
 """Quality metrics.
 
-ChartQA is scored with *relaxed accuracy*: a numeric answer counts as correct if
-its relative error is at most 5%; a text answer must match after normalisation.
-The tolerance exists because chart questions usually require reading values off
-the plot by eye, so demanding an exact match would be unreasonable.
+ChartQA is scored with the benchmark's *relaxed accuracy* (relaxed_correctness): if
+both answers parse as numbers, the prediction is correct within 5% relative error;
+otherwise the strings must match, ignoring case. The tolerance exists because chart
+values are read off the plot by eye. Two variants serve as a sensitivity check:
+exact_years (years must match exactly — the benchmark applies the 5% tolerance to
+them too, so 2019 counts for 2017) and lenient_match, the project's earlier metric,
+which fished the first number out of any sentence.
 """
 import re
 
@@ -24,6 +27,26 @@ def to_number(s):
         return None
 
 
+def relaxed_correctness(prediction, target, max_relative_change=0.05, exact_years=False):
+    """ChartQA relaxed accuracy for one answer, as the benchmark defines it.
+
+    Numbers: the whole string must parse as a float, and a trailing "%" divides it by
+    100. With exact_years, a target that is a year (1500-2099) must match exactly.
+    """
+    def to_float(t):
+        try:
+            return float(t.rstrip("%")) / 100.0 if t.endswith("%") else float(t)
+        except ValueError:
+            return None
+    prediction, target = prediction.strip(), target.strip()
+    if exact_years and re.fullmatch(r"(1[5-9]|20)\d\d", target):
+        return prediction == target
+    p, t = to_float(prediction), to_float(target)
+    if p is not None and t:
+        return abs(p - t) / abs(t) <= max_relative_change
+    return prediction.lower() == target.lower()
+
+
 def clean_answer(s):
     """Answer extraction before scoring: trim, and drop one trailing full stop.
 
@@ -41,8 +64,13 @@ def normalize_text(s):
     return s.strip(" .")  # drop surrounding punctuation: "Yes." -> "yes"
 
 
-def relaxed_match(pred, gold, tol=0.05):
-    """True if the prediction matches the answer under ChartQA relaxed accuracy."""
+def lenient_match(pred, gold, tol=0.05):
+    """The project's earlier ChartQA metric, kept only for the sensitivity check.
+
+    More lenient than the benchmark: it takes the FIRST number anywhere in the answer
+    ("82.39 billion" counts for 82.39, but so does "1992, 2016" for 2009), drops
+    thousands separators, and treats "45%" as 45.
+    """
     p_num, g_num = to_number(pred), to_number(gold)
     if g_num is not None and p_num is not None:
         if g_num == 0:
@@ -51,11 +79,19 @@ def relaxed_match(pred, gold, tol=0.05):
     return normalize_text(pred) == normalize_text(gold)
 
 
-def relaxed_accuracy(preds, golds, tol=0.05):
+def score_chartqa(pred, gold, metric="relaxed"):
+    """Score one ChartQA answer after answer cleaning. metric: relaxed | exact_years | lenient."""
+    pred = clean_answer(pred)
+    if metric == "lenient":
+        return lenient_match(pred, gold)
+    return relaxed_correctness(pred, gold, exact_years=(metric == "exact_years"))
+
+
+def relaxed_accuracy(preds, golds):
     assert len(preds) == len(golds)
     if not preds:
         return 0.0
-    return sum(relaxed_match(p, g, tol) for p, g in zip(preds, golds)) / len(preds)
+    return sum(score_chartqa(p, g) for p, g in zip(preds, golds)) / len(preds)
 
 
 def wilson_interval(k, n, z=1.96):
@@ -117,6 +153,22 @@ def bootstrap_ci(values, stat=None, n_boot=10_000, seed=0, level=0.95):
     lo = boots[int((1 - level) / 2 * n_boot)]
     hi = boots[int((1 + level) / 2 * n_boot) - 1]
     return lo, hi
+
+
+def holm(pvalues):
+    """Holm-Bonferroni adjusted p-values, in the input order.
+
+    With m comparisons, the i-th smallest p-value is multiplied by (m - i), and the
+    sequence is made non-decreasing. Controls the chance of any false positive at
+    alpha, and rejects at least as much as plain Bonferroni.
+    """
+    m = len(pvalues)
+    order = sorted(range(m), key=lambda i: pvalues[i])
+    adjusted, running = [0.0] * m, 0.0
+    for rank, i in enumerate(order):
+        running = max(running, min(1.0, (m - rank) * pvalues[i]))
+        adjusted[i] = round(running, 12)
+    return adjusted
 
 
 def mcnemar(b, c):

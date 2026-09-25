@@ -18,7 +18,7 @@ import torch
 
 from bench.latency_probe import (GpuSampler, check_gpu_idle, foreign_memory_mb,
                                  summarize, timed)
-from bench.metrics import accuracy_ci, anls, bootstrap_ci, clean_answer, relaxed_match
+from bench.metrics import accuracy_ci, anls, bootstrap_ci, clean_answer, score_chartqa
 from bench.prune import build_inputs
 
 # The instruction appended to every question. These strings are an experimental
@@ -99,6 +99,7 @@ class Record:
     clock_mhz: float = 0.0
     temp_c: float = 0.0
     foreign_mb: float = 0.0          # GPU memory held by other processes at the time
+    subset: str = ""                 # ChartQA: "human" or "augmented" question
 
 
 class Runner:
@@ -202,7 +203,7 @@ class Runner:
 
 DATASETS = {
     # name -> (hub path, split, image column, question column, answer column)
-    "chartqa": ("HuggingFaceM4/ChartQA", "val", "image", "query", "label"),
+    "chartqa": ("HuggingFaceM4/ChartQA", "val", "image", "query", "label"),   # 960 human + 960 augmented
     "docvqa": ("lmms-lab/DocVQA", "validation", "image", "question", "answers"),
 }
 
@@ -221,7 +222,10 @@ def load_samples(n, seed=0, dataset="chartqa"):
         golds = row[c_a]
         out.append({"sample_id": i, "image": row[c_img], "query": row[c_q],
                     "gold": golds[0] if isinstance(golds, list) else golds,
-                    "golds": golds if isinstance(golds, list) else [golds]})
+                    "golds": golds if isinstance(golds, list) else [golds],
+                    # ChartQA marks human-written questions 0, generated ones 1
+                    "subset": ({0: "human", 1: "augmented"}.get(row.get("human_or_machine"), "")
+                               if dataset == "chartqa" else "")})
     return out
 
 
@@ -340,6 +344,7 @@ def main():
                     help="robust CV measured in gate 0, in %%; recorded with the run")
     ap.add_argument("--quant", default="bf16", help="bf16 | fp16 | int8 | nf4")
     ap.add_argument("--dataset", default="chartqa", help="chartqa | docvqa")
+    ap.add_argument("--metric", default="relaxed", help="ChartQA: relaxed | exact_years | lenient")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="results/harness_run.json")
     ap.add_argument("--allow-busy-gpu", action="store_true",
@@ -351,8 +356,8 @@ def main():
 
     configs = [Config.parse(c) for c in a.configs.split(",")]
     samples = load_samples(a.samples, a.seed, a.dataset)
-    score = ((lambda p, s: relaxed_match(clean_answer(p), s['gold'])) if a.dataset == 'chartqa'
-             else (lambda p, s: anls(clean_answer(p), s['golds']) >= 0.5))
+    score = ((lambda p, s: score_chartqa(p, s["gold"], a.metric)) if a.dataset == "chartqa"
+             else (lambda p, s: anls(clean_answer(p), s["golds"]) >= 0.5))
     runner = Runner(a.model, quant=a.quant)
 
     print(f"model: {a.model} [{a.quant}] | {len(samples)} samples | {len(configs)} configs "
@@ -380,7 +385,7 @@ def main():
             correct=score(pred, s), pred=pred, gold=s["gold"],
             prefill_ms=pre_ms, generate_ms=gen_ms,
             image_tokens=n_img, input_tokens=n_in,
-            clock_mhz=tele["clock_mhz"], temp_c=tele["temp_c"],
+            clock_mhz=tele["clock_mhz"], temp_c=tele["temp_c"], subset=s["subset"],
             foreign_mb=max(0.0, foreign_memory_mb(
                 tele["mem_used_mb"], torch.cuda.memory_reserved() / mib, context_mb))))
         if step % 25 == 0:
@@ -415,6 +420,7 @@ def main():
 
     check = integrity(records, drift)
     out = {"model": a.model, "quant": a.quant, "dataset": a.dataset,
+           "metric": a.metric if a.dataset == "chartqa" else "anls>=0.5",
            "samples": len(samples), "rounds": a.rounds, "integrity": check,
            "noise_cv_pct": a.noise_cv,
            "paired_speedup_vs_baseline": speedups,
