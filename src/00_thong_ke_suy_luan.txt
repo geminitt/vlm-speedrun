@@ -338,7 +338,7 @@ print(f"unpaired z = {z:.2f}, p = {p_unpaired:.4f}")
 ### MD
 Theo cách này, p khoảng 0,17 — **không** vượt ngưỡng 0,05. Nhưng README ghi p = 0,011 cho
 cùng dữ liệu. Chênh lệch gấp khoảng 16 lần đến từ việc cách trên đã
-**bỏ phí** một thông tin quan trọng: hai cấu hình được chấm trên **cùng** 300 câu hỏi.
+**bỏ phí** một thông tin quan trọng: hai cấu hình được chấm trên **cùng** 1.920 câu hỏi.
 
 ## 5. Thiết kế theo cặp và kiểm định McNemar
 
@@ -347,7 +347,7 @@ câu khó thì cùng sai. Phép so độc lập coi toàn bộ sự khác nhau v
 nên SE của nó lớn. Nếu hai cấu hình chạy trên **cùng** câu hỏi, ta có thể so **từng
 câu một**, và độ khó của câu tự triệt tiêu.
 
-Xếp 300 câu vào bảng 2×2:
+Xếp 1.920 câu vào bảng 2×2:
 
 | | B đúng | B sai |
 |---|---|---|
@@ -505,6 +505,37 @@ phân biệt được" ở 100 hay 300 câu là kết cục *có khả năng nh�
 cả 1.920 câu cũng chỉ cho lực khoảng 0,7; muốn đạt 80% (mức quy ước khi thiết kế thí nghiệm)
 cần khoảng 2.300 câu — nhiều hơn cả tập validation.
 
+**Kiểm chứng bằng công thức chính xác.** Mô phỏng có sai số của riêng nó: với 20.000 lần
+lặp, sai số chuẩn của một ước lượng lực quanh 0,73 là $\sqrt{0{,}73 \cdot 0{,}27 / 20.000}
+\approx 0{,}003$. README không mô phỏng mà tính lực **chính xác** bằng `mcnemar_power` trong
+`bench/metrics.py`: thay vì rút ngẫu nhiên số cặp bất đồng $d$, nó cộng trên **mọi** giá trị
+có thể của $d$, mỗi giá trị nhân với xác suất của nó:
+
+$$\text{lực}(n) = \sum_{d=0}^{n} \binom{n}{d}\,\pi_d^{\,d}(1-\pi_d)^{n-d}
+\Big[P(B \le k_d) + P(B \ge d - k_d)\Big], \qquad B \sim \mathrm{Binomial}(d, \pi_b)$$
+
+**Ký hiệu mới**
+- $k_d$: số lớn nhất sao cho `mcnemar(k_d, d - k_d)` < α — vùng bác bỏ của McNemar với $d$
+  cặp bất đồng là "$B$ lệch về một phía ít nhất tới mức đó"
+- $\binom{n}{d}\pi_d^{\,d}(1-\pi_d)^{n-d}$: xác suất nhị thức để đúng $d$ trong $n$ câu là
+  cặp bất đồng
+
+Hai cách phải cho cùng kết quả, sai khác không quá vài lần 0,003:
+
+### CODE
+from bench.metrics import mcnemar_power, samples_for_power
+for m, w in zip(ns, pw):
+    print(f"n = {m:>4}: simulated {w:.3f} | exact {mcnemar_power(m, pi_d, pi_b):.4f}")
+print(f"80% power first reached at about {samples_for_power(pi_d, pi_b):,} questions "
+      f"(searched in steps of 100)")
+
+### MD
+Hai cột khớp trong sai số mô phỏng. Cột **exact** là con số README in ra trong mục
+"Why the whole split"; nó không phụ thuộc seed, nên CI kiểm tra được README có khớp dữ liệu
+hay không. Tìm theo bước 100 vì với phép kiểm định chính xác, lực tăng theo hình răng cưa nhỏ
+chứ không trơn: thêm một câu có thể làm lực giảm nhẹ, nên "cần đúng bao nhiêu câu" chỉ có
+nghĩa khi làm tròn.
+
 Bài học có tên riêng: **thiếu bằng chứng không phải là bằng chứng về sự vắng mặt**
 (absence of evidence is not evidence of absence). Quy trình đúng là ước lượng lực
 **trước** khi chạy, từ một lần chạy thử, như vừa làm ở trên.
@@ -523,7 +554,7 @@ lệch** độ chính xác giữa hai cấu hình trên cùng câu hỏi, hay ch
 1,92× — những đại lượng không có công thức gọn.
 
 **Bootstrap** thay công thức bằng tính toán. Lập luận: phân phối lấy mẫu là thứ ta sẽ
-thấy nếu rút mẫu mới từ tổng thể nhiều lần. Ta không có tổng thể, nhưng mẫu 300 câu là
+thấy nếu rút mẫu mới từ tổng thể nhiều lần. Ta không có tổng thể, nhưng mẫu 1.920 câu là
 bản xấp xỉ tốt nhất của nó. Vậy:
 
 1. Rút **có hoàn lại** $n$ câu từ chính $n$ câu đã có (một câu có thể bị rút nhiều lần,
@@ -576,8 +607,11 @@ và nếu nó không chứa 0 thì hiệu ứng có ý nghĩa thống kê. Vì v
 hơn một p-value đứng riêng.
 
 Áp dụng lên ba kết luận của dự án. Lần chạy nf4 và lần chạy bf16 là **hai lần chạy
-riêng**, nhưng trên cùng 300 câu (cùng seed), nên vẫn ghép cặp được theo mã câu — đó
-là việc `bench/compare_runs.py` làm.
+riêng** với cỡ khác nhau: bf16 chạy cả 1.920 câu, nf4 chạy 300 câu **đầu tiên** của cùng
+thứ tự đã xáo (cùng seed). Vì vậy vẫn ghép cặp được theo mã câu, trên 300 câu chung — hàm
+`paired_arrays` dưới đây chỉ giữ các câu có mặt ở cả hai lần chạy, đúng như
+`bench/compare_runs.py` làm. (So độ chính xác của 1.920 câu với của 300 câu là so hai tập
+câu hỏi khác nhau, không phải so hai cấu hình.)
 
 ### CODE
 def paired_arrays(run_a, cfg_a, run_b, cfg_b):
@@ -603,6 +637,11 @@ report("English vs Vietnamese instruction", *paired_arrays(prompt, "baseline", p
 - **Cạnh 768**: khoảng tin cậy nằm hẳn dưới 0 nhưng sát 0 — hiệu ứng **có thật và nhỏ**,
   khoảng 1–4 điểm. Có ý nghĩa thống kê không có nghĩa là lớn; với tốc độ gần gấp đôi, đây là
   một đánh đổi mà nhiều hệ thống sẽ chấp nhận.
+  (Mục 7 cho khoảng $[-3{,}9;\,-0{,}6]$, ở đây là $[-3{,}8;\,-0{,}5]$ — cùng dữ liệu, cùng hàm.
+  Bootstrap là phép rút ngẫu nhiên; hai lần gọi dùng hai đoạn khác nhau của chuỗi số ngẫu
+  nhiên, nên đầu mút lệch vài phần mười điểm. Đó là **sai số Monte Carlo** của chính bootstrap,
+  nhỏ dần khi tăng $B$. README cố định seed trong `bench/report.py`, nên lần nào cũng in cùng
+  một khoảng.)
 - **nf4**: điểm ước lượng −1,7 điểm, khoảng tin cậy từ khoảng −6 đến +2. Không phân biệt được
   với "không đổi" — nhưng hãy nhìn độ **rộng**: 300 câu không loại trừ được một mức mất tới
   khoảng 6 điểm. Cách nói đúng là *"không phát hiện được; nếu có thì dưới khoảng 6 điểm"*.
