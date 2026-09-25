@@ -1,0 +1,481 @@
+### MD
+# 01 — Bố trí thí nghiệm cho công bằng: các lỗi đo đạc đã gặp
+
+Notebook 00 xây công cụ thống kê; notebook này dùng chúng để trả lời một câu khó hơn:
+**làm sao biết con số mình đo được là thật?** Câu trả lời đi qua các lỗi đo đạc thật đã xảy ra
+trong dự án: bốn lỗi phát hiện ngay khi làm, hai lỗi phát hiện khi viết bộ notebook này, và sáu
+lỗi phát hiện trong hai lần rà soát toàn bộ repo sau đó.
+
+Điểm chung của cả mười hai: chúng **không tự lộ ra** — lỗi nào cũng cho ra những con số trông hợp
+lý. Phần lớn còn làm kết quả trông đẹp hơn hoặc chắc chắn hơn thực tế, tức là thưởng cho người
+không kiểm tra.
+
+Nền tảng cần có: notebook 00 (McNemar, lực kiểm định, khoảng tin cậy). Notebook này chỉ đọc các
+file kết quả trong `results/`, không chạy lại mô hình.
+
+| Lỗi | Loại | Hậu quả nếu không phát hiện |
+|---|---|---|
+| 1 | Vùng bấm giờ không công bằng | tăng tốc bị thổi phồng gấp ba |
+| 2 | Mỗi vòng đo một nhóm mẫu khác | độ khó của mẫu bị đọc thành nhiễu của máy |
+| 3 | Kết luận "không khác biệt" khi thiếu lực | kết luận sai chiều |
+| 4 | Giá trị mặc định lặng lẽ đổi thí nghiệm | suýt kết luận sai về lượng tử hoá |
+| 5 | Đếm vòng lặp như mẫu mới | khoảng tin cậy hẹp hơn thực tế |
+| 6 | Ngưỡng nhiễu mượn từ mô hình khác, rồi áp sai chỗ | gạt bỏ oan những cải thiện có thật |
+| 7 | Cắt token xoá luôn token bố cục | trộn hai tác động vào một con số |
+| 8 | Một phương pháp được nêu nhưng chưa từng chạy | kết luận sai về việc chọn token |
+| 9 | GPU bị một tiến trình khác dùng chung | đòn bẩy rẻ nhất trông chậm gấp rưỡi |
+| 10 | Phép kiểm tra tỉnh táo quá lỏng | một khoảng chênh thật bị coi là "đạt" |
+| 11 | Số liệu chép tay từ log | con số không truy được về dữ liệu |
+| 12 | Metric tự chế mang tên metric chuẩn | một hiệu ứng nhỏ trông lớn và chắc chắn |
+
+### CODE
+import json, math, statistics, sys
+from collections import defaultdict
+from pathlib import Path
+
+import numpy as np
+
+sys.path.insert(0, "..")                      # main-branch code lives one level up
+from bench.metrics import paired_accuracy, wilson_interval
+
+RESULTS = Path("../results")
+
+def load(name):
+    return json.loads((RESULTS / name).read_text())
+
+print("result files:", ", ".join(p.name for p in sorted(RESULTS.glob("*.json"))))
+
+### MD
+## Lỗi 1 — vùng bấm giờ không công bằng
+
+Kỹ thuật cắt token ảnh cần lấy token ảnh ra **trước** khi đưa vào mô hình ngôn ngữ, nên đường tối
+ưu gọi bộ mã hoá thị giác sớm hơn. Trong phiên bản đầu, lời gọi đó nằm **ngoài** vùng bấm giờ.
+Kết quả: đường gốc được tính cả thời gian mã hoá thị giác, đường tối ưu thì không — một bên còn
+gánh, một bên đã đặt gánh xuống.
+
+Hai file dưới đây là cùng một thí nghiệm, trước và sau khi sửa:
+
+### CODE
+before = load("history/prune_smoke_vision_outside_timer.json")
+after = load("history/prune_smoke_fixed_timer.json")
+for name, r in [("BEFORE the fix", before), ("AFTER the fix", after)]:
+    print(name)
+    for k, v in r["paired_speedup_vs_baseline"].items():
+        print(f"   {k.split('(')[0]:<12} {v['median_speedup']:.2f}x")
+
+### MD
+Cùng kỹ thuật, cùng mô hình, cùng máy: **3,47× thành 1,12×**. Notebook 02 (định luật Amdahl)
+cho biết trần lý thuyết của kỹ thuật này là khoảng 1,42× — nên một con số 3,47× lẽ ra phải bị
+nghi ngờ ngay: nó **vượt trần vật lý**.
+
+**Quy tắc 1:** vùng bấm giờ phải bao trọn toàn bộ đường đi mà người dùng thật phải trả, ở **mọi**
+cấu hình được so sánh. Và: **đối chiếu kết quả với một giới hạn lý thuyết** — con số vượt trần là
+dấu hiệu lỗi đo, không phải đột phá.
+
+## Lỗi 2 — mỗi vòng đo dùng một nhóm mẫu khác
+
+Ban đầu mỗi vòng đo một nhóm câu hỏi khác nhau. Nghe hợp lý, nhưng ảnh ChartQA có kích thước rất
+khác nhau, nên thời gian xử lý mỗi câu dao động mạnh **vì bản thân câu hỏi**, không vì máy. Triệu
+chứng lúc đó: IQR bằng 86,5% trung vị, và "độ trôi" −44% — máy càng chạy càng nhanh, điều vô lý.
+
+Tách hai nguồn dao động trên dữ liệu thật (`gate2_confirm`, mỗi câu đo hai vòng):
+- **Dao động giữa các câu hỏi**: độ phân tán của thời gian qua 300 câu khác nhau.
+- **Nhiễu của máy**: độ phân tán của tỉ số giữa hai vòng của **cùng** một câu (notebook 02, mục 3.1).
+
+### CODE
+confirm = load("gate2_confirm.json")
+by = defaultdict(dict)
+for r in confirm["records"]:
+    if r["config"] == "baseline":
+        by[r["sample_id"]][r["round_idx"]] = r["generate_ms"]
+first_round = np.array([v[0] for v in by.values()])
+ratio = np.array([v[1] / v[0] for v in by.values()])
+
+def iqr_pct(x):
+    return 100 * (np.percentile(x, 75) - np.percentile(x, 25)) / np.median(x)
+
+print(f"spread across questions (round 1)     : IQR {iqr_pct(first_round):5.1f}% of median")
+print(f"machine noise (same question, 2 rounds): IQR {iqr_pct(ratio):5.1f}% of median ratio")
+
+### MD
+Dao động do câu hỏi lớn gấp khoảng ba lần nhiễu của máy, ngay cả ở cấu hình gốc nơi mọi ảnh đều
+thành 13 ô. Nếu hai cấu hình được đo trên hai **nhóm câu khác nhau**, chênh lệch giữa hai nhóm có thể
+lấn át hiệu ứng thật. Một ví dụ đồ chơi cho thấy nó có thể
+đảo ngược kết luận:
+
+### CODE
+cost = {"small image": 100.0, "medium image": 400.0, "large image": 1000.0}
+optimised = {k: v / 2 for k, v in cost.items()}                     # truly 2x faster everywhere
+group_a = statistics.median([cost["small image"], cost["medium image"]])
+group_b = statistics.median([optimised["medium image"], optimised["large image"]])
+print(f"different questions per config : {group_a / group_b:.2f}x  (wrong)")
+print(f"paired, per question           : {statistics.median(cost[k] / optimised[k] for k in cost):.2f}x  (right)")
+
+### MD
+So hai nhóm khác nhau cho **0,71×** — kết luận rằng kỹ thuật làm mọi thứ **chậm đi** — trong khi
+thật ra nó nhanh đúng **2×**. Đây là cùng nguyên lý với McNemar ở notebook 00: **so theo cặp trên
+cùng câu hỏi** làm độ khó của câu hỏi tự triệt tiêu.
+
+**Quy tắc 2:** các vòng đo là **bản lặp trên cùng tập câu hỏi**, và mọi so sánh làm theo cặp trên
+từng câu, rồi mới tổng hợp.
+
+## Lỗi 3 — kết luận "không khác biệt" khi thiếu lực
+
+Lúc làm dự án, lần quét 100 câu cho cạnh 768 kém bản gốc vài điểm với p = 0,18 — "không phân biệt
+được". Rất dễ đọc thành "giảm độ phân giải không làm mất chất lượng". Với metric chuẩn hiện tại, câu
+chuyện còn rõ hơn — cùng một lần chạy trên cả tập, nhìn 100 câu đầu, 300 câu đầu, rồi tất cả:
+
+### CODE
+confirm = load("gate2_confirm.json")
+first100 = {r["sample_id"] for r in load("gate2_sweep.json")["records"]}
+first300 = {r["sample_id"] for r in load("gate5_nf4.json")["records"]}
+for name, keep in [("first 100", first100), ("first 300", first300), ("all 1,920", None)]:
+    recs = [r for r in confirm["records"] if keep is None or r["sample_id"] in keep]
+    pa = paired_accuracy(recs, "baseline", "edge768(edge=768)")
+    acc = lambda k: 100 * sum(r["correct"] for r in recs if r["config"] == k) / sum(1 for r in recs if r["config"] == k)
+    print(f"{name:<10} {acc('baseline'):5.1f}% -> {acc('edge768(edge=768)'):5.1f}% | discordant "
+          f"{pa['only_a_correct']}+{pa['only_b_correct']} | p = {pa['p_value']:.3f}")
+
+### MD
+Với 100 và 300 câu: "không phân biệt được". Với cả 1.920 câu: mất khoảng 2 điểm, có thật. Notebook
+00 (mục 6) tính được nguyên nhân: với hiệu ứng cỡ này, lực kiểm định ở 300 câu chỉ khoảng 0,14 — kết
+quả "không phân biệt được" là kết cục *có khả năng nhất*, dù hiệu ứng có thật.
+
+**Quy tắc 3:** "p lớn" nghĩa là *chưa đủ bằng chứng*, không phải *không có khác biệt*. Trước khi
+kết luận "không khác biệt", hãy báo **khoảng tin cậy của hiệu số** (nó cho biết hiệu ứng lớn nhất
+còn tương thích với dữ liệu), và tính cỡ mẫu cần thiết từ **hiệu ứng nhỏ nhất đáng quan tâm**.
+
+## Lỗi 4 — giá trị mặc định lặng lẽ đổi thí nghiệm
+
+Một lần đo quên truyền `--model`, nên bộ đo dùng mặc định lúc đó là mô hình **256 triệu tham số**
+thay vì bản **2,2 tỉ** dùng xuyên suốt. Kết quả trông như một thảm hoạ: độ chính xác tụt từ 64%
+xuống 23%, số token ảnh đổi từ 1.053 thành 640. Suýt nữa đã kết luận rằng lượng tử hoá 4 bit phá
+hỏng mô hình.
+
+Dấu hiệu lẽ ra phải thấy ngay: **số token ảnh đổi**. Số token ảnh là hàm của bộ tiền xử lý và kiến
+trúc (notebook 03), không phụ thuộc kiểu số. Một đại lượng lẽ ra **bất biến** mà lại đổi, tức là
+đang đo một thứ khác với thứ mình nghĩ.
+
+### CODE
+print(f"{'file':<24} {'model':<18} {'dtype':<6} {'image tokens':>12}")
+for f in ["gate2_sweep.json", "gate2_confirm.json", "gate5_nf4.json", "gate6_prompt.json"]:
+    r = load(f); c = r["configs"]["baseline"]
+    print(f"{f:<24} {r['model'].split('/')[-1]:<18} {r.get('quant', 'bf16'):<6} {c['image_tokens_median']:>12.0f}")
+
+### MD
+Mọi lần chạy bf16 và nf4 của cùng mô hình đều cho 1.053 token ảnh — đúng như phải thế. Sau lỗi này,
+mặc định của `--model` được đổi sang bản 2.2B, và tên mô hình cùng số token ảnh được ghi vào mọi
+file kết quả.
+
+**Quy tắc 4:** ghi lại **đại lượng bất biến** cùng mỗi phép đo — tên mô hình, số token ảnh — và kiểm
+tra chúng **trước** khi đọc kết quả.
+
+## Lỗi 5 — đếm vòng lặp như mẫu mới
+
+*(Phát hiện khi viết notebook 00.)* `bench/harness.py` tính khoảng tin cậy Wilson của độ chính xác
+với $n$ là **số bản ghi** — số câu × số vòng. Nhưng mô hình giải mã tất định: câu nào sai ở vòng 1
+thì sai ở mọi vòng. Các vòng lặp **không** mang thêm thông tin về độ chính xác.
+
+### CODE
+sweep = load("history/gate2_sweep_layout_tokens_deleted.json")   # written before the fix
+per = defaultdict(set)
+for r in sweep["records"]:
+    if r["config"] == "baseline":
+        per[r["sample_id"]].add(r["correct"])
+print(f"baseline, 40 questions x 3 rounds: {sum(len(v) == 1 for v in per.values())}/40 questions "
+      f"give the same verdict in every round")
+k = sum(next(iter(v)) for v in per.values())
+stored = sweep["configs"]["baseline"]["accuracy_ci95"]
+lo, hi = wilson_interval(k, 40)
+print(f"stored CI (n = 120 records) : [{100 * stored[0]:.1f}, {100 * stored[1]:.1f}]  width {100 * (stored[1] - stored[0]):.1f} pts")
+print(f"correct CI (n = 40 questions): [{100 * lo:.1f}, {100 * hi:.1f}]  width {100 * (hi - lo):.1f} pts")
+
+### MD
+Khoảng tin cậy lưu trong file cũ hẹp hơn khoảng đúng khoảng $\sqrt 3$ lần, nên các thanh sai số trên
+biểu đồ **trông chắc chắn hơn thực tế**. Các kết luận chính không đổi (chúng dựa trên McNemar theo
+cặp, vốn tính đúng trên từng câu). Harness giờ dùng `accuracy_ci`, tính một quan sát cho mỗi câu.
+
+**Quy tắc 5:** $n$ là **số quan sát độc lập**, không phải số dòng trong file. Lặp lại một phép đo tất
+định giúp đo **thời gian** chính xác hơn, nhưng không thêm thông tin về **độ chính xác**.
+
+## Lỗi 6 — ngưỡng nhiễu mượn từ mô hình khác, rồi áp sai chỗ
+
+*(Phát hiện khi viết notebook 02, và hiểu hết trong lần rà soát.)* Quy tắc cũ: "chỉ tuyên bố cải
+thiện khi vượt ba lần nhiễu", với nhiễu 8,5% — tức ngưỡng 25,5%. Quy tắc này sai ở **ba** tầng:
+
+1. **Điều kiện đo khác.** Con số 8,5% đo trên **mô hình 256M**, trước khi dự án chuyển sang bản
+   2.2B, và file gốc còn bị một lần chạy nhanh ghi đè — biến thể của lỗi 4.
+2. **Thước đo không bền vững.** CV là độ lệch chuẩn chia trung bình — chính loại thống kê mà quy
+   tắc 4 bảo tránh. Một lần chạy bất thường là đủ để đẩy nó lên.
+3. **Áp sai chỗ.** "Ba lần nhiễu" dành cho so **một** lần đo với **một** lần đo. Harness lại dùng nó
+   để phán định **trung vị tăng tốc theo cặp trên hàng trăm câu** — một đại lượng chính xác hơn nhiều.
+
+Tầng 2 và 3 trên dữ liệu của lần đo lại, với mô hình 2.2B:
+
+### CODE
+from bench.metrics import robust_cv, bootstrap_ci
+g0 = load("gate0_latency.json")
+raw = g0["raw_generate_ms"]
+print(f"gate 0 on {g0['model'].split('/')[-1]}, {len(raw)} runs of one input")
+print(f"  plain CV  {g0['generate_ms']['cv_pct']:.1f}%   robust CV (IQR/1.349/median) {robust_cv(raw):.1f}%")
+print(f"  slowest run {max(raw):.0f} ms vs median {statistics.median(raw):.0f} ms")
+print(f"  without that one run: plain CV {100 * statistics.stdev(sorted(raw)[:-1]) / statistics.fmean(sorted(raw)[:-1]):.1f}%")
+
+sw = load("gate2_sweep.json")
+per = defaultdict(dict)
+for r in sw["records"]:
+    per[r["sample_id"]].setdefault(r["config"], []).append(r["generate_ms"])
+ratios = [statistics.median(d["baseline"]) / statistics.median(d["edge1152(edge=1152)"])
+          for d in per.values() if "baseline" in d and "edge1152(edge=1152)" in d]
+lo, hi = bootstrap_ci(ratios, stat=statistics.median, n_boot=4000)
+print(f"\nedge 1152 vs baseline, {len(ratios)} paired questions: {statistics.median(ratios):.2f}x, 95% CI [{lo:.2f}, {hi:.2f}]")
+print(f"  old rule with the plain CV: needs > {1 + 3 * g0['generate_ms']['cv_pct'] / 100:.2f}x -> 'below noise threshold'")
+
+### MD
+Một lần chạy chậm duy nhất làm CV thường tăng vọt, còn CV bền vững gần như không đổi. Và tăng tốc
+1,21× có khoảng tin cậy nằm hẳn trên 1 — nó là thật, dù quy tắc cũ gọi nó là "dưới ngưỡng nhiễu".
+
+**Quy tắc 6:** phán định một cải thiện bằng **khoảng tin cậy của chính đại lượng được báo cáo**; ngưỡng
+"ba lần nhiễu" chỉ dành cho so một lần đo với một lần đo. Nhiễu dùng thước đo bền vững, và mọi hằng
+số dùng để ra quyết định phải đo **trong đúng điều kiện** của thí nghiệm nó phục vụ.
+
+## Lỗi 7 — cắt token xoá luôn token bố cục
+
+*(Phát hiện trong lần rà soát, bằng cách đọc code — không có triệu chứng nào trong số liệu.)* Prompt
+của SmolVLM không chỉ có token ảnh: trước mỗi ô là các token chữ đánh dấu vị trí của ô đó.
+
+### CODE
+from transformers import AutoProcessor
+from bench.harness import load_samples, PROMPT
+proc = AutoProcessor.from_pretrained("HuggingFaceTB/SmolVLM-Instruct")
+s0 = load_samples(1, seed=0)[0]
+msg = [{"role": "user", "content": [{"type": "image"}, {"type": "text", "text": PROMPT.format(q=s0["query"])}]}]
+ids = proc(text=proc.apply_chat_template(msg, add_generation_prompt=True), images=[s0["image"]],
+           return_tensors="pt")["input_ids"][0]
+img = proc.tokenizer.convert_tokens_to_ids("<image>")
+pos = (ids == img).nonzero().flatten()
+span = ids[int(pos[0]):int(pos[-1]) + 1]
+print(f"image tokens {int((ids == img).sum())}, span from first to last image token {len(span)}, "
+      f"text tokens inside the span {int((span != img).sum())}")
+print("examples:", proc.tokenizer.convert_ids_to_tokens(span[span != img][:11].tolist()))
+
+### MD
+Code cắt token cũ thay **cả đoạn** từ token ảnh đầu tới token ảnh cuối bằng các token ảnh đã chọn —
+nên xoá luôn 119 token `<row_i_col_j>`, `<global-img>`. Mô hình nhận được các token ảnh, nhưng không
+còn biết token nào thuộc ô nào. Code mới (`splice` trong `bench/prune.py`) cắt **từng ô một** và giữ
+nguyên mọi token chữ, có test kiểm tra.
+
+Sửa lỗi này thay đổi độ chính xác bao nhiêu? So trên đúng 40 câu hỏi chung giữa lần quét cũ và lần
+quét mới:
+
+### CODE
+old = load("history/gate2_sweep_layout_tokens_deleted.json")
+new = load("gate2_sweep.json")
+shared = {r["sample_id"] for r in old["records"]}
+from bench.metrics import score_chartqa
+def acc_on(run, cfg):
+    """Accuracy on the shared questions, both runs scored with the same (benchmark) metric."""
+    per = defaultdict(list)
+    for r in run["records"]:
+        if r["config"] == cfg and r["sample_id"] in shared:
+            per[r["sample_id"]].append(score_chartqa(r["pred"], r["gold"]))
+    return 100 * sum(sum(v) / len(v) for v in per.values()) / len(per)
+for cfg in ["keep0.5:uniform(keep=0.5,uniform)", "keep0.25:uniform(keep=0.25,uniform)",
+            "keep0.25:random(keep=0.25,random)", "keep0.25:pool(keep=0.25,pool)"]:
+    print(f"{cfg.split('(')[0]:<18} layout deleted {acc_on(old, cfg):5.1f}%   layout kept {acc_on(new, cfg):5.1f}%")
+
+### MD
+Trên 40 câu, chênh lệch nhỏ và theo cả hai chiều — với số câu này, không phân biệt được với may rủi
+(notebook 00). Bài học không nằm ở độ lớn: nó nằm ở chỗ con số cũ **đo một thứ khác** với thứ nó được
+gọi tên, và không có triệu chứng nào báo điều đó.
+
+**Quy tắc 7:** với mỗi can thiệp vào đầu vào của mô hình, **in ra và nhìn** đầu vào sau can thiệp, ít
+nhất một lần. Một dòng `print` đã đủ để thấy lỗi này.
+
+## Lỗi 8 — một phương pháp được nêu nhưng chưa từng chạy
+
+README cũ ghi "cắt token đã thử với bốn cách chọn", và kết luận "chọn token nào không quan trọng,
+chỉ số lượng mới quan trọng". Nhưng cách thứ tư — giữ các token có **chuẩn lớn nhất** (`norm`) — có
+trong code mà chưa từng nằm trong lần quét nào. Lần quét mới chạy cả bốn:
+
+### CODE
+from bench.metrics import paired_accuracy
+k25 = lambda m: f"keep0.25:{m}(keep=0.25,{m})"
+print("configs in the old sweep:", [c.split("(")[0] for c in old["configs"] if c.startswith("keep0.25")])
+for m in ["uniform", "random", "pool", "norm"]:
+    print(f"keep 25%, {m:<8} accuracy {100 * new['configs'][k25(m)]['accuracy']:5.1f}%")
+pa = paired_accuracy(new["records"], k25("uniform"), k25("norm"))
+print(f"norm vs uniform: norm right where uniform wrong {pa['only_b_correct']}, the reverse {pa['only_a_correct']}, p = {pa['p_value']:.1e}")
+
+### MD
+Cách chưa từng chạy lại là cách **tốt nhất**, và tốt hơn hẳn: giữ 25% token có chuẩn lớn nhất đúng
+ngang giữ 50% token cách đều. Kết luận "chọn token nào không quan trọng" thực ra chỉ đúng cho ba cách
+**không dùng thông tin gì từ mô hình** (cách đều, ngẫu nhiên, gộp) — chúng ngang nhau vì cùng mù.
+
+**Quy tắc 8:** mỗi khẳng định trong báo cáo phải chỉ ra được **lần chạy** chứng minh nó. "Đã thử bốn
+cách" mà chỉ có ba file kết quả là một khẳng định không có căn cứ.
+
+## Lỗi 9 — GPU bị một tiến trình khác dùng chung
+
+Lần quét 100 câu cũ chạy trong lúc một tiến trình khác cũng dùng GPU. Harness có kiểm tra "trôi"
+(so vòng đầu với vòng cuối của cấu hình gốc) — và kiểm tra đó **không thấy gì**:
+
+### CODE
+bad = load("history/gate2_edge_sweep_contaminated.json")
+print(f"old run: control drift {bad['control_drift_pct']:+.1f}%  (looks clean)")
+def per_q(run, cfg):
+    d = defaultdict(list)
+    for r in run["records"]:
+        if r["config"] == cfg:
+            d[r["sample_id"]].append(r["generate_ms"])
+    return {k: statistics.median(v) for k, v in d.items()}
+for cfg in ["baseline", "edge768(edge=768)", "nosplit(nosplit)"]:
+    a, b = per_q(bad, cfg), per_q(new, cfg)
+    common = sorted(set(a) & set(b))
+    print(f"{cfg.split('(')[0]:<9} same questions: old/new time ratio, median {statistics.median(a[i] / b[i] for i in common):.2f}")
+print(f"single tile: old paired speedup {bad['paired_speedup_vs_baseline']['nosplit(nosplit)']['median_speedup']:.2f}x, "
+      f"clean re-run {new['paired_speedup_vs_baseline']['nosplit(nosplit)']['median_speedup']:.2f}x")
+
+### MD
+Cùng câu hỏi, cùng cấu hình: cấu hình gốc và cạnh 768 bị chậm đi chút ít, nhưng "một ô" chậm gần
+**gấp đôi**. Tiến trình lạ chiếm GPU theo từng lát thời gian, nên những công việc ngắn bị ảnh hưởng
+nặng hơn — và kiểm tra trôi, vốn so trung vị của cả vòng, bỏ qua kiểu nhiễu chập chờn này.
+
+Bây giờ có ba lớp chặn: script đo từ chối chạy khi GPU đang bận; harness ghi **bộ nhớ GPU mà tiến
+trình khác chiếm** cùng mỗi lần đo; và đếm các lần đo lệch xa **chính các vòng lặp của cùng câu hỏi**.
+Lần quét mới qua cả ba.
+
+**Quy tắc 9:** kiểm tra toàn vẹn phải nhắm vào **cơ chế gây hỏng**, không chỉ vào một triệu chứng.
+"Trôi theo thời gian" chỉ là một trong nhiều cách phép đo có thể hỏng.
+
+## Lỗi 10 — phép kiểm tra tỉnh táo quá lỏng
+
+Phép kiểm tra DocVQA cũ chạy 100 câu, và coi pipeline là ổn nếu chênh với con số công bố **dưới 10
+điểm**. Thêm vào đó, hàm ANLS xoá dấu câu trước khi so — ANLS chuẩn thì không. Tái hiện cả hai trên
+dữ liệu mới (300 câu):
+
+### CODE
+import re
+from bench.metrics import levenshtein, clean_answer
+dv = load("sanity_docvqa.json")
+def lenient_anls(pred, golds):
+    """The old version: punctuation stripped before comparing."""
+    norm = lambda t: re.sub(r"\s+", " ", re.sub(r"[^\w\s%.-]", "", (t or "").strip().lower())).strip(" .")
+    p_, best = norm(pred), 0.0
+    for g in golds:
+        g = norm(g)
+        best = max(best, 1.0 if not p_ and not g else 1 - levenshtein(p_, g) / max(len(p_), len(g), 1))
+    return best if best >= 0.5 else 0.0
+official = [r["anls"] for r in dv["rows"]]
+lenient = [lenient_anls(r["pred"], r["golds"]) for r in dv["rows"]]
+for name, xs in [("official, 300", official), ("lenient, 300", lenient), ("official, first 100", official[:100])]:
+    lo, hi = bootstrap_ci(xs, n_boot=4000)
+    print(f"{name:<20} ANLS {100 * statistics.fmean(xs):5.1f}  95% CI [{100 * lo:.1f}, {100 * hi:.1f}]  "
+          f"published {dv['published_test_anls']} inside: {100 * lo <= dv['published_test_anls'] <= 100 * hi}")
+
+### MD
+Ba dòng kể một câu chuyện khác với điều tôi đoán lúc đầu:
+
+- **Cách tính ANLS lỏng gần như không đổi kết quả** (chênh 0,2 điểm), vì dấu chấm cuối câu — dấu câu
+  phổ biến nhất trong câu trả lời — đã được bước làm sạch câu trả lời xử lý. Nó vẫn là một lỗi (metric
+  không phải là metric chuẩn như README khẳng định), nhưng không phải nguyên nhân của khoảng chênh.
+- **Ngay cả 100 câu cũng đã đủ bằng chứng**: con số công bố nằm sát ngoài khoảng tin cậy. Lỗi thật
+  nằm ở **quy tắc phán định**: "chênh dưới 10 điểm là ổn" đã bỏ qua bằng chứng có sẵn trong dữ liệu.
+- Với 300 câu, khoảng tin cậy hẹp lại và con số công bố nằm hẳn bên ngoài: có một khoảng chênh **thật**
+  khoảng 10 điểm, mà README giờ báo cáo thay vì bỏ qua.
+
+**Quy tắc 10:** một phép kiểm tra phải nói rõ nó **phân biệt được** điều gì, và phải có khả năng trượt.
+Phán định bằng khoảng tin cậy, với cỡ mẫu đủ để khoảng đó hẹp hơn khoảng chênh cần phát hiện.
+
+## Lỗi 11 — số liệu chép tay từ log
+
+README cũ có dòng "nf4: 995 so với 1.081 ms". Tìm con số đó trong mọi **giá trị tổng hợp** (trung vị,
+phân vị, trung bình…) của mọi file kết quả — bỏ qua bản ghi từng lần đo, vì một lần chạy đơn lẻ mất
+1.081 ms thì chẳng có gì lạ:
+
+### CODE
+import glob
+hits = []
+for f in glob.glob(str(RESULTS / "**/*.json"), recursive=True):
+    def walk(x):
+        if isinstance(x, dict):
+            for k, v in x.items():
+                if k not in ("records", "rows", "raw_generate_ms"):   # individual timings
+                    walk(v)
+        elif isinstance(x, list):
+            for v in x: walk(v)
+        elif isinstance(x, (int, float)) and 1080.5 <= x < 1081.5:
+            hits.append(f)
+    walk(json.loads(Path(f).read_text()))
+print("summary statistics equal to 1,081 in any result file:", sorted({Path(h).name for h in hits}) or "none")
+
+### MD
+Nhiều khả năng đó là tỉ số 1,081 (nf4 chậm hơn 8,1%) bị chép nhầm thành mili-giây. Cùng cơ chế: bảng
+phân rã thời gian trong README lệch khỏi file của nó sau khi file bị một lần chạy khác ghi đè.
+
+Cách chặn triệt để là **không để con người chép số**: README giờ được sinh từ `README.template.md` bởi
+`bench/report.py`, mọi con số lấy thẳng từ `results/`, và CI báo lỗi nếu README lệch khỏi dữ liệu.
+
+**Quy tắc 11:** mọi con số trong báo cáo phải **sinh ra từ dữ liệu**, không chép tay.
+
+## Lỗi 12 — metric tự chế mang tên metric chuẩn
+
+*(Phát hiện trong lần rà soát thứ hai.)* README ghi ChartQA được chấm bằng *relaxed accuracy* —
+metric chuẩn của benchmark: nếu **cả câu trả lời** là một con số thì cho sai số 5%, còn lại so chữ.
+Nhưng hàm của dự án lấy **số đầu tiên xuất hiện ở bất kỳ đâu** trong câu trả lời, bỏ dấu phân cách
+hàng nghìn và coi "45%" bằng 45. So hai metric trên đúng các câu trả lời đã lưu:
+
+### CODE
+from bench.metrics import lenient_match, relaxed_correctness, clean_answer
+disagree = []
+for r in confirm["records"]:
+    if r["round_idx"]:
+        continue
+    p_ = clean_answer(r["pred"])
+    old_, new_ = lenient_match(p_, r["gold"]), relaxed_correctness(p_, r["gold"])
+    if old_ != new_:
+        disagree.append((r["config"].split("(")[0], p_, r["gold"], old_))
+print(f"{len(disagree)} of {len(confirm['records']) // 2} verdicts differ between the two metrics; examples:")
+for cfg, p_, g, old_ in disagree[:8]:
+    print(f"   {cfg:<9} answer {p_[:40]!r:<44} gold {g!r:<12} old metric says {'right' if old_ else 'wrong'}")
+first300_recs = [r for r in confirm["records"] if r["sample_id"] in first300]
+for name, fn in [("old lenient metric", lenient_match), ("benchmark metric", relaxed_correctness)]:
+    recs = [dict(r, correct=fn(clean_answer(r["pred"]), r["gold"])) for r in first300_recs]
+    pa = paired_accuracy(recs, "baseline", "edge768(edge=768)")
+    acc = lambda k: 100 * sum(x["correct"] for x in recs if x["config"] == k) / sum(1 for x in recs if x["config"] == k)
+    print(f"first 300, {name:<19}: baseline {acc('baseline'):.1f}%, edge768 {acc('edge768(edge=768)'):.1f}%, p = {pa['p_value']:.3f}")
+
+### MD
+Metric cũ vừa **dễ dãi** (chấm đúng "82.39 billion U.S. dollars", dù chấm chuẩn thì sai vì định dạng)
+vừa **sai** (chấm đúng "1992, 2016" cho đáp án 2009, vì số đầu tiên 1992 lệch dưới 5%). Và độ dễ dãi đó
+không đều giữa các cấu hình: bản gốc độ phân giải cao hay kèm đơn vị và dấu phân cách hơn, nên được
+"cứu" nhiều câu hơn. Trên 300 câu, metric cũ cho cạnh 768 mất khoảng 7 điểm với p = 0,002; metric chuẩn
+cho khoảng 3 điểm và không phân biệt được. Kết luận tiêu đề của dự án từng dựa vào metric cũ.
+
+Không metric nào hoàn hảo: chính metric chuẩn cũng áp sai số 5% cho **năm** (2019 được tính đúng cho
+2017). Vì vậy README báo mọi kết luận chính dưới ba metric — chuẩn, chuẩn với năm chính xác, và metric
+cũ — để người đọc thấy kết luận nào phụ thuộc cách chấm.
+
+**Quy tắc 12:** metric là một phần của thí nghiệm. Dùng **đúng định nghĩa chuẩn** khi gọi tên chuẩn;
+khi buộc phải tự chế, gọi nó bằng tên khác, và kiểm tra **độ nhạy** của kết luận với lựa chọn metric.
+
+## Danh sách kiểm tra
+
+Trước khi tin một kết quả:
+
+1. Vùng bấm giờ có bao trọn đường đi thật, ở **mọi** cấu hình? Con số có vượt trần lý thuyết không?
+2. Hai cấu hình có được so **theo cặp**, trên cùng câu hỏi?
+3. "Không khác biệt" có đi kèm khoảng tin cậy và ước lượng lực?
+4. Các đại lượng bất biến (mô hình, số token ảnh) có đúng như dự kiến?
+5. $n$ có phải là số quan sát **độc lập**?
+6. Cải thiện được phán định bằng **khoảng tin cậy** của chính nó? Nhiễu có đo bằng thước bền vững,
+   trong đúng điều kiện?
+7. Đầu vào sau mỗi can thiệp đã được **in ra và nhìn** chưa?
+8. Mỗi khẳng định có chỉ ra được **lần chạy** chứng minh nó?
+9. Kiểm tra toàn vẹn có nhắm vào **cơ chế** gây hỏng (GPU dùng chung, đột biến), không chỉ trôi?
+10. Phép kiểm tra tỉnh táo có **khả năng trượt** không?
+11. Mọi con số có được **sinh từ dữ liệu**?
+12. Metric có đúng định nghĩa mà báo cáo gọi tên? Kết luận có đứng vững khi đổi metric?
+
+Và một quy tắc không cài được vào code, chỉ nằm ở thói quen: **khi một kết quả đẹp bất ngờ, nghi
+ngờ phép đo trước khi mừng** — và khi một kết quả xấu bất ngờ, cũng vậy.
