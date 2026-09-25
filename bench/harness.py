@@ -338,7 +338,7 @@ MIN_SPIKES = 5              # ...and at least this many, so one spike in a short
 
 
 def integrity(records, drift_pct):
-    """Rule 6: summarise the run's integrity and list every problem found."""
+    """Rule 6: summarize the run's integrity and list every problem found."""
     foreign = max((r.foreign_mb for r in records), default=0.0)
     spikes = timing_spikes(records)
     problems = []

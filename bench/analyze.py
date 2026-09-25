@@ -1,4 +1,4 @@
-"""Analyse recorded results: paired comparison of both speed and accuracy.
+"""Analyze recorded results: paired comparison of both speed and accuracy.
 
 Runs on existing JSON files; no model needs to be re-run.
 """

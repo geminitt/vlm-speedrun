@@ -1,4 +1,4 @@
-"""Gate 3 — quantisation, with an equivalence check.
+"""Gate 3 — quantization, with an equivalence check.
 
 Principle: every "faster" variant must prove it produces EQUIVALENT OUTPUT to the
 original before it is allowed to claim any speed.

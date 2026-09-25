@@ -108,7 +108,7 @@ def test_keep_ratio_one_returns_the_sequence_unchanged():
     assert kept == 81 and torch.equal(out, expected)
 
 
-def test_pool_averages_spatial_neighbours_within_a_tile():
+def test_pool_averages_spatial_neighbors_within_a_tile():
     # each token carries its (row, col) on the 9x9 grid of one tile
     grid = torch.tensor([[r, c] for r in range(9) for c in range(9)], dtype=torch.float32)
     out = select(grid, 20 / 81, "pool", grid=9)            # 20 = 4 x 5 pooled regions

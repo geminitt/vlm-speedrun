@@ -30,7 +30,7 @@ QUERY = "clocks.current.graphics,temperature.gpu,power.draw,utilization.gpu,memo
 
 
 def gpu_query():
-    """One nvidia-smi reading: clock, temperature, power, utilisation, memory used."""
+    """One nvidia-smi reading: clock, temperature, power, utilization, memory used."""
     out = subprocess.run(["nvidia-smi", f"--query-gpu={QUERY}", "--format=csv,noheader,nounits"],
                          capture_output=True, text=True, timeout=5).stdout.strip()
     clk, temp, pw, util, mem = [p.strip() for p in out.splitlines()[0].split(",")]
@@ -56,7 +56,7 @@ def check_gpu_idle(max_mem_mb=500, max_util_pct=10, readings=5):
     mem = statistics.median(r["mem_used_mb"] for r in rows)
     util = statistics.median(r["util_pct"] for r in rows)
     if mem > max_mem_mb or util > max_util_pct:
-        return (f"GPU busy before start: {mem:.0f} MiB used, {util:.0f}% utilisation. "
+        return (f"GPU busy before start: {mem:.0f} MiB used, {util:.0f}% utilization. "
                 f"Stop the other job, or pass --allow-busy-gpu to measure anyway.")
     return None
 

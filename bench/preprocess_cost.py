@@ -1,7 +1,7 @@
 """Measure CPU-side image preprocessing — the part left out of every earlier benchmark.
 
 The gate 1 and 2 harness calls the processor BEFORE the clock starts, so the cost
-of tiling, resizing and normalising the image never appears in any number. A real
+of tiling, resizing and normalizing the image never appears in any number. A real
 service pays for it anyway.
 """
 import argparse, json, statistics, time
@@ -36,7 +36,7 @@ def main():
             runner.run(s, cfg)                       # warm up
         for s in samples:
             t0 = time.perf_counter()
-            inputs = runner.prepare(s, cfg)          # CPU: resize, tile, normalise
+            inputs = runner.prepare(s, cfg)          # CPU: resize, tile, normalize
             prep.append((time.perf_counter() - t0) * 1000)
             with torch.no_grad():
                 ms, _ = timed(lambda: runner.model.generate(

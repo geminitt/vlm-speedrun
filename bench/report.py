@@ -273,7 +273,7 @@ def values(results):
              first300_lenient_e768_delta=signed(d_len), first300_lenient_e768_p=pval(p_len),
              first300_n=f"{len(first300):,}")
 
-    # ---- quantisation ----------------------------------------------------------------
+    # ---- quantization ----------------------------------------------------------------
     q = load(results, "gate3_quant")
     v["table_quant"] = table(
         ["Mode", "Latency (median)", "Peak VRAM", "Top-1 agreement", "Max logit difference"],

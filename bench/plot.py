@@ -1,7 +1,7 @@
 """Plot the accuracy-versus-speed trade-off.
 
 Presentation rules:
-  - colour encodes the LEVER FAMILY (baseline / fewer tiles / token pruning), never rank
+  - color encodes the LEVER FAMILY (baseline / fewer tiles / token pruning), never rank
   - every point carries a direct label, because the palette has one low-contrast slot
   - error bars are the 95% Wilson confidence interval of accuracy, one observation
     per sample (replicate rounds are not extra samples)
@@ -22,7 +22,7 @@ THEMES = {
                  series=("#3987e5", "#d95926", "#199e70")),
 }
 FAMILIES = ["Baseline", "Fewer image tiles", "Prune tokens after encoding"]
-# Labels are staggered like steps. Points in the left half are always labelled to
+# Labels are staggered like steps. Points in the left half are always labeled to
 # the right so they are not clipped at the edge, and vice versa.
 LABEL_GAP = 4.2        # minimum vertical distance between stacked labels, in accuracy points
 CLUSTER_GAP = 0.3      # points closer than this on the speed axis share one label column

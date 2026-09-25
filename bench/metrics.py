@@ -104,9 +104,9 @@ def wilson_interval(k, n, z=1.96):
         return (0.0, 0.0)
     p = k / n
     d = 1 + z * z / n
-    centre = (p + z * z / (2 * n)) / d
+    center = (p + z * z / (2 * n)) / d
     half = z * ((p * (1 - p) / n + z * z / (4 * n * n)) ** 0.5) / d
-    return (max(0.0, centre - half), min(1.0, centre + half))
+    return (max(0.0, center - half), min(1.0, center + half))
 
 
 def accuracy_ci(records):
@@ -195,9 +195,9 @@ def mcnemar_power(n, pi_d, pi_b, alpha=0.05):
     """Power of the exact McNemar test above: P(p < alpha) on n paired samples.
 
     Model: each sample is discordant (one configuration right, the other wrong) with
-    probability pi_d, and a discordant sample favours A with probability pi_b. So the
+    probability pi_d, and a discordant sample favors A with probability pi_b. So the
     number of discordant samples is D ~ Binomial(n, pi_d), and given D = d, the number
-    favouring A is B ~ Binomial(d, pi_b). The test rejects when B <= k or B >= d - k,
+    favoring A is B ~ Binomial(d, pi_b). The test rejects when B <= k or B >= d - k,
     where k is the largest count with mcnemar(k, d - k) < alpha. Hence
 
         power = sum over d of P(D = d) * P(B <= k or B >= d - k | D = d)
@@ -298,7 +298,7 @@ def anls(pred, golds, threshold=0.5):
 
     ANLS is used instead of exact match because document answers are text read off
     an image, so a single OCR-level character error should not count as fully wrong.
-    Normalisation follows the official metric: lowercase and collapse whitespace,
+    Normalization follows the official metric: lowercase and collapse whitespace,
     nothing else (punctuation counts). Pass the prediction through clean_answer first.
     """
     if isinstance(golds, str):

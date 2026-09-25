@@ -2,7 +2,7 @@
 and decoding.
 
 The question: when a vision-language model runs on a small GPU, where does the
-time actually go? Only after answering that do we know what to optimise.
+time actually go? Only after answering that do we know what to optimize.
 """
 import argparse, json, statistics
 from pathlib import Path

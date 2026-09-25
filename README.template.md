@@ -22,7 +22,7 @@
 > largest-norm quarter loses far less accuracy than keeping an evenly spaced quarter —
 > but no pruning variant comes close to **halving the input resolution: {{confirm_e768_speedup}}
 > faster, with {{serve_throughput_gain}} the serving throughput**, {{confirm_e768_verdict}}.
-> nf4 quantisation with
+> nf4 quantization with
 > bitsandbytes **cuts memory by {{nf4_vram_cut}}** but runs {{nf4_slower}} slower: it buys
 > memory, not speed.
 
@@ -124,7 +124,7 @@ By question type:
 effect that is really there. For McNemar's test it depends on two rates, both measured on
 the whole split: how often the two configurations disagree — {{confirm_discordant_total}}
 of {{confirm_samples}} questions ({{confirm_pi_d}}) have one configuration right and the
-other wrong — and how lopsided those disagreements are: {{confirm_pi_b}} of them favour the
+other wrong — and how lopsided those disagreements are: {{confirm_pi_b}} of them favor the
 baseline. Treating questions as independent draws with these two rates, the power of the
 exact two-sided McNemar test at α = 0.05 is computed exactly, not simulated
 (`mcnemar_power` in `bench/metrics.py`):
@@ -152,27 +152,27 @@ paired McNemar p:
 Conclusions that hold under all three are stated as findings; the ones that do not are
 reported with their uncertainty.
 
-### Quantisation
+### Quantization
 
 Latency is the median of {{quant_latency_n}} timings; logit parity is measured on
 {{quant_parity_samples}} questions against bf16.
 
 {{table_quant}}
 
-**bitsandbytes quantisation buys memory here, not speed.** Neither format reduces the
+**bitsandbytes quantization buys memory here, not speed.** Neither format reduces the
 arithmetic, and each adds work:
 
-- **int8** (LLM.int8) quantises the activations on every call, splits out outlier
-  features into a separate fp16 matrix multiplication, then dequantises and merges the
+- **int8** (LLM.int8) quantizes the activations on every call, splits out outlier
+  features into a separate fp16 matrix multiplication, then dequantizes and merges the
   two results. That extra work makes it {{int8_slowdown}} slower.
-- **nf4** only quantises the weights, so every call first dequantises them back to
+- **nf4** only quantizes the weights, so every call first dequantizes them back to
   bf16. In the vision encoder and the prefill, which are compute-bound, that is pure
   overhead. In decoding, the 4-bit kernels do cut GPU time per token roughly in half,
   but the GPU then sits idle for most of each step: a decoding step issues about a
   thousand small kernels, plus bitsandbytes' Python on every nf4 call, and that
   CPU-side work — not the GPU — sets the pace, so the saving disappears.
 
-Quantisation that targets this workload's bottleneck would quantise activations too
+Quantization that targets this workload's bottleneck would quantize activations too
 (W8A8 or FP8, which this Ada GPU supports) with fused kernels. That was not tested
 here.
 
@@ -231,7 +231,7 @@ recorded result stays comparable; `prompten` in the harness switches to the Engl
 ## Six measurement rules, enforced in code
 
 Performance measurement on a laptop GPU easily produces results that are wrong in
-your own favour. These rules live in `bench/harness.py`, not in a document:
+your own favor. These rules live in `bench/harness.py`, not in a document:
 
 1. **The timed region covers the whole real path**, in every configuration compared
 2. **Rounds are replicates over the same sample set**, so comparisons can be paired
@@ -254,10 +254,10 @@ audit of the whole repository, and every one is fixed in the code.
 
 | Mistake | Symptom | Consequence if missed |
 |---|---|---|
-| Vision encoder outside the timed region on the optimised path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
+| Vision encoder outside the timed region on the optimized path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
 | Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same: for edge 768's loss of about 2 points, 100 questions give a power of only {{confirm_power_first100}} ("Why the whole split" above) |
-| Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
+| Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantization breaks the model |
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
@@ -312,8 +312,8 @@ Dockerfile             packages the inference server
 - One model, one benchmark family, one GPU. Nothing is claimed for other setups.
 - The laptop GPU clocks cannot be locked (`nvidia-smi` reports active power and
   thermal capping), so a baseline noise of about {{noise_cv}} (CV) is unavoidable.
-- Quantisation was tested only through bitsandbytes (weight-only nf4 and LLM.int8).
-  Activation quantisation (W8A8, FP8), CUDA graphs and fused 4-bit kernels, which
+- Quantization was tested only through bitsandbytes (weight-only nf4 and LLM.int8).
+  Activation quantization (W8A8, FP8), CUDA graphs and fused 4-bit kernels, which
   target the bottlenecks found here, were not.
 - bf16 and nf4 cannot share a 6 GB card, so they run one after the other rather than
   interleaved; the comparison is paired per sample but not protected against drift
@@ -333,4 +333,4 @@ Dockerfile             packages the inference server
 - **ChartQA** — dataset and the *relaxed accuracy* metric
 - **DocVQA** — dataset and the *ANLS* metric
 - **FastV**, **ToMe** — image-token pruning and merging techniques
-- **bitsandbytes** — int8 and nf4 quantisation
+- **bitsandbytes** — int8 and nf4 quantization
