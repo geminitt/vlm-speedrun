@@ -64,7 +64,9 @@ def main():
         wall = time.perf_counter() - t0
         res[str(c)] = {"end_to_end_ms": summarize(lat),
                        "server_ms": summarize(srv),
-                       "throughput_rps": len(lat) / wall}
+                       "throughput_rps": len(lat) / wall,
+                       # per-request values, so comparisons can carry a bootstrap interval
+                       "raw_end_to_end_ms": lat, "raw_server_ms": srv}
         e = res[str(c)]["end_to_end_ms"]
         print(f"concurrency {c}: median {e['median']:.0f} ms | p95 {e['p95']:.0f} ms "
               f"| throughput {res[str(c)]['throughput_rps']:.2f} req/s")

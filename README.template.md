@@ -21,8 +21,8 @@
 > **{{prune_speedup_range}}**. Which tokens are kept does matter — keeping the
 > largest-norm quarter loses far less accuracy than keeping an evenly spaced quarter —
 > but no pruning variant comes close to **halving the input resolution: {{confirm_e768_speedup}}
-> faster, with {{serve_throughput_gain}} the serving throughput**, at a cost of
-> {{confirm_e768_loss}} accuracy points (p {{confirm_e768_p}}, {{confirm_samples}} questions). nf4 quantisation with
+> faster, with {{serve_throughput_gain}} the serving throughput**, {{confirm_e768_verdict}}.
+> nf4 quantisation with
 > bitsandbytes **cuts memory by {{nf4_vram_cut}}** but runs {{nf4_slower}} slower: it buys
 > memory, not speed.
 
@@ -34,10 +34,10 @@ Error bars are 95% Wilson intervals with one observation per question.*
 ## Reproduce everything with one command
 
 ```bash
-./speedrun.sh              # every result in this README, about 3 hours on a 6 GB GPU
+./speedrun.sh              # every result in this README, about 5 hours on a 6 GB GPU
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
-START=5 ./speedrun.sh      # resume from step 5
+START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
 pixi run test              # {{n_tests}} tests in a light CPU environment, a few seconds
 ```
 
@@ -62,8 +62,10 @@ as the native run, one request at a time:
 
 Hardware: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**, under WSL2.
 No cloud GPU, no API spend.
-Model: **SmolVLM-2.2B**. Data: **ChartQA** (scored with *relaxed accuracy*) and
-**DocVQA** (scored with *ANLS*, used for the sanity check).
+Model: **SmolVLM-2.2B**. Data: **ChartQA**, validation split (960 human-written and 960
+generated questions), scored with the benchmark's *relaxed accuracy*; and **DocVQA**,
+scored with the official *ANLS*, for the sanity check. Samples are drawn from the split in
+a fixed shuffled order, so every run shares its first questions with the longer runs.
 
 ---
 
@@ -83,8 +85,9 @@ short answer is bound by memory bandwidth (the study notes measure both).
 ### Levers that reduce image tokens
 
 All configurations run on the same {{sweep_samples}} questions, interleaved and shuffled.
-Δ and p (McNemar) are paired against the baseline on the same questions; speedup is the
-median over questions of the paired time ratio, with a bootstrap 95% interval.
+Δ and p (McNemar) are paired against the baseline on the same questions; p (Holm) corrects
+for the {{sweep_comparisons}} comparisons against one baseline. Speedup is the median over
+questions of the paired time ratio, with a bootstrap 95% interval.
 
 {{table_levers}}
 
@@ -105,13 +108,31 @@ Three conclusions:
 - **A single tile is the fastest option, and the most expensive one.** {{nosplit_speedup}}
   faster, but {{nosplit_delta}} points: at 384×384 the digits on a chart become unreadable.
 
-### The main lever on more questions
+### The main lever on the whole validation split
 
-On {{confirm_samples}} questions, longest edge 768 runs **{{confirm_e768_speedup}}** faster
+The accuracy cost of the main lever is small, so it needs many questions: on the whole
+split of {{confirm_samples}} questions, longest edge 768 runs **{{confirm_e768_speedup}}** faster
 {{confirm_e768_speed_ci}} and changes accuracy from {{confirm_base_acc}} to
 {{confirm_e768_acc}}: **{{confirm_e768_delta}} points** {{confirm_e768_delta_ci}}, p
-{{confirm_e768_p}} ({{confirm_e768_discordant}} discordant questions). A real trade-off,
-not a free lunch.
+{{confirm_e768_p}} ({{confirm_e768_discordant}} discordant questions) — {{confirm_e768_significant}}.
+
+By question type:
+
+{{table_confirm_subsets}}
+
+### Which conclusions depend on the scoring
+
+ChartQA's relaxed accuracy has two known quirks: a number must be the whole answer
+("82.39 billion U.S. dollars" is wrong for 82.39), and the 5% tolerance also applies to
+years (2019 counts for 2017). The project first used a more lenient metric that fished
+the first number out of any answer; on the baseline it reads {{lenient_base_acc}} instead of
+{{confirm_base_acc}}. Every main comparison under three metrics — difference in points,
+paired McNemar p:
+
+{{table_sensitivity}}
+
+Conclusions that hold under all three are stated as findings; the ones that do not are
+reported with their uncertainty.
 
 ### Quantisation
 
@@ -198,10 +219,10 @@ your own favour. These rules live in `bench/harness.py`, not in a document:
 2. **Rounds are replicates over the same sample set**, so comparisons can be paired
 3. **Configurations are interleaved and shuffled**, with a seed for reproducibility
 4. **Report the median and interquartile range**, never mean ± standard deviation
-5. **Claim a speedup only when its 95% interval excludes 1.** Paired medians over many
-   questions are precise; a single run-to-run comparison, as in the Docker check, needs
-   three times the measured noise — {{noise_threshold}} on this machine (robust CV
-   {{noise_cv}} over {{gate0_runs}} runs of one input).
+5. **Claim a difference only when its 95% interval excludes "no difference"**, and correct
+   for multiple comparisons (Holm) when many configurations face one baseline. For
+   reference, a single measurement varies with a robust CV of {{noise_cv}} on this machine
+   ({{gate0_runs}} runs of one input) — why one run against one run proves little.
 6. **Record invariants and machine state, and check each run's integrity** — image tokens,
    clock, temperature, control drift, timing spikes against each sample's own replicates,
    and GPU memory held by other processes. Timing scripts refuse to start on a busy GPU,
@@ -217,12 +238,13 @@ audit of the whole repository, and every one is fixed in the code.
 |---|---|---|
 | Vision encoder outside the timed region on the optimised path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
-| Concluding "no difference" from 100 samples | p = 0.18 | with 300 samples the same effect gives p = 0.002 — **the conclusion reverses** |
+| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same; how many questions a small effect needs is computed above, not guessed |
 | Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
 | DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a real gap to the published score was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
+| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | baseline about 10 points above the benchmark metric | edge 768's accuracy cost looked large and certain (−7.3, p = 0.002 on 300 questions); with the benchmark metric it is small and needs the whole split |
 | Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than the data allow |
 | Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of the measured one | real improvements below 25% would have been dismissed |
 | A single-measurement noise rule applied to paired medians over hundreds of questions, with a CV that one outlier can inflate | a clear 1.21× speedup marked "below noise threshold" | real improvements dismissed; now judged by the speedup's 95% interval, and noise by a robust CV |
@@ -278,6 +300,8 @@ Dockerfile             packages the inference server
 - bf16 and nf4 cannot share a 6 GB card, so they run one after the other rather than
   interleaved; the comparison is paired per sample but not protected against drift
   between the two runs.
+- The lever sweep uses 100 questions: enough for the large effects it reports, not for
+  differences of a few points between configurations.
 - The SmolVLM authors do not publish a ChartQA score, so the main benchmark has no
   independent reference number; the DocVQA check above is the substitute, on the
   validation split rather than the test split they report.

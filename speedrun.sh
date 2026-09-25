@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # One command reruns every result in the README, then regenerates its tables.
 #
-#   ./speedrun.sh            # full run, about 3 hours on a 6 GB GPU
+#   ./speedrun.sh            # full run, about 5 hours on a 6 GB GPU
 #   FAST=1 ./speedrun.sh     # reduced run to check the pipeline, about 15 minutes
 #   DOCKER=1 ./speedrun.sh   # also build the image and measure the server in Docker
-#   START=5 ./speedrun.sh    # resume from step 5 after a failure
+#   START=5 ./speedrun.sh    # resume from step 5 after a failure (END=n stops after step n)
 #
 # The GPU must be idle: every timing script refuses to start otherwise, and the
 # harness fails a run in which another process took GPU memory.
@@ -20,17 +20,20 @@ if [[ "${FAST:-0}" == "1" ]]; then
   # A pipeline check writes to its own folder so it never overwrites reference results.
   OUT=results/fast
   PROBE_RUNS=15; BREAKDOWN_SAMPLES=3; PREP_SAMPLES=4
-  CONFIRM_SAMPLES=12; SWEEP_SAMPLES=8; PROMPT_SAMPLES=8; DOCVQA_SAMPLES=8
+  CONFIRM_SAMPLES=12; NF4_SAMPLES=12; SWEEP_SAMPLES=8; PROMPT_SAMPLES=8; DOCVQA_SAMPLES=8
   QUANT_SAMPLES=4; SERVE_REQUESTS=8; ROUNDS=2
 else
   OUT=results
   PROBE_RUNS=60; BREAKDOWN_SAMPLES=12; PREP_SAMPLES=16
-  CONFIRM_SAMPLES=300; SWEEP_SAMPLES=100; PROMPT_SAMPLES=200; DOCVQA_SAMPLES=300
+  # step 4 uses the whole ChartQA validation split: a loss of about 3 points needs
+  # ~1,500 questions for 80% power; 1,920 gives about 0.95
+  CONFIRM_SAMPLES=1920; NF4_SAMPLES=300; SWEEP_SAMPLES=100; PROMPT_SAMPLES=200; DOCVQA_SAMPLES=300
   QUANT_SAMPLES=16; SERVE_REQUESTS=40; ROUNDS=2
 fi
 mkdir -p "$OUT"
 START="${START:-0}"          # resume: START=5 ./speedrun.sh skips steps 0-4
-step() { [[ "$1" -ge "$START" ]]; }
+END="${END:-9}"              # a range: START=4 END=4 ./speedrun.sh reruns step 4 only
+step() { [[ "$1" -ge "$START" && "$1" -le "$END" ]]; }
 LEVERS="baseline,edge1152,edge960,edge768,edge576,nosplit"
 LEVERS="$LEVERS,keep0.5:uniform,keep0.25:uniform,keep0.25:random,keep0.25:pool,keep0.25:norm,keep0.077:uniform"
 
@@ -59,7 +62,7 @@ if step 3; then
 fi
 
 if step 4; then
-  echo "== 4/9 the main lever on more samples =="
+  echo "== 4/9 the main lever on the whole validation split =="
   $PY -m bench.harness --model "$MODEL" --samples "$CONFIRM_SAMPLES" --rounds "$ROUNDS" \
     --noise-cv "$NOISE_CV" --configs "baseline,edge768" --out "$OUT/gate2_confirm.json"
 fi
@@ -70,8 +73,8 @@ if step 5; then
 fi
 
 if step 6; then
-  echo "== 6/9 nf4 accuracy on the same samples as step 4 =="
-  $PY -m bench.harness --model "$MODEL" --quant nf4 --samples "$CONFIRM_SAMPLES" --rounds "$ROUNDS" \
+  echo "== 6/9 nf4 accuracy on the first questions of step 4 =="
+  $PY -m bench.harness --model "$MODEL" --quant nf4 --samples "$NF4_SAMPLES" --rounds "$ROUNDS" \
     --noise-cv "$NOISE_CV" --configs "baseline,edge768" --out "$OUT/gate5_nf4.json"
 fi
 

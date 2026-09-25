@@ -13,15 +13,16 @@ from pathlib import Path
 
 from bench.compare_anls import compare as compare_anls
 from bench.compare_runs import compare as compare_runs
-from bench.metrics import accuracy_ci, bootstrap_ci, clean_answer, paired_accuracy, robust_cv
+from bench.metrics import (accuracy_ci, bootstrap_ci, clean_answer, holm, paired_accuracy,
+                           robust_cv, score_chartqa)
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE, README = ROOT / "README.template.md", ROOT / "README.md"
 
 LABELS = {   # configuration key prefix -> README label
     "baseline": "Baseline (13 tiles, longest edge 1536)",
-    "edge1152": "Longest edge 1152", "edge960": "Longest edge 960",
-    "edge768": "**Longest edge 768**", "edge576": "Longest edge 576",
+    "edge1152": "Longest edge 1152", "edge960": "Longest edge 960 (upscaled to 1152)",
+    "edge768": "**Longest edge 768**", "edge576": "Longest edge 576 (upscaled to 768)",
     "nosplit": "Single tile, no splitting",
     "keep0.5:uniform": "Prune to 50% per tile, uniform",
     "keep0.25:uniform": "Prune to 25% per tile, uniform",
@@ -85,6 +86,34 @@ def paired_delta_ci(records, key_a, key_b):
     return 100 * lo, 100 * hi
 
 
+def with_metric(records, metric):
+    """The same records, re-scored with another ChartQA metric (predictions are stored)."""
+    return [dict(r, correct=score_chartqa(r["pred"], r["gold"], metric)) for r in records]
+
+
+def delta_p(records, key_a, key_b):
+    """Accuracy of B minus A in points, and the McNemar p-value, on the samples both share.
+
+    The two configurations may come from runs of different length (bf16 on the whole
+    split, nf4 on its first 300 questions); both numbers use only the shared samples.
+    """
+    ids = ({r["sample_id"] for r in records if r["config"] == key_a} &
+           {r["sample_id"] for r in records if r["config"] == key_b})
+    shared = [r for r in records if r["sample_id"] in ids]
+    acc = lambda k: 100 * sum(r["correct"] for r in shared if r["config"] == k) / \
+        sum(1 for r in shared if r["config"] == k)
+    return acc(key_b) - acc(key_a), paired_accuracy(shared, key_a, key_b)["p_value"]
+
+
+def median_ratio_ci(a, b, n_boot=4000, seed=0):
+    """median(b) / median(a) for two independent samples, with a bootstrap 95% interval."""
+    import random
+    rng = random.Random(seed)
+    boots = sorted(statistics.median(rng.choices(b, k=len(b))) /
+                   statistics.median(rng.choices(a, k=len(a))) for _ in range(n_boot))
+    return statistics.median(b) / statistics.median(a), boots[int(0.025 * n_boot)], boots[int(0.975 * n_boot) - 1]
+
+
 def values(results):
     v = {}
     # ---- gate 0: noise ------------------------------------------------------------
@@ -120,6 +149,8 @@ def values(results):
     sw = load(results, "gate2_sweep")
     base = "baseline"
     rows, lever = [], {}
+    others = [k for k in sw["configs"] if k != base]
+    holm_p = dict(zip(others, holm([paired_accuracy(sw["records"], base, k)["p_value"] for k in others])))
     for key, c in sw["configs"].items():
         short = key.split("(")[0]
         recs = [r for r in sw["records"] if r["config"] == key]
@@ -127,7 +158,7 @@ def values(results):
         acc = 100 * c["accuracy"]
         if key == base:
             rows.append([LABELS[short], n0(c["image_tokens_median"]),
-                         f"{acc:.1f}% [{100 * lo:.0f}–{100 * hi:.0f}]", "—", "—", "1.00×"])
+                         f"{acc:.1f}% [{100 * lo:.0f}–{100 * hi:.0f}]", "—", "—", "—", "1.00×"])
             base_acc = acc
             v["sweep_baseline_acc"] = pct(acc)
             continue
@@ -138,11 +169,14 @@ def values(results):
                             tokens=c["image_tokens_median"])
         rows.append([LABELS[short], n0(c["image_tokens_median"]),
                      f"{acc:.1f}% [{100 * lo:.0f}–{100 * hi:.0f}]", signed(d),
-                     pval(pa["p_value"]).replace("= ", ""), f"{sp:.2f}× [{sp_lo:.2f}–{sp_hi:.2f}]"])
+                     pval(pa["p_value"]).replace("= ", ""), pval(holm_p[key]).replace("= ", ""),
+                     f"{sp:.2f}× [{sp_lo:.2f}–{sp_hi:.2f}]"])
     v["table_levers"] = table(
-        ["Configuration", "Image tokens", "Accuracy [95% CI]", "Δ points", "p",
+        ["Configuration", "Image tokens", "Accuracy [95% CI]", "Δ points", "p", "p (Holm)",
          "Speedup [95% CI]"],
-        rows, ["---", "---:", "---", "---:", "---:", "---:"])
+        rows, ["---", "---:", "---", "---:", "---:", "---:", "---:"])
+    v["sweep_comparisons"] = len(others)
+    v["metric"] = sw.get("metric", "relaxed")
     v.update(sweep_samples=sw["samples"], sweep_rounds=sw["rounds"])
     for short, L in lever.items():
         tag = short.replace(":", "_").replace(".", "")
@@ -163,6 +197,7 @@ def values(results):
     v["sel_norm25_vs_uniform50_p"] = pval(pa["p_value"])
     pa = paired_accuracy(sw["records"], k25("norm"), "edge768(edge=768)")
     v["sel_norm25_vs_edge768_p"] = pval(pa["p_value"])
+    v["norm25_holm_p"] = pval(holm_p[k25("norm")])
 
     # ---- the main lever, confirmed on more samples ---------------------------------------
     cf = load(results, "gate2_confirm")
@@ -170,6 +205,18 @@ def values(results):
     pa = paired_accuracy(cf["records"], base, e768)
     lo, hi = paired_delta_ci(cf["records"], base, e768)
     sp, sp_lo, sp_hi = paired_speedup_ci(cf["records"], base, e768)
+    rows = []
+    for sub in ("human", "augmented"):
+        recs = [r for r in cf["records"] if r.get("subset") == sub]
+        if not recs:
+            continue
+        d, p = delta_p(recs, base, e768)
+        acc = lambda k: 100 * sum(r["correct"] for r in recs if r["config"] == k) / sum(1 for r in recs if r["config"] == k)
+        label = {"human": "Human-written questions", "augmented": "Generated questions"}[sub]
+        rows.append([f"{label} ({len({r['sample_id'] for r in recs})})", pct(acc(base)), pct(acc(e768)),
+                     f"{signed(d)} points, p {pval(p)}"])
+    v["table_confirm_subsets"] = table(["", "Baseline", "Edge 768", "Difference"], rows,
+                                       ["---", "---:", "---:", "---"]) if rows else ""
     v.update(confirm_samples=cf["samples"],
              confirm_base_acc=pct(100 * cf["configs"][base]["accuracy"]),
              confirm_e768_acc=pct(100 * cf["configs"][e768]["accuracy"]),
@@ -179,6 +226,14 @@ def values(results):
              confirm_e768_p=pval(pa["p_value"]),
              confirm_e768_loss=f"{100 * (cf['configs'][base]['accuracy'] - cf['configs'][e768]['accuracy']):.1f}",
              confirm_e768_discordant=f"{pa['only_a_correct']} vs {pa['only_b_correct']}",
+             confirm_e768_verdict=(
+                 f"at a cost of {100 * (cf['configs'][base]['accuracy'] - cf['configs'][e768]['accuracy']):.1f} "
+                 f"accuracy points (p {pval(pa['p_value'])}, {cf['samples']:,} questions)"
+                 if pa["p_value"] < 0.05 else
+                 f"with an accuracy change of {signed(100 * (cf['configs'][e768]['accuracy'] - cf['configs'][base]['accuracy']))} "
+                 f"points that {cf['samples']:,} questions cannot tell apart from zero (p {pval(pa['p_value'])})"),
+             confirm_e768_significant="a real trade-off" if pa["p_value"] < 0.05 else
+                 "an accuracy cost too small to resolve even on the whole validation split",
              confirm_e768_speedup=f"{sp:.2f}×",
              confirm_e768_speed_ci=f"[{sp_lo:.2f}–{sp_hi:.2f}]")
 
@@ -199,8 +254,8 @@ def values(results):
     cb, ce = compare_runs(cf, nf, base), compare_runs(cf, nf, e768)
     slower = lambda c: 100 * (1 / c["speed_b_over_a"] - 1)
     v["nf4_acc_verdict"] = ("a statistically significant loss" if cb["p_value"] < 0.05 else
-                            "not significant at the 0.05 level" if cb["p_value"] < 0.2 else
-                            "no detectable loss")
+                            "a loss that is not significant at the 0.05 level" if cb["p_value"] < 0.2 else
+                            "not distinguishable from no change")
     v.update(nf4_samples=cb["n"], nf4_delta=signed(cb["acc_b"] - cb["acc_a"]),
              nf4_p=pval(cb["p_value"]), nf4_slower=pct(slower(cb), 0),
              nf4_slower_e768=pct(slower(ce), 0),
@@ -219,6 +274,33 @@ def values(results):
           f"**−{pct(100 * (1 - cb['vram_b'] / cb['vram_a']), 0)}**"]],
         ["---", "---:", "---:", "---"])
 
+    # ---- which conclusions depend on the ChartQA metric ---------------------------------
+    pr = load(results, "gate6_prompt")
+    tag = lambda recs, t: [dict(r, config=f"{t}|{r['config']}") for r in recs]
+    k25 = lambda m: f"keep0.25:{m}(keep=0.25,{m})"
+    checks = [
+        (f"Edge 768 vs baseline ({cf['samples']} questions)", cf["records"], base, e768),
+        (f"Single tile vs baseline ({sw['samples']})", sw["records"], base, "nosplit(nosplit)"),
+        (f"Prune 25% uniform vs baseline ({sw['samples']})", sw["records"], base, k25("uniform")),
+        (f"Largest-norm vs uniform, 25% ({sw['samples']})", sw["records"], k25("uniform"), k25("norm")),
+        (f"nf4 vs bf16 ({cb['n']})", tag(cf["records"], "bf16") + tag(nf["records"], "nf4"),
+         f"bf16|{base}", f"nf4|{base}"),
+        (f"English vs Vietnamese instruction ({pr['samples']})", pr["records"], base, "prompten(prompt=en)"),
+    ]
+    rows = []
+    for name, recs, a_, b_ in checks:
+        cells = [name]
+        for metric in ("relaxed", "exact_years", "lenient"):
+            d, p = delta_p(with_metric(recs, metric), a_, b_)
+            cells.append(f"{signed(d)}, p {pval(p)}")
+        rows.append(cells)
+    v["table_sensitivity"] = table(
+        ["Comparison", "Relaxed accuracy (primary)", "Years exact", "Earlier lenient metric"],
+        rows, ["---", "---", "---", "---"])
+    lenient = with_metric(cf["records"], "lenient")
+    v["lenient_base_acc"] = pct(100 * sum(r["correct"] for r in lenient if r["config"] == base) /
+                                sum(1 for r in lenient if r["config"] == base))
+
     # ---- serving --------------------------------------------------------------------------
     rows, serving = [], {}
     for edge in (1536, 768):
@@ -236,20 +318,18 @@ def values(results):
     v["serve_requests"] = serving[768]["1"]["end_to_end_ms"]["n"]
     v["serve_throughput_gain"] = (f"{serving[768]['1']['throughput_rps'] / serving[1536]['1']['throughput_rps']:.2f}×")
 
-    rows, worst = [], 0.0
+    rows, verdicts = [], []
     for edge in (768, 1536):
         nat, dk = serving[edge]["1"], load(results, f"gate4_docker_{edge}")["1"]
-        diff = 100 * (dk["end_to_end_ms"]["median"] / nat["end_to_end_ms"]["median"] - 1)
-        worst = max(worst, abs(diff))
+        r, lo, hi = median_ratio_ci(nat["raw_end_to_end_ms"], dk["raw_end_to_end_ms"])
+        verdicts.append(lo <= 1 <= hi)
         rows.append([edge, f"{nat['end_to_end_ms']['median']:,.0f} ms · {nat['throughput_rps']:.2f} req/s",
                      f"{dk['end_to_end_ms']['median']:,.0f} ms · {dk['throughput_rps']:.2f} req/s",
-                     f"{signed(diff, 0)}%"])
-    v["table_docker"] = table(["Longest edge", "Native", "In Docker", "Difference"], rows,
-                              ["---:", "---:", "---:", "---:"])
-    v["docker_verdict"] = (f"Both differences are below the {pct(3 * cv)} noise threshold, so Docker "
-                           f"cannot be said to be slower." if worst < 3 * cv else
-                           f"The larger difference exceeds the {pct(3 * cv)} noise threshold: "
-                           f"Docker is measurably slower here.")
+                     f"{signed(100 * (r - 1), 0)}% [{signed(100 * (lo - 1), 0)}, {signed(100 * (hi - 1), 0)}]"])
+    v["table_docker"] = table(["Longest edge", "Native", "In Docker", "Latency difference [95% CI]"],
+                              rows, ["---:", "---:", "---:", "---:"])
+    v["docker_verdict"] = ("Both intervals include zero, so Docker cannot be said to be slower." if all(verdicts)
+                           else "At least one interval excludes zero: Docker is measurably different there.")
 
     # ---- DocVQA sanity check and instruction language -----------------------------------------
     dv, de = load(results, "sanity_docvqa"), load(results, "sanity_docvqa_en")
