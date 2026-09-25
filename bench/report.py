@@ -13,8 +13,8 @@ from pathlib import Path
 
 from bench.compare_anls import compare as compare_anls
 from bench.compare_runs import compare as compare_runs
-from bench.metrics import (accuracy_ci, bootstrap_ci, clean_answer, holm, paired_accuracy,
-                           robust_cv, score_chartqa)
+from bench.metrics import (accuracy_ci, bootstrap_ci, clean_answer, holm, mcnemar_power,
+                           paired_accuracy, robust_cv, samples_for_power, score_chartqa)
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE, README = ROOT / "README.template.md", ROOT / "README.md"
@@ -217,7 +217,7 @@ def values(results):
                      f"{signed(d)} points, p {pval(p)}"])
     v["table_confirm_subsets"] = table(["", "Baseline", "Edge 768", "Difference"], rows,
                                        ["---", "---:", "---:", "---"]) if rows else ""
-    v.update(confirm_samples=cf["samples"],
+    v.update(confirm_samples=f"{cf['samples']:,}",
              confirm_base_acc=pct(100 * cf["configs"][base]["accuracy"]),
              confirm_e768_acc=pct(100 * cf["configs"][e768]["accuracy"]),
              confirm_e768_delta=signed(100 * (cf["configs"][e768]["accuracy"]
@@ -236,6 +236,42 @@ def values(results):
                  "an accuracy cost too small to resolve even on the whole validation split",
              confirm_e768_speedup=f"{sp:.2f}×",
              confirm_e768_speed_ci=f"[{sp_lo:.2f}–{sp_hi:.2f}]")
+
+    # Why the whole split: the power of McNemar's test for this loss, and what the first
+    # questions of the same run show. Runs share their first questions (fixed shuffled
+    # order), so the sweep's 100 and the nf4 run's 300 are prefixes of this run.
+    discordant = pa["only_a_correct"] + pa["only_b_correct"]
+    pi_d, pi_b = discordant / pa["n_pairs"], pa["only_a_correct"] / discordant
+    first300 = {r["sample_id"] for r in load(results, "gate5_nf4")["records"]}
+    prefixes = [("first 100 (those of the lever sweep)", {r["sample_id"] for r in sw["records"]}),
+                ("first 300 (those of the nf4 run)", first300),
+                ("the whole split", None)]
+    rows = []
+    for label, ids in prefixes:
+        recs = cf["records"] if ids is None else [r for r in cf["records"] if r["sample_id"] in ids]
+        n_q = len({r["sample_id"] for r in recs})
+        d, p = delta_p(recs, base, e768)
+        rows.append([f"{n_q:,}", label, f"{mcnemar_power(n_q, pi_d, pi_b):.2f}",
+                     f"{signed(d)} points, p {pval(p)}"])
+    v["confirm_power_first100"] = rows[0][2]
+    v["table_confirm_power"] = table(
+        ["Questions", "Which questions", "Power for this loss", "Measured on them"], rows,
+        ["---:", "---", "---:", "---"])
+    n80 = samples_for_power(pi_d, pi_b)
+    v.update(confirm_pi_d=pct(100 * pi_d), confirm_pi_b=pct(100 * pi_b),
+             confirm_discordant_total=f"{discordant:,}",
+             confirm_n80=f"about {n80:,}" if n80 else "more than 100,000")
+
+    # The earlier lenient metric on the same first 300 questions (the measurement-mistakes table)
+    first = [r for r in cf["records"] if r["sample_id"] in first300]
+    base_acc = lambda recs: 100 * sum(r["correct"] for r in recs if r["config"] == base) / \
+        sum(1 for r in recs if r["config"] == base)
+    relaxed300, lenient300 = with_metric(first, "relaxed"), with_metric(first, "lenient")
+    d_len, p_len = delta_p(lenient300, base, e768)
+    v.update(first300_relaxed_acc=pct(base_acc(relaxed300)), first300_lenient_acc=pct(base_acc(lenient300)),
+             first300_lenient_gap=f"{base_acc(lenient300) - base_acc(relaxed300):.1f}",
+             first300_lenient_e768_delta=signed(d_len), first300_lenient_e768_p=pval(p_len),
+             first300_n=f"{len(first300):,}")
 
     # ---- quantisation ----------------------------------------------------------------
     q = load(results, "gate3_quant")
@@ -279,7 +315,7 @@ def values(results):
     tag = lambda recs, t: [dict(r, config=f"{t}|{r['config']}") for r in recs]
     k25 = lambda m: f"keep0.25:{m}(keep=0.25,{m})"
     checks = [
-        (f"Edge 768 vs baseline ({cf['samples']} questions)", cf["records"], base, e768),
+        (f"Edge 768 vs baseline ({cf['samples']:,} questions)", cf["records"], base, e768),
         (f"Single tile vs baseline ({sw['samples']})", sw["records"], base, "nosplit(nosplit)"),
         (f"Prune 25% uniform vs baseline ({sw['samples']})", sw["records"], base, k25("uniform")),
         (f"Largest-norm vs uniform, 25% ({sw['samples']})", sw["records"], k25("uniform"), k25("norm")),

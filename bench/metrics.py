@@ -191,6 +191,61 @@ def mcnemar(b, c):
     return min(1.0, 2 * tail)
 
 
+def mcnemar_power(n, pi_d, pi_b, alpha=0.05):
+    """Power of the exact McNemar test above: P(p < alpha) on n paired samples.
+
+    Model: each sample is discordant (one configuration right, the other wrong) with
+    probability pi_d, and a discordant sample favours A with probability pi_b. So the
+    number of discordant samples is D ~ Binomial(n, pi_d), and given D = d, the number
+    favouring A is B ~ Binomial(d, pi_b). The test rejects when B <= k or B >= d - k,
+    where k is the largest count with mcnemar(k, d - k) < alpha. Hence
+
+        power = sum over d of P(D = d) * P(B <= k or B >= d - k | D = d)
+
+    computed exactly rather than simulated, so the number is the same on every run.
+    """
+    from fractions import Fraction
+    from math import exp, lgamma, log
+    if not (0 < pi_d < 1 and 0 < pi_b < 1):
+        raise ValueError("pi_d and pi_b must lie strictly between 0 and 1")
+
+    def log_pmf(k, m, p):
+        return (lgamma(m + 1) - lgamma(k + 1) - lgamma(m - k + 1)
+                + k * log(p) + (m - k) * log(1 - p))
+
+    power = 0.0
+    for d in range(n + 1):
+        log_w = log_pmf(d, n, pi_d)
+        if log_w < -40:                          # weight below 1e-17: no visible contribution
+            continue
+        # largest k with 2 * P(Binomial(d, 1/2) <= k) < alpha, in exact integer arithmetic
+        bound, k, tail, c = Fraction(alpha) * 2 ** d, -1, 0, 1
+        for i in range(d // 2 + 1):
+            if i:
+                c = c * (d - i + 1) // i         # comb(d, i)
+            tail += c
+            if 2 * tail >= bound:
+                break
+            k = i
+        if k < 0:                                # too few discordant pairs to ever reject
+            continue
+        reject = sum(exp(log_pmf(b, d, pi_b)) for b in [*range(k + 1), *range(d - k, d + 1)])
+        power += exp(log_w) * reject
+    return power
+
+
+def samples_for_power(pi_d, pi_b, target=0.8, alpha=0.05, step=100, max_n=100_000):
+    """Smallest multiple of `step` at which mcnemar_power reaches `target` (None if never).
+
+    Exact tests make power rise in small saw-teeth rather than smoothly, so the answer
+    is quoted to the nearest `step`, not to the sample.
+    """
+    for n in range(step, max_n + 1, step):
+        if mcnemar_power(n, pi_d, pi_b, alpha) >= target:
+            return n
+    return None
+
+
 def paired_accuracy(records, key_a, key_b):
     """Compare the accuracy of two configurations sample by sample."""
     from collections import defaultdict

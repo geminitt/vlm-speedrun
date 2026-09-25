@@ -38,7 +38,7 @@ Error bars are 95% Wilson intervals with one observation per question.*
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
 START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
-pixi run test              # 67 tests in a light CPU environment, a few seconds
+pixi run test              # 70 tests in a light CPU environment, a few seconds
 ```
 
 The script runs every measurement, redraws the figure and regenerates this README
@@ -133,7 +133,7 @@ Three conclusions:
 ### The main lever on the whole validation split
 
 The accuracy cost of the main lever is small, so it needs many questions: on the whole
-split of 1920 questions, longest edge 768 runs **1.92×** faster
+split of 1,920 questions, longest edge 768 runs **1.92×** faster
 [1.91–1.93] and changes accuracy from 55.2% to
 53.0%: **−2.2 points** [−3.9, −0.6], p
 = 0.011 (150 vs 108 discordant questions) — a real trade-off.
@@ -144,6 +144,28 @@ By question type:
 |---|---:|---:|---|
 | Human-written questions (960) | 47.9% | 45.9% | −2.0 points, p = 0.104 |
 | Generated questions (960) | 62.5% | 60.1% | −2.4 points, p = 0.058 |
+
+**Why the whole split.** The *power* of a test is the probability that it detects an
+effect that is really there. For McNemar's test it depends on two rates, both measured on
+the whole split: how often the two configurations disagree — 258
+of 1,920 questions (13.4%) have one configuration right and the
+other wrong — and how lopsided those disagreements are: 58.1% of them favour the
+baseline. Treating questions as independent draws with these two rates, the power of the
+exact two-sided McNemar test at α = 0.05 is computed exactly, not simulated
+(`mcnemar_power` in `bench/metrics.py`):
+
+| Questions | Which questions | Power for this loss | Measured on them |
+|---:|---|---:|---|
+| 100 | first 100 (those of the lever sweep) | 0.05 | −1.0 points, p = 1.000 |
+| 300 | first 300 (those of the nf4 run) | 0.14 | −3.0 points, p = 0.188 |
+| 1,920 | the whole split | 0.73 | −2.2 points, p = 0.011 |
+
+80% power, the usual design target, would need about 2,300 questions — more than the
+split holds, so the whole split is the most this benchmark can give. The shorter prefixes
+of the same run behave as the power column predicts: they do not resolve the loss. Both
+rates come from this run itself, so the power column shows why the sample had to be this
+large; it adds no evidence of its own (power computed from an observed effect only
+restates its p-value).
 
 ### Which conclusions depend on the scoring
 
@@ -156,7 +178,7 @@ paired McNemar p:
 
 | Comparison | Relaxed accuracy (primary) | Years exact | Earlier lenient metric |
 |---|---|---|---|
-| Edge 768 vs baseline (1920 questions) | −2.2, p = 0.011 | −2.3, p = 0.008 | −4.2, p < 0.0001 |
+| Edge 768 vs baseline (1,920 questions) | −2.2, p = 0.011 | −2.3, p = 0.008 | −4.2, p < 0.0001 |
 | Single tile vs baseline (100) | −28.0, p < 0.0001 | −28.0, p < 0.0001 | −28.0, p < 0.0001 |
 | Prune 25% uniform vs baseline (100) | −34.0, p < 0.0001 | −34.0, p < 0.0001 | −41.0, p < 0.0001 |
 | Largest-norm vs uniform, 25% (100) | +23.0, p < 0.001 | +24.0, p < 0.001 | +27.0, p < 0.0001 |
@@ -295,13 +317,13 @@ audit of the whole repository, and every one is fixed in the code.
 |---|---|---|
 | Vision encoder outside the timed region on the optimised path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
-| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same; how many questions a small effect needs is computed above, not guessed |
+| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same: for edge 768's loss of about 2 points, 100 questions give a power of only 0.05 ("Why the whole split" above) |
 | Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
 | DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a real gap to the published score was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
-| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | baseline about 10 points above the benchmark metric | edge 768's accuracy cost looked large and certain (−7.3, p = 0.002 on 300 questions); with the benchmark metric it is small and needs the whole split |
+| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | on the first 300 questions the baseline scored 64.7% instead of 55.0% (+9.7 points) | edge 768's accuracy cost looked large and certain on those 300 questions (−7.3 points, p = 0.002); with the benchmark metric it is small and needs the whole split |
 | Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than the data allow |
 | Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of the measured one | real improvements below 25% would have been dismissed |
 | A single-measurement noise rule applied to paired medians over hundreds of questions, with a CV that one outlier can inflate | a clear 1.21× speedup marked "below noise threshold" | real improvements dismissed; now judged by the speedup's 95% interval, and noise by a robust CV |
@@ -326,7 +348,7 @@ bench/
   prune.py             image-token pruning per tile, layout tokens kept (4 selection methods)
   quantize.py          bf16/fp16/int8/nf4 with a logit equivalence check
   harness.py           main harness: accuracy + latency across configurations, run integrity
-  metrics.py           relaxed accuracy · ANLS · Wilson and bootstrap intervals · McNemar
+  metrics.py           relaxed accuracy · ANLS · Wilson and bootstrap intervals · McNemar and its power
   analyze.py           paired analysis within one run
   compare_runs.py      paired comparison across two separate runs (bf16 vs nf4)
   compare_anls.py      paired comparison of two DocVQA runs (sign test)
@@ -339,7 +361,7 @@ serve/
   admission.py         admission control: reject at once beyond the queue bound
   server.py            inference server: bounded queue, clear errors, server-side timing
   client_bench.py      end-to-end latency at several concurrency levels
-tests/                 67 tests for the core, on CPU in a few seconds
+tests/                 70 tests for the core, on CPU in a few seconds
 results/               raw JSON results + figures; results/history/ keeps the runs that
                        document the mistakes above
 speedrun.sh            one command to rerun every result and regenerate this README

@@ -120,6 +120,24 @@ By question type:
 
 {{table_confirm_subsets}}
 
+**Why the whole split.** The *power* of a test is the probability that it detects an
+effect that is really there. For McNemar's test it depends on two rates, both measured on
+the whole split: how often the two configurations disagree — {{confirm_discordant_total}}
+of {{confirm_samples}} questions ({{confirm_pi_d}}) have one configuration right and the
+other wrong — and how lopsided those disagreements are: {{confirm_pi_b}} of them favour the
+baseline. Treating questions as independent draws with these two rates, the power of the
+exact two-sided McNemar test at α = 0.05 is computed exactly, not simulated
+(`mcnemar_power` in `bench/metrics.py`):
+
+{{table_confirm_power}}
+
+80% power, the usual design target, would need {{confirm_n80}} questions — more than the
+split holds, so the whole split is the most this benchmark can give. The shorter prefixes
+of the same run behave as the power column predicts: they do not resolve the loss. Both
+rates come from this run itself, so the power column shows why the sample had to be this
+large; it adds no evidence of its own (power computed from an observed effect only
+restates its p-value).
+
 ### Which conclusions depend on the scoring
 
 ChartQA's relaxed accuracy has two known quirks: a number must be the whole answer
@@ -238,13 +256,13 @@ audit of the whole repository, and every one is fixed in the code.
 |---|---|---|
 | Vision encoder outside the timed region on the optimised path | reported **3.47×** | the real number is **1.12×**, inflated threefold |
 | Each round used a different group of samples | IQR 86.5%, "drift −44%" | spread caused by image size was misread as system noise |
-| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same; how many questions a small effect needs is computed above, not guessed |
+| Concluding "no difference" from 100 samples | p = 0.18 | "no difference" and "no evidence" are not the same: for edge 768's loss of about 2 points, 100 questions give a power of only {{confirm_power_first100}} ("Why the whole split" above) |
 | Forgot `--model`, silently ran the 256M model | accuracy 23%, 640 image tokens | nearly concluded that 4-bit quantisation breaks the model |
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
 | DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a real gap to the published score was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
-| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | baseline about 10 points above the benchmark metric | edge 768's accuracy cost looked large and certain (−7.3, p = 0.002 on 300 questions); with the benchmark metric it is small and needs the whole split |
+| ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | on the first {{first300_n}} questions the baseline scored {{first300_lenient_acc}} instead of {{first300_relaxed_acc}} (+{{first300_lenient_gap}} points) | edge 768's accuracy cost looked large and certain on those {{first300_n}} questions ({{first300_lenient_e768_delta}} points, p {{first300_lenient_e768_p}}); with the benchmark metric it is small and needs the whole split |
 | Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than the data allow |
 | Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of the measured one | real improvements below 25% would have been dismissed |
 | A single-measurement noise rule applied to paired medians over hundreds of questions, with a CV that one outlier can inflate | a clear 1.21× speedup marked "below noise threshold" | real improvements dismissed; now judged by the speedup's 95% interval, and noise by a robust CV |
@@ -269,7 +287,7 @@ bench/
   prune.py             image-token pruning per tile, layout tokens kept (4 selection methods)
   quantize.py          bf16/fp16/int8/nf4 with a logit equivalence check
   harness.py           main harness: accuracy + latency across configurations, run integrity
-  metrics.py           relaxed accuracy · ANLS · Wilson and bootstrap intervals · McNemar
+  metrics.py           relaxed accuracy · ANLS · Wilson and bootstrap intervals · McNemar and its power
   analyze.py           paired analysis within one run
   compare_runs.py      paired comparison across two separate runs (bf16 vs nf4)
   compare_anls.py      paired comparison of two DocVQA runs (sign test)

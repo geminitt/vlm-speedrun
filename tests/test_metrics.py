@@ -89,6 +89,28 @@ def test_mcnemar_without_discordant_pairs_gives_p_of_one():
     assert mcnemar(0, 0) == 1.0
 
 
+def test_mcnemar_power_matches_brute_force_enumeration():
+    # sum the multinomial probability of every (b, c) table the test rejects
+    from math import factorial
+    from bench.metrics import mcnemar, mcnemar_power
+    n, pi_d, pi_b = 30, 0.4, 0.8
+    brute = sum(factorial(n) / (factorial(b) * factorial(c) * factorial(n - b - c))
+                * (pi_d * pi_b) ** b * (pi_d * (1 - pi_b)) ** c * (1 - pi_d) ** (n - b - c)
+                for b in range(n + 1) for c in range(n + 1 - b) if mcnemar(b, c) < 0.05)
+    assert abs(mcnemar_power(n, pi_d, pi_b) - brute) < 1e-12
+
+
+def test_mcnemar_power_without_an_effect_stays_below_alpha():
+    from bench.metrics import mcnemar_power
+    assert mcnemar_power(500, 0.2, 0.5) <= 0.05          # an exact test is conservative
+
+
+def test_samples_for_power_reaches_the_target():
+    from bench.metrics import mcnemar_power, samples_for_power
+    n = samples_for_power(0.2, 0.7, step=10)
+    assert mcnemar_power(n, 0.2, 0.7) >= 0.8 > mcnemar_power(n - 10, 0.2, 0.7)
+
+
 def test_paired_accuracy_counts_each_cell():
     from bench.metrics import paired_accuracy
     recs = [

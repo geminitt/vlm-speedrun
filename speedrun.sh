@@ -25,9 +25,11 @@ if [[ "${FAST:-0}" == "1" ]]; then
 else
   OUT=results
   PROBE_RUNS=60; BREAKDOWN_SAMPLES=12; PREP_SAMPLES=16
-  # step 4 uses the whole ChartQA validation split, the most questions available:
-  # for the observed loss of 2.2 points, 1,920 questions give a power of about 0.73
-  # (80% would need about 2,400)
+  # step 4 uses the whole ChartQA validation split, the most questions available.
+  # Power of the exact McNemar test (alpha = 0.05) for edge 768's measured loss, with
+  # 13.4% of questions discordant and 58.1% of those favouring the baseline:
+  # 0.14 at 300 questions, 0.73 at 1,920; 80% would need about 2,300. The README
+  # section "Why the whole split" computes these from the results (bench.metrics).
   CONFIRM_SAMPLES=1920; NF4_SAMPLES=300; SWEEP_SAMPLES=100; PROMPT_SAMPLES=200; DOCVQA_SAMPLES=300
   QUANT_SAMPLES=16; SERVE_REQUESTS=40; ROUNDS=2
 fi
