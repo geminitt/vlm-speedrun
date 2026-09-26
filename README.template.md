@@ -43,7 +43,12 @@ pixi run test              # {{n_tests}} tests in a light CPU environment, a few
 
 The script runs every measurement, redraws the figure and regenerates this README
 from the result files (`bench/report.py`); CI fails if the README and `results/`
-disagree. Timing scripts refuse to start on a GPU that another process is using.
+disagree. Timing scripts refuse to start on a GPU that another process is using
+(`--allow-busy-gpu` overrides, and the harness then flags the run).
+
+- Launch the full run detached, so it survives the terminal closing:
+  `setsid nohup ./speedrun.sh > results/run.log 2>&1 &`
+- Edit `README.template.md`, never `README.md`, then run `python -m bench.report --write`.
 
 The inference server runs in Docker:
 
@@ -77,7 +82,7 @@ Median of {{breakdown_samples}} timings per component:
 
 {{table_breakdown}}
 
-An 800×557 image is split into **13 tiles** and yields **{{image_tokens}} image tokens** —
+The median sample is split into **{{tiles}} tiles** (the tile grid plus one downscaled view of the whole image) and yields **{{image_tokens}} image tokens** —
 {{image_share}} of the {{input_tokens}}-token input. The encoder, the connector and the
 prefill together are {{encoder_side_pct}} of the time; they are compute-bound, while the
 short answer is bound by memory bandwidth (the study notes measure both).
@@ -326,6 +331,26 @@ Dockerfile             packages the inference server
 - Token pruning was tried with four simple selection methods; attention-based
   selection such as FastV, which requires deeper changes to the model's decoding
   loop, was not.
+
+## Extensions
+
+Ordered by how much they could change the conclusions:
+
+1. **Activation quantization for the vision encoder** (W8A8 or FP8, which this Ada GPU
+   supports): the encoder is the compute-bound majority of the time, the only place
+   quantization could buy speed in this workload.
+2. **Attention-score token pruning (FastV-style)**: largest-norm selection already shows
+   that informed selection matters; attention scores are the next signal to try. Still
+   capped by Amdahl's law, since pruning cannot touch the encoder.
+3. **Explain the DocVQA gap**: rerun with the authors' evaluation prompt and image settings
+   to see how much of it is setup rather than the model.
+4. **CUDA graphs or a fused 4-bit kernel**, to turn nf4's smaller weights into faster decoding
+   by removing the CPU-side work that sets the pace of each step; a timeline profile (Nsight
+   Systems) would first show whether that work is kernel launches or synchronization.
+5. **Server-side batching**: the server handles one request at a time; batching raises
+   throughput where decoding dominates, and nf4's freed memory makes room for it.
+6. **A second model** (e.g. Qwen2.5-VL-3B), to test whether "the vision encoder takes over
+   half the time" holds beyond SmolVLM.
 
 ## References
 

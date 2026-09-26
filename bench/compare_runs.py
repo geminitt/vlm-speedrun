@@ -6,14 +6,15 @@ benefit of interleaving over time but keep the per-sample paired comparison.
 """
 import argparse, json, statistics
 
-from bench.metrics import mcnemar
+from bench.metrics import bootstrap_ci, mcnemar
 
 
 def compare(run_a, run_b, key="baseline"):
     """Paired comparison of configuration `key` in two runs (loaded JSON dicts).
 
     Accuracy: McNemar on the samples both runs share (majority verdict over rounds).
-    Speed: median over samples of (time in A / time in B), so > 1 means B is faster.
+    Speed: median over samples of (time in A / time in B), so > 1 means B is faster, with a
+    bootstrap 95% interval for that median (rule 5 of the harness).
     """
     def fold(run):
         acc, lat = {}, {}
@@ -37,6 +38,7 @@ def compare(run_a, run_b, key="baseline"):
             "only_a": only_a, "only_b": only_b, "p_value": mcnemar(only_a, only_b),
             "speed_b_over_a": statistics.median(ratios),
             "speed_iqr": [ratios[n // 4], ratios[(3 * n) // 4]],
+            "speed_ci95": list(bootstrap_ci(ratios, stat=statistics.median, n_boot=4000)),
             "vram_a": run_a.get("peak_vram_mb", 0.0), "vram_b": run_b.get("peak_vram_mb", 0.0)}
 
 
@@ -58,7 +60,7 @@ def main():
           f"(only {x.label_a} correct: {c['only_a']} · only {x.label_b} correct: {c['only_b']} "
           f"· p = {c['p_value']:.4f})")
     print(f"speed         : {x.label_b} runs at {sp:.2f}× the speed of {x.label_a} "
-          f"[{c['speed_iqr'][0]:.2f}–{c['speed_iqr'][1]:.2f}] — "
+          f"[95% CI {c['speed_ci95'][0]:.2f}–{c['speed_ci95'][1]:.2f}] — "
           + (f"{100 * (sp - 1):.0f}% faster" if sp >= 1 else f"{100 * (1 / sp - 1):.0f}% slower"))
     print(f"verdict       : " + ("quality differs significantly" if c["p_value"] < 0.05
                                  else "quality not distinguishable"))

@@ -43,7 +43,12 @@ pixi run test              # 70 tests in a light CPU environment, a few seconds
 
 The script runs every measurement, redraws the figure and regenerates this README
 from the result files (`bench/report.py`); CI fails if the README and `results/`
-disagree. Timing scripts refuse to start on a GPU that another process is using.
+disagree. Timing scripts refuse to start on a GPU that another process is using
+(`--allow-busy-gpu` overrides, and the harness then flags the run).
+
+- Launch the full run detached, so it survives the terminal closing:
+  `setsid nohup ./speedrun.sh > results/run.log 2>&1 &`
+- Edit `README.template.md`, never `README.md`, then run `python -m bench.report --write`.
 
 The inference server runs in Docker:
 
@@ -86,7 +91,7 @@ Median of 36 timings per component:
 | Generating the answer (median 6 tokens, at most 32) | 169 ms | 19.1% |
 | *(CPU-side image preprocessing, before the GPU)* | *31 ms* | *3.5%* |
 
-An 800×557 image is split into **13 tiles** and yields **1,053 image tokens** —
+The median sample is split into **13 tiles** (the tile grid plus one downscaled view of the whole image) and yields **1,053 image tokens** —
 85% of the 1,242-token input. The encoder, the connector and the
 prefill together are 81% of the time; they are compute-bound, while the
 short answer is bound by memory bandwidth (the study notes measure both).
@@ -224,8 +229,8 @@ card, so they run one after the other; the comparison is paired per question):
 |---|---:|---:|---|
 | Accuracy (baseline) | 55.0% | 53.3% | −1.7 points, p = 0.533 |
 | Accuracy (edge 768) | 52.0% | 49.0% | −3.0 points, p = 0.188 |
-| Speed, paired (baseline) | 1.00× | 0.95× | **5% slower** |
-| Speed, paired (edge 768) | 1.00× | 0.88× | **14% slower** |
+| Speed, paired (baseline) | 1.00× | 0.95× [0.94–0.96] | **5% slower** |
+| Speed, paired (edge 768) | 1.00× | 0.88× [0.87–0.89] | **14% slower** |
 | Peak VRAM | 4,891 MB | **2,169 MB** | **−56%** |
 
 The accuracy change of −1.7 points is not distinguishable from no change (p = 0.533).
@@ -387,6 +392,26 @@ Dockerfile             packages the inference server
 - Token pruning was tried with four simple selection methods; attention-based
   selection such as FastV, which requires deeper changes to the model's decoding
   loop, was not.
+
+## Extensions
+
+Ordered by how much they could change the conclusions:
+
+1. **Activation quantization for the vision encoder** (W8A8 or FP8, which this Ada GPU
+   supports): the encoder is the compute-bound majority of the time, the only place
+   quantization could buy speed in this workload.
+2. **Attention-score token pruning (FastV-style)**: largest-norm selection already shows
+   that informed selection matters; attention scores are the next signal to try. Still
+   capped by Amdahl's law, since pruning cannot touch the encoder.
+3. **Explain the DocVQA gap**: rerun with the authors' evaluation prompt and image settings
+   to see how much of it is setup rather than the model.
+4. **CUDA graphs or a fused 4-bit kernel**, to turn nf4's smaller weights into faster decoding
+   by removing the CPU-side work that sets the pace of each step; a timeline profile (Nsight
+   Systems) would first show whether that work is kernel launches or synchronization.
+5. **Server-side batching**: the server handles one request at a time; batching raises
+   throughput where decoding dominates, and nf4's freed memory makes room for it.
+6. **A second model** (e.g. Qwen2.5-VL-3B), to test whether "the vision encoder takes over
+   half the time" holds beyond SmolVLM.
 
 ## References
 

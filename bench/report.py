@@ -17,6 +17,7 @@ from bench.metrics import (accuracy_ci, bootstrap_ci, clean_answer, holm, mcnema
                            paired_accuracy, robust_cv, samples_for_power, score_chartqa)
 
 ROOT = Path(__file__).resolve().parents[1]
+TOKENS_PER_TILE = 81   # SmolVLM: 729 SigLIP patches per 384-pixel tile, pixel-shuffled down to 81 tokens
 TEMPLATE, README = ROOT / "README.template.md", ROOT / "README.md"
 
 LABELS = {   # configuration key prefix -> README label
@@ -129,6 +130,7 @@ def values(results):
     v.update(vision_pct=pct(s["vision"]), prefill_pct=pct(s["llm_prefill"]),
              answer_pct=pct(s["decode"]), answer_tokens=n0(bd["answer_tokens_median"]),
              image_tokens=n0(bd["image_tokens_median"]), input_tokens=n0(bd["input_tokens_median"]),
+             tiles=n0(bd["image_tokens_median"] / TOKENS_PER_TILE),
              image_share=pct(100 * bd["image_tokens_median"] / bd["input_tokens_median"], 0),
              breakdown_samples=bd["detail"]["vision"]["n"],
              # Amdahl: pruning after the encoder can only shrink the language-model prefill
@@ -302,9 +304,9 @@ def values(results):
           f"{signed(cb['acc_b'] - cb['acc_a'])} points, p {pval(cb['p_value'])}"],
          ["Accuracy (edge 768)", pct(ce["acc_a"]), pct(ce["acc_b"]),
           f"{signed(ce['acc_b'] - ce['acc_a'])} points, p {pval(ce['p_value'])}"],
-         ["Speed, paired (baseline)", "1.00×", f"{cb['speed_b_over_a']:.2f}×",
+         ["Speed, paired (baseline)", "1.00×", f"{cb['speed_b_over_a']:.2f}× [{cb['speed_ci95'][0]:.2f}–{cb['speed_ci95'][1]:.2f}]",
           f"**{pct(slower(cb), 0)} slower**"],
-         ["Speed, paired (edge 768)", "1.00×", f"{ce['speed_b_over_a']:.2f}×",
+         ["Speed, paired (edge 768)", "1.00×", f"{ce['speed_b_over_a']:.2f}× [{ce['speed_ci95'][0]:.2f}–{ce['speed_ci95'][1]:.2f}]",
           f"**{pct(slower(ce), 0)} slower**"],
          ["Peak VRAM", f"{cb['vram_a']:,.0f} MB", f"**{cb['vram_b']:,.0f} MB**",
           f"**−{pct(100 * (1 - cb['vram_b'] / cb['vram_a']), 0)}**"]],
