@@ -9,7 +9,7 @@ from pathlib import Path
 
 import grpc
 
-from bench.harness import load_samples
+from bench.harness import add_revision_args, load_samples, run_identity
 from bench.latency_probe import summarize
 from serve.gen_proto import ensure_stubs
 ensure_stubs()                      # a fresh clone has no code generated from .proto yet
@@ -38,6 +38,7 @@ def main():
     ap.add_argument("--max-edge", type=int, default=0)
     ap.add_argument("--timeout", type=float, default=120.0)
     ap.add_argument("--out", default="results/gate4_serving.json")
+    add_revision_args(ap, model=False)
     a = ap.parse_args()
 
     ch = grpc.insecure_channel(a.target, options=[
@@ -46,7 +47,8 @@ def main():
     h = stub.Health(vlm_pb2.HealthRequest(), timeout=300, wait_for_ready=True)  # server may still be loading
     print(f"server: {h.model} on {h.device}")
 
-    samples = load_samples(a.samples, seed=1)
+    ident = dict(run_identity(a, dataset="chartqa"), server_model=h.model)
+    samples = load_samples(a.samples, seed=1, revision=ident["dataset_revision"])
     payloads = [(encode(s["image"]), s["query"]) for s in samples]
 
     # warm up
@@ -71,6 +73,7 @@ def main():
         print(f"concurrency {c}: median {e['median']:.0f} ms | p95 {e['p95']:.0f} ms "
               f"| throughput {res[str(c)]['throughput_rps']:.2f} req/s")
 
+    res["identity"] = ident
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
     print(f"saved {a.out}")

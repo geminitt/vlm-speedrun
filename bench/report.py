@@ -282,7 +282,7 @@ def values(results):
         [[f"{'**' + mode + '**' if mode == 'nf4' else mode}{' (reference)' if mode == 'bf16' else ''}",
           f"{q[mode]['latency_ms']['median']:,.0f} ms", f"{q[mode]['peak_vram_mb']:,.0f} MB",
           pct(100 * q[mode]["parity"]["top1_agreement"], 0),
-          f"{q[mode]['parity']['max_abs_diff']:.2f}"] for mode in q],
+          f"{q[mode]['parity']['max_abs_diff']:.2f}"] for mode in q if mode != "identity"],
         ["---", "---:", "---:", "---:", "---:"])
     v.update(quant_parity_samples=q["bf16"]["parity"]["samples"],
              quant_latency_n=q["bf16"]["latency_ms"]["n"],
@@ -345,6 +345,8 @@ def values(results):
         sv = load(results, f"gate4_serving_{edge}")
         serving[edge] = sv
         for c, x in sv.items():
+            if c == "identity":
+                continue
             e2e = x["end_to_end_ms"]
             bold = edge == 768 and c == "1"
             rows.append([f"**{edge}**" if bold else edge, c,

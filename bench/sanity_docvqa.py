@@ -15,7 +15,7 @@ from pathlib import Path
 
 import torch
 
-from bench.harness import Runner, Config, load_samples
+from bench.harness import Runner, add_revision_args, run_identity, Config, load_samples
 from bench.metrics import anls, bootstrap_ci, clean_answer
 
 PUBLISHED = 81.6
@@ -28,10 +28,12 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=32)
     ap.add_argument("--prompt", default="vi", help="vi | en")
     ap.add_argument("--out", default="results/sanity_docvqa.json")
+    add_revision_args(ap)
     a = ap.parse_args()
 
-    runner = Runner(a.model)
-    samples = load_samples(a.samples, seed=0, dataset="docvqa")
+    ident = run_identity(a, a.model, "docvqa")
+    runner = Runner(a.model, revision=ident["model_revision"])
+    samples = load_samples(a.samples, seed=0, dataset="docvqa", revision=ident["dataset_revision"])
     cfg = Config("baseline", max_new_tokens=a.max_new_tokens, prompt=a.prompt)
 
     scores, rows = [], []
@@ -48,7 +50,7 @@ def main():
 
     mean = 100 * statistics.fmean(scores)
     lo, hi = (100 * v for v in bootstrap_ci(scores))
-    res = {"model": a.model, "dataset": "docvqa/validation", "prompt": a.prompt,
+    res = {"model": a.model, "identity": ident, "dataset": "docvqa/validation", "prompt": a.prompt,
            "n": len(scores), "anls_mean": mean, "anls_ci95": [lo, hi],
            "published_test_anls": PUBLISHED, "gap": mean - PUBLISHED, "rows": rows}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)

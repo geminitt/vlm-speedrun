@@ -118,6 +118,8 @@ def main():
     ap.add_argument("--image-size", type=int, default=512)
     ap.add_argument("--out", default="results/gate0_latency.json")
     ap.add_argument("--allow-busy-gpu", action="store_true")
+    from bench.harness import add_revision_args, run_identity   # harness imports this module
+    add_revision_args(ap, dataset=False)
     a = ap.parse_args()
     busy = None if a.allow_busy_gpu else check_gpu_idle()
     if busy:
@@ -127,9 +129,10 @@ def main():
 
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     print(f"device: {dev} | {torch.cuda.get_device_name(0) if dev=='cuda' else ''}")
-    proc = AutoProcessor.from_pretrained(a.model)
+    ident = run_identity(a, a.model)
+    proc = AutoProcessor.from_pretrained(a.model, revision=ident["model_revision"])
     model = AutoModelForImageTextToText.from_pretrained(
-        a.model, dtype=torch.bfloat16).to(dev).eval()
+        a.model, dtype=torch.bfloat16, revision=ident["model_revision"]).to(dev).eval()
 
     img = make_image(a.image_size)
     # The question text is a fixed experimental input ("Describe this image."): the
@@ -167,7 +170,7 @@ def main():
 
     half = len(lat_gen) // 2
     res = {
-        "model": a.model, "device": dev,
+        "model": a.model, "identity": ident, "device": dev,
         "input_tokens": int(ids.numel()), "image_tokens": n_img_tok,
         "max_new_tokens": a.max_new_tokens, "wall_seconds": wall,
         "generate_ms": summarize(lat_gen),

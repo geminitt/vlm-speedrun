@@ -12,17 +12,17 @@ from pathlib import Path
 
 import torch
 
-from bench.harness import Runner, Config, load_samples
+from bench.harness import Runner, add_revision_args, run_identity, Config, load_samples
 from bench.latency_probe import check_gpu_idle, summarize, timed
 
 
-def load_quantized(model_id, mode, device="cuda"):
-    """mode: bf16 (reference) | fp16 | int8 | nf4"""
+def load_quantized(model_id, mode, device="cuda", revision=None):
+    """mode: bf16 (reference) | fp16 | int8 | nf4; revision: a hub commit, or None"""
     from transformers import AutoModelForImageTextToText
     if mode in ("bf16", "fp16"):
         dtype = torch.bfloat16 if mode == "bf16" else torch.float16
         return AutoModelForImageTextToText.from_pretrained(
-            model_id, dtype=dtype).to(device).eval()
+            model_id, dtype=dtype, revision=revision).to(device).eval()
     from transformers import BitsAndBytesConfig
     if mode == "int8":
         cfg = BitsAndBytesConfig(load_in_8bit=True)
@@ -33,7 +33,7 @@ def load_quantized(model_id, mode, device="cuda"):
     else:
         raise ValueError(f"unknown mode: {mode}")
     return AutoModelForImageTextToText.from_pretrained(
-        model_id, quantization_config=cfg, device_map=device).eval()
+        model_id, quantization_config=cfg, device_map=device, revision=revision).eval()
 
 
 @torch.no_grad()
@@ -71,13 +71,15 @@ def main():
     ap.add_argument("--repeats", type=int, default=2)
     ap.add_argument("--out", default="results/gate3_quant.json")
     ap.add_argument("--allow-busy-gpu", action="store_true")
+    add_revision_args(ap)
     a = ap.parse_args()
     busy = None if a.allow_busy_gpu else check_gpu_idle()
     if busy:
         raise SystemExit(busy)
 
-    runner = Runner(a.model)
-    samples = load_samples(a.samples, seed=0)
+    ident = run_identity(a, a.model, "chartqa")
+    runner = Runner(a.model, revision=ident["model_revision"])
+    samples = load_samples(a.samples, seed=0, revision=ident["dataset_revision"])
     cfg = Config("baseline")
     res = {}
 
@@ -114,7 +116,7 @@ def main():
     for mode in [m for m in modes if m != "bf16"]:
         print(f"\n--- {mode} ---")
         torch.cuda.empty_cache(); torch.cuda.reset_peak_memory_stats()
-        model = load_quantized(a.model, mode)
+        model = load_quantized(a.model, mode, revision=ident["model_revision"])
         runner.model = model
         lat = measure(model)
         parity = compare_to_reference(model, runner, samples, cfg, refs)
@@ -133,6 +135,7 @@ def main():
     base = res["bf16"]["latency_ms"]["median"]
     for m, v in res.items():
         v["speedup_vs_bf16"] = base / v["latency_ms"]["median"]
+    res["identity"] = ident
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
     print(f"\nsaved {a.out}")

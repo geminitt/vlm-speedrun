@@ -9,7 +9,7 @@ from pathlib import Path
 
 import torch
 
-from bench.harness import Runner, Config, load_samples, PROMPT
+from bench.harness import Runner, add_revision_args, run_identity, Config, load_samples, PROMPT
 from bench.latency_probe import check_gpu_idle, summarize, timed
 
 
@@ -21,14 +21,16 @@ def main():
     ap.add_argument("--max-new-tokens", type=int, default=32)
     ap.add_argument("--out", default="results/breakdown.json")
     ap.add_argument("--allow-busy-gpu", action="store_true")
+    add_revision_args(ap)
     a = ap.parse_args()
     busy = None if a.allow_busy_gpu else check_gpu_idle()
     if busy:
         raise SystemExit(busy)
 
-    r = Runner(a.model)
+    ident = run_identity(a, a.model, "chartqa")
+    r = Runner(a.model, revision=ident["model_revision"])
     model, inner = r.model, r.model.model
-    samples = load_samples(a.samples, seed=0)
+    samples = load_samples(a.samples, seed=0, revision=ident["dataset_revision"])
 
     parts = {"vision": [], "connector": [], "llm_prefill": [], "decode": [],
              "total_generate": []}
@@ -62,7 +64,7 @@ def main():
 
     med = {k: statistics.median(v) for k, v in parts.items()}
     total = med["total_generate"]
-    res = {"model": a.model, "image_tokens_median": statistics.median(n_tok),
+    res = {"model": a.model, "identity": ident, "image_tokens_median": statistics.median(n_tok),
            "input_tokens_median": statistics.median(ids_len),
            "answer_tokens_median": statistics.median(n_answer),
            "max_new_tokens": a.max_new_tokens,

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import torch
 
-from bench.harness import Runner, Config, load_samples
+from bench.harness import Runner, add_revision_args, run_identity, Config, load_samples
 from bench.latency_probe import check_gpu_idle, summarize, timed
 
 
@@ -20,13 +20,15 @@ def main():
     ap.add_argument("--edges", default="1536,768")
     ap.add_argument("--out", default="results/preprocess_cost.json")
     ap.add_argument("--allow-busy-gpu", action="store_true")
+    add_revision_args(ap)
     a = ap.parse_args()
     busy = None if a.allow_busy_gpu else check_gpu_idle()
     if busy:
         raise SystemExit(busy)
 
-    runner = Runner(a.model)
-    samples = load_samples(a.samples, seed=0)
+    ident = run_identity(a, a.model, "chartqa")
+    runner = Runner(a.model, revision=ident["model_revision"])
+    samples = load_samples(a.samples, seed=0, revision=ident["dataset_revision"])
     res = {}
 
     for edge in [int(e) for e in a.edges.split(",")]:
@@ -51,6 +53,7 @@ def main():
               f"| GPU {v['gpu_ms']['median']:.0f} ms "
               f"| preprocess is {v['preprocess_share_pct']:.0f}% of {total:.0f} ms total")
 
+    res["identity"] = ident
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(res, indent=2))
     print(f"saved {a.out}")

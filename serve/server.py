@@ -30,14 +30,15 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
     POLL_S = 0.05            # how often a queued request checks whether its client is gone
 
     def __init__(self, model_id, max_edge=1536, max_new_tokens=32, device="cuda",
-                 prompt="vi", max_queue=8):
+                 prompt="vi", max_queue=8, revision=None):
         from bench.harness import Runner, Config
         self.Config = Config
-        self.runner = Runner(model_id, device=device)
+        self.runner = Runner(model_id, device=device, revision=revision)
         self.default_edge = max_edge
         self.default_tokens = max_new_tokens
         self.device = device
-        self.model_id = model_id
+        # reported by Health, so a client can record exactly which weights answered
+        self.model_id = f"{model_id}@{revision}" if revision else model_id
         self.prompt = prompt
         # One GPU serves one request at a time; the lock makes admitted requests
         # queue in order instead of competing for memory.
@@ -121,8 +122,10 @@ def serve(args):
     device = args.device
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
+    from bench.harness import resolve_revision
+    revision = resolve_revision(args.model, args.model_revision, "model")
     server = build_server(VlmService(args.model, args.max_edge, args.max_new_tokens, device,
-                                     args.prompt, args.max_queue), args.max_queue)
+                                     args.prompt, args.max_queue, revision), args.max_queue)
     server.add_insecure_port(f"[::]:{args.port}")
     server.start()
     print(f"server ready on port {args.port} | model {args.model} "
@@ -134,6 +137,8 @@ def serve(args):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="HuggingFaceTB/SmolVLM-Instruct")
+    ap.add_argument("--model-revision", default="main",
+                    help="hub branch, tag or commit; resolved to a commit and reported by Health")
     ap.add_argument("--port", type=int, default=50051)
     ap.add_argument("--max-queue", type=int, default=8,
                     help="requests waiting or running before new ones are rejected")

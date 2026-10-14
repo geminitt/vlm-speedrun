@@ -2,6 +2,8 @@ import sys
 from collections import Counter
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from bench.harness import Config, Record, build_plan, integrity, timing_spikes
 
@@ -183,8 +185,9 @@ def test_main_resumes_after_an_interruption_and_writes_the_result(tmp_path, monk
         def stop(self): pass
         def join(self, timeout=None): pass
 
-    monkeypatch.setattr(h, "load_samples", lambda n, seed, dataset: samples[:n])
+    monkeypatch.setattr(h, "load_samples", lambda n, seed, dataset, **kw: samples[:n])
     monkeypatch.setattr(h, "Runner", FakeRunner)
+    _fixed_identity(monkeypatch, h)
     monkeypatch.setattr(h, "GpuSampler", FakeSampler)
     monkeypatch.setattr(h, "check_gpu_idle", lambda: None)
     monkeypatch.setattr(h.time, "sleep", lambda s: None)
@@ -206,3 +209,134 @@ def test_main_resumes_after_an_interruption_and_writes_the_result(tmp_path, monk
     assert len(result["records"]) == 8 * 2 * 2   # 32 steps: passes the progress line at 25
     assert len({(r["config"], r["sample_id"], r["round_idx"]) for r in result["records"]}) == 32
     assert not out.with_suffix(".partial.jsonl").exists()
+
+
+# --- resume identity: a checkpoint is reused only for the same inputs --------------
+
+REV_A, REV_B = "a" * 40, "b" * 40
+
+
+def _fixed_identity(monkeypatch, h, source="src-1", env=None, revision=REV_A):
+    """Pin every identity input of main(), so a test changes exactly one of them."""
+    monkeypatch.setattr(h, "source_digest", lambda *a, **k: source, raising=False)
+    monkeypatch.setattr(h, "environment_identity", lambda *a, **k: env or {"torch": "1"},
+                        raising=False)
+    monkeypatch.setattr(h, "resolve_revision", lambda repo, rev="main", kind="model": revision,
+                        raising=False)
+
+
+def _interrupted_then_rerun(tmp_path, monkeypatch, change):
+    """Stop a fake run midway, apply `change`, rerun; return the result and loader calls."""
+    import json
+    import pytest
+    import torch
+    import bench.harness as h
+
+    samples = [{"sample_id": i, "image": None, "query": f"q{i}", "gold": "1", "golds": ["1"],
+                "subset": "human"} for i in range(4)]
+    state = {"n": 0, "stop_after": 6, "loads": []}
+
+    class FakeRunner:
+        def __init__(self, model_id, **kw):
+            state["loads"].append(("model", kw.get("revision")))
+
+        def run(self, sample, cfg):
+            state["n"] += 1
+            if state["stop_after"] and state["n"] > state["stop_after"]:
+                raise KeyboardInterrupt
+            return "1", 50.0, 100.0, 81, 100
+
+    class FakeSampler:
+        rows = []
+        def start(self): pass
+        def stop(self): pass
+        def join(self, timeout=None): pass
+
+    def fake_load(n, seed, dataset, **kw):
+        state["loads"].append(("dataset", kw.get("revision")))
+        return samples[:n]
+
+    monkeypatch.setattr(h, "load_samples", fake_load)
+    monkeypatch.setattr(h, "Runner", FakeRunner)
+    monkeypatch.setattr(h, "GpuSampler", FakeSampler)
+    monkeypatch.setattr(h, "check_gpu_idle", lambda: None)
+    monkeypatch.setattr(h.time, "sleep", lambda s: None)
+    monkeypatch.setattr(torch.cuda, "memory_reserved", lambda: 0)
+    monkeypatch.setattr(torch.cuda, "max_memory_allocated", lambda: 0)
+    _fixed_identity(monkeypatch, h)
+    out = tmp_path / "run.json"
+    monkeypatch.setattr("sys.argv", ["harness", "--samples", "4", "--rounds", "2",
+                                     "--configs", "baseline,edge768", "--out", str(out)])
+    with pytest.raises(KeyboardInterrupt):
+        h.main()                                       # 4 warm-up calls + 2 measurements
+    state.update(n=0, stop_after=0, loads=[])
+    change(monkeypatch, h)
+    h.main()
+    result = json.loads(out.read_text())
+    keys = [(r["config"], r["sample_id"], r["round_idx"]) for r in result["records"]]
+    assert len(keys) == len(set(keys)) == 4 * 2 * 2        # complete, with no duplicate
+    return result, state["loads"]
+
+
+def test_resume_reuses_records_when_every_input_is_unchanged(tmp_path, monkeypatch):
+    result, loads = _interrupted_then_rerun(tmp_path, monkeypatch, lambda mp, h: None)
+    assert result["resumed_records"] == 2
+
+
+@pytest.mark.parametrize("what, change", [
+    ("measured source", lambda mp, h: _fixed_identity(mp, h, source="src-2")),
+    ("environment", lambda mp, h: _fixed_identity(mp, h, env={"torch": "2"})),
+    ("model and dataset revision", lambda mp, h: _fixed_identity(mp, h, revision=REV_B)),
+])
+def test_a_changed_input_starts_the_run_afresh(tmp_path, monkeypatch, what, change):
+    result, _ = _interrupted_then_rerun(tmp_path, monkeypatch, change)
+    assert result["resumed_records"] == 0, f"a changed {what} must not reuse old records"
+
+
+def test_loaders_receive_the_resolved_revision(tmp_path, monkeypatch):
+    result, loads = _interrupted_then_rerun(tmp_path, monkeypatch, lambda mp, h: None)
+    assert ("model", REV_A) in loads and ("dataset", REV_A) in loads
+    ident = result["identity"]
+    assert ident["model_revision"] == REV_A and ident["dataset_revision"] == REV_A
+
+
+def test_only_the_model_revision_differs(tmp_path, monkeypatch):
+    """Model and dataset revisions are separate signature fields."""
+    def change(mp, h):
+        mp.setattr(h, "resolve_revision",
+                   lambda repo, rev="main", kind="model": REV_B if kind == "model" else REV_A)
+    result, _ = _interrupted_then_rerun(tmp_path, monkeypatch, change)
+    assert result["resumed_records"] == 0
+
+
+def test_source_digest_follows_file_content(tmp_path):
+    from bench.harness import source_digest
+    (tmp_path / "a.py").write_text("x = 1\n")
+    first = source_digest(tmp_path, ("a.py",))
+    assert source_digest(tmp_path, ("a.py",)) == first
+    (tmp_path / "a.py").write_text("x = 2\n")
+    assert source_digest(tmp_path, ("a.py",)) != first
+
+
+def test_measured_sources_exist():
+    from bench.harness import MEASURED_SOURCES, source_digest
+    root = Path(__file__).resolve().parents[1] / "bench"
+    assert all((root / f).is_file() for f in MEASURED_SOURCES)
+    assert len(source_digest()) == 64
+
+
+def test_revision_resolution(tmp_path, monkeypatch):
+    import pytest
+    import bench.harness as h
+    assert h.resolve_revision("org/m", REV_B) == REV_B          # a commit is already pinned
+
+    def offline(*a, **k):
+        raise OSError("offline")
+    monkeypatch.setattr(h, "_online_revision", offline)
+    monkeypatch.setenv("HF_HUB_CACHE", str(tmp_path))
+    refs = tmp_path / "datasets--org--d" / "refs"
+    refs.mkdir(parents=True)
+    (refs / "main").write_text(REV_A + "\n")
+    assert h.resolve_revision("org/d", "main", "dataset") == REV_A   # offline: the cached ref
+    with pytest.raises(SystemExit):
+        h.resolve_revision("org/unknown", "main", "model")          # unidentifiable: refuse

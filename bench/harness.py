@@ -10,7 +10,7 @@ The six measurement rules of the README, and where each lives in this file:
      image tokens, clock, temperature, control drift, timing spikes, and
      GPU memory held by other processes                                    -> main (integrity)
 """
-import argparse, json, random, statistics, time
+import argparse, hashlib, json, os, platform, random, re, statistics, time
 from dataclasses import dataclass, field, asdict
 from pathlib import Path
 
@@ -103,19 +103,21 @@ class Record:
 
 
 class Runner:
-    def __init__(self, model_id, dtype="bfloat16", device="cuda", quant="bf16"):
+    def __init__(self, model_id, dtype="bfloat16", device="cuda", quant="bf16", revision=None):
+        """revision: a hub commit; None loads whatever the default branch points to."""
         from transformers import AutoProcessor, AutoModelForImageTextToText
         self.device = device
         self.model_id = model_id
         self.quant = quant
+        self.revision = revision
         self._procs = {}
         self.proc = self.processor_for(Config("baseline"))
         if quant == "bf16":
             self.model = AutoModelForImageTextToText.from_pretrained(
-                model_id, dtype=getattr(torch, dtype)).to(device).eval()
+                model_id, dtype=getattr(torch, dtype), revision=revision).to(device).eval()
         else:
             from bench.quantize import load_quantized
-            self.model = load_quantized(model_id, quant, device)
+            self.model = load_quantized(model_id, quant, device, revision=revision)
         self.img_token_id = getattr(self.model.config, "image_token_id", None)
 
     def processor_for(self, cfg):
@@ -125,7 +127,8 @@ class Runner:
             kw = {"do_image_splitting": cfg.split}
             if cfg.split:
                 kw["size"] = {"longest_edge": cfg.max_edge}
-            self._procs[k] = AutoProcessor.from_pretrained(self.model_id, **kw)
+            self._procs[k] = AutoProcessor.from_pretrained(self.model_id,
+                                                           revision=self.revision, **kw)
         return self._procs[k]
 
     def prepare(self, sample, cfg=None):
@@ -208,12 +211,12 @@ DATASETS = {
 }
 
 
-def load_samples(n, seed=0, dataset="chartqa"):
-    """Take n samples, fixed by seed. The same seed always yields the same set."""
+def load_samples(n, seed=0, dataset="chartqa", revision=None):
+    """Take n samples, fixed by seed. The same seed and revision always yield the same set."""
     from datasets import load_dataset
     path, split, c_img, c_q, c_a = DATASETS[dataset]
     kw = {"name": "DocVQA"} if dataset == "docvqa" else {}
-    ds = load_dataset(path, split=split, **kw)
+    ds = load_dataset(path, split=split, revision=revision, **kw)
     idx = list(range(len(ds)))
     random.Random(seed).shuffle(idx)
     out = []
@@ -227,6 +230,85 @@ def load_samples(n, seed=0, dataset="chartqa"):
                     "subset": ({0: "human", 1: "augmented"}.get(row.get("human_or_machine"), "")
                                if dataset == "chartqa" else "")})
     return out
+
+
+# --- run identity: what must match before a checkpoint's records may be reused -----
+
+# Modules whose code decides what a measurement is: timing, token selection, scoring,
+# telemetry and quantized loading. A change in any of them changes the numbers.
+MEASURED_SOURCES = ("harness.py", "prune.py", "metrics.py", "latency_probe.py", "quantize.py")
+
+
+def source_digest(root=Path(__file__).resolve().parent, files=MEASURED_SOURCES):
+    """SHA-256 over the measured modules' content; works on an uncommitted tree too."""
+    h = hashlib.sha256()
+    for name in files:
+        h.update(name.encode() + b"\0" + (Path(root) / name).read_bytes() + b"\0")
+    return h.hexdigest()
+
+
+def environment_identity():
+    """Library versions and hardware that a timing or a prediction depends on."""
+    from importlib import metadata
+    env = {"python": platform.python_version(), "torch": torch.__version__,
+           "cuda": torch.version.cuda,
+           "gpu": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None}
+    for pkg in ("transformers", "datasets", "accelerate", "bitsandbytes", "pillow"):
+        try:
+            env[pkg] = metadata.version(pkg)
+        except metadata.PackageNotFoundError:
+            env[pkg] = None
+    return env
+
+
+def _hub_cache():
+    if os.environ.get("HF_HUB_CACHE"):
+        return Path(os.environ["HF_HUB_CACHE"])
+    home = os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface")
+    return Path(home) / "hub"
+
+
+def _online_revision(repo_id, revision, kind):
+    from huggingface_hub import HfApi
+    return HfApi().repo_info(repo_id, repo_type=kind, revision=revision).sha
+
+
+def resolve_revision(repo_id, revision="main", kind="model"):
+    """Turn a branch or tag into the commit it points to, so a run names its exact inputs.
+
+    Asks the hub first; offline, reads the commit the local cache recorded for that
+    branch. A run whose inputs cannot be identified is refused rather than guessed.
+    """
+    if re.fullmatch(r"[0-9a-f]{40}", revision):
+        return revision
+    try:
+        return _online_revision(repo_id, revision, kind)
+    except Exception as online_error:
+        ref = _hub_cache() / f"{kind}s--{repo_id.replace('/', '--')}" / "refs" / revision
+        if ref.is_file():
+            return ref.read_text().strip()
+        raise SystemExit(f"cannot identify {kind} {repo_id}@{revision}: not on the hub "
+                         f"({online_error}) and not in the local cache")
+
+
+def add_revision_args(ap, model=True, dataset=True):
+    for kind, wanted in (("model", model), ("dataset", dataset)):
+        if wanted:
+            ap.add_argument(f"--{kind}-revision", default="main",
+                            help="hub branch, tag or commit; resolved to a commit and recorded")
+
+
+def run_identity(a, model_id=None, dataset=None):
+    """The exact inputs of a run, recorded with its output: the model and dataset
+    commits it loads (when it loads them), the measuring code and the environment."""
+    ident = {}
+    if model_id:
+        ident["model_revision"] = resolve_revision(model_id, a.model_revision, "model")
+    if dataset:
+        ident["dataset_revision"] = resolve_revision(DATASETS[dataset][0], a.dataset_revision,
+                                                     "dataset")
+    ident.update(source_sha256=source_digest(), environment=environment_identity())
+    return ident
 
 
 def build_plan(configs, n_samples, rounds, seed):
@@ -383,6 +465,7 @@ def main():
     ap.add_argument("--dataset", default="chartqa", help="chartqa | docvqa")
     ap.add_argument("--metric", default="relaxed", help="ChartQA: relaxed | exact_years | lenient")
     ap.add_argument("--seed", type=int, default=0)
+    add_revision_args(ap)
     ap.add_argument("--out", default="results/harness_run.json")
     ap.add_argument("--allow-busy-gpu", action="store_true",
                     help="measure even if another process is using the GPU (results flagged)")
@@ -392,10 +475,14 @@ def main():
         raise SystemExit(busy)
 
     configs = [Config.parse(c) for c in a.configs.split(",")]
-    samples = load_samples(a.samples, a.seed, a.dataset)
+    # Pin the exact model and data before loading either, so the run cannot pick up a
+    # branch that moved between its start and a resume.
+    ident = run_identity(a, a.model, a.dataset)
+    model_rev, dataset_rev = ident["model_revision"], ident["dataset_revision"]
+    samples = load_samples(a.samples, a.seed, a.dataset, revision=dataset_rev)
     score = ((lambda p, s: score_chartqa(p, s["gold"], a.metric)) if a.dataset == "chartqa"
              else (lambda p, s: anls(clean_answer(p), s["golds"]) >= 0.5))
-    runner = Runner(a.model, quant=a.quant)
+    runner = Runner(a.model, quant=a.quant, revision=model_rev)
 
     print(f"model: {a.model} [{a.quant}] | {len(samples)} samples | {len(configs)} configs "
           f"| {a.rounds} rounds")
@@ -405,10 +492,13 @@ def main():
         for s in samples[:2]:
             runner.run(s, cfg)
 
-    # checkpoint: a run interrupted by a shutdown resumes where it stopped
+    # checkpoint: a run interrupted by a shutdown resumes where it stopped, but only if
+    # every input that shapes a measurement is the same: settings, the measuring code,
+    # the exact model and data commits, and the library versions and GPU
     signature = {"model": a.model, "quant": a.quant, "dataset": a.dataset, "metric": a.metric,
                  "samples": len(samples), "rounds": a.rounds, "seed": a.seed,
-                 "configs": [c.key() for c in configs]}
+                 "configs": [c.key() for c in configs],
+                 **ident}
     ckpt = Path(a.out).with_suffix(".partial.jsonl")
     restored, checkpoint = open_checkpoint(ckpt, signature)
     finished = {(r.config, r.sample_id, r.round_idx) for r in restored}
@@ -470,6 +560,7 @@ def main():
 
     check = integrity(records, drift)
     out = {"model": a.model, "quant": a.quant, "dataset": a.dataset,
+           "identity": ident,
            "metric": a.metric if a.dataset == "chartqa" else "anls>=0.5",
            "samples": len(samples), "rounds": a.rounds, "integrity": check,
            "resumed_records": len(restored),
