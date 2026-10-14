@@ -50,7 +50,10 @@ if step 1; then
   $PY -m bench.latency_probe --model "$MODEL" --runs "$PROBE_RUNS" --out "$OUT/gate0_latency.json"
 fi
 # The noise measured in step 1, on the same model, is recorded with every harness run.
-NOISE_CV=$($PY -c "import json; from bench.metrics import robust_cv; print(robust_cv(json.load(open('$OUT/gate0_latency.json'))['raw_generate_ms']))")
+# Read only when a step that records it is in range, so other ranges need no gate-0 file.
+if step 3 || step 4 || step 6 || step 7; then
+  NOISE_CV=$($PY -c "import json; from bench.metrics import robust_cv; print(robust_cv(json.load(open('$OUT/gate0_latency.json'))['raw_generate_ms']))")
+fi
 
 if step 2; then
   echo "== 2/9 where the time goes =="
@@ -111,17 +114,22 @@ if step 8; then
     docker build -t vlm-speedrun .
     for edge in 1536 768; do
       cid=$(docker run -d --gpus all -p 50051:50051 -v ~/.cache/huggingface:/models \
-            vlm-speedrun pixi run python -m serve.server --max-edge "$edge")
+            vlm-speedrun pixi run python -m serve.server --model "$MODEL" --max-edge "$edge")
+      # expands now: a failed client run must not leave the container holding the GPU
+      trap "docker rm -f $cid > /dev/null 2>&1 || true" EXIT
       $PY -m serve.client_bench --samples "$SERVE_REQUESTS" --concurrency 1,2,4 \
         --max-edge "$edge" --out "$OUT/gate4_docker_$edge.json"
       docker rm -f "$cid" > /dev/null
+      trap - EXIT
     done
   fi
 fi
 
-echo "== 9/9 figure and README tables =="
-$PY -m bench.plot --results "$OUT/gate2_sweep.json" --stem "$OUT/tradeoff"
-if [[ "$OUT" == "results" ]]; then
-  $PY -m bench.report --write
+if step 9; then
+  echo "== 9/9 figure and README tables =="
+  $PY -m bench.plot --results "$OUT/gate2_sweep.json" --stem "$OUT/tradeoff"
+  if [[ "$OUT" == "results" ]]; then
+    $PY -m bench.report --write
+  fi
 fi
 echo "== done. Results are in $OUT/ =="
