@@ -12,6 +12,7 @@ from pathlib import Path
 import pytest
 
 SCRIPT = Path(__file__).resolve().parents[1] / "speedrun.sh"
+SCRIPT_SETTINGS = ("FAST", "DOCKER", "START", "END", "MODEL", "PIXI", "FAIL_DOCKER_CLIENT")
 
 # pixi stub: answers the script's two probes (the interpreter path is a stand-in
 # server that waits to be killed), records every other command, and fails the
@@ -24,6 +25,15 @@ if [[ "$3" == "-c" ]]; then
 fi
 echo "pixi $*" >> "$LOG"
 if [[ "${FAIL_DOCKER_CLIENT:-0}" == "1" && "$*" == *gate4_docker_* ]]; then exit 3; fi
+# Like the real client, which waits for Health: return only once the native server
+# it talks to has started, or the script may kill that server before it logs.
+if [[ "$*" == *gate4_serving_* ]]; then
+  want=$(grep -c "gate4_serving_" "$LOG")
+  for _ in $(seq 100); do
+    [[ $(grep -c "^server " "$LOG") -ge $want ]] && break
+    sleep 0.05
+  done
+fi
 """
 SERVER = r"""#!/bin/bash
 echo "server $*" >> "$LOG"
@@ -47,7 +57,10 @@ def run(tmp_path):
     log = tmp_path / "commands.log"
 
     def go(**env):
-        full = dict(os.environ, PIXI=str(bin_dir / "pixi"), LOG=str(log),
+        # Step 0 of speedrun.sh runs this suite: its own FAST, DOCKER, range and model
+        # settings must not leak into the script under test.
+        inherited = {k: v for k, v in os.environ.items() if k not in SCRIPT_SETTINGS}
+        full = dict(inherited, PIXI=str(bin_dir / "pixi"), LOG=str(log),
                     PATH=f"{bin_dir}:{os.environ['PATH']}", **env)
         proc = subprocess.run(["bash", str(SCRIPT)], cwd=tmp_path, env=full,
                               capture_output=True, text=True, timeout=30)
