@@ -396,13 +396,7 @@ def values(results):
     v["docvqa_vi"] = f"{dv['anls_mean']:.1f}"
     v["docvqa_en"] = f"{de['anls_mean']:.1f}"
     v["docvqa_published"] = f"{dv['published_test_anls']:.1f}"
-    v["docvqa_verdict"] = (
-        f"The published {dv['published_test_anls']:.1f} lies inside our 95% interval "
-        f"[{lo:.1f}, {hi:.1f}], so this check finds no evidence of a systematic fault in "
-        f"prompting, scoring or preprocessing" if lo <= dv["published_test_anls"] <= hi else
-        f"The published {dv['published_test_anls']:.1f} lies outside our 95% interval "
-        f"[{lo:.1f}, {hi:.1f}]: the gap of {dv['published_test_anls'] - dv['anls_mean']:.0f} points "
-        f"is systematic, not sampling noise")
+    v["docvqa_verdict"] = docvqa_verdict(dv["published_test_anls"], dv["anls_mean"], lo, hi)
     ca = compare_anls(dv["rows"], de["rows"])
     pr = load(results, "gate6_prompt")
     pp = paired_accuracy(pr["records"], base, "prompten(prompt=en)")
@@ -424,6 +418,25 @@ def values(results):
     v["n_tests"] = sum(len(re.findall(r"^def test_", p.read_text(), re.M))
                        for p in (ROOT / "tests").glob("test_*.py"))
     return {k: str(x) for k, x in v.items()}
+
+
+def docvqa_verdict(published, mean, lo, hi):
+    """What the DocVQA comparison can and cannot say.
+
+    Our number is a validation-split sample; the published one is the full test split
+    under the authors' own evaluation setup. The interval speaks only to sampling
+    error: a gap outside it is real for this setup but has no cause assigned by this
+    check, and agreement inside it does not verify the pipeline either.
+    """
+    limit = ("the two numbers come from different splits and evaluation setups, so this "
+             "check alone")
+    if lo <= published <= hi:
+        return (f"The published {published:.1f} (test split) lies inside our 95% interval "
+                f"[{lo:.1f}, {hi:.1f}] (validation split): no difference beyond sampling error. "
+                f"However, {limit} does not verify prompting, scoring or preprocessing")
+    return (f"The published {published:.1f} (test split) lies outside our 95% interval "
+            f"[{lo:.1f}, {hi:.1f}] (validation split): the gap of {published - mean:.0f} points "
+            f"is larger than sampling error. However, {limit} does not show where it comes from")
 
 
 def render(template, vals):

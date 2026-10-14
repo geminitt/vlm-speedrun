@@ -1,13 +1,14 @@
 """Sanity check: run on DocVQA and compare against the published number.
 
-The SmolVLM authors report DocVQA (test) = 81.6. If our pipeline lands far from
-that, something systematic is wrong — prompting, scoring or preprocessing — and
-every other result in the project becomes suspect with it.
+The SmolVLM authors report DocVQA (test) = 81.6. A large gap is a reason to look
+for a fault in prompting, scoring or preprocessing, but not proof of one.
 
 Note: we run on the validation split (test labels are not public) with the exact
-ANLS metric, on a sample. The verdict therefore asks whether the published number
-lies inside the bootstrap 95% interval of our estimate — a fixed tolerance would
-say nothing about how much a sample of this size can resolve.
+ANLS metric, on a sample, and with our own prompt and image settings. The verdict
+therefore asks only whether the published number lies inside the bootstrap 95%
+interval of our estimate — a fixed tolerance would say nothing about how much a
+sample of this size can resolve. Because splits and setups differ, the check
+cannot say where a gap comes from.
 """
 import argparse, json, statistics
 from pathlib import Path
@@ -56,10 +57,10 @@ def main():
     print(f"\nour ANLS    : {mean:.1f}  95% CI [{lo:.1f}, {hi:.1f}]  ({len(scores)} samples, validation split)")
     print(f"published   : {PUBLISHED:.1f}  (full test split)")
     print(f"gap         : {mean - PUBLISHED:+.1f} points")
-    print("verdict     : " + ("published number inside our 95% interval: no evidence of a systematic fault"
+    print("verdict     : " + ("published number inside our 95% interval: no gap beyond sampling error"
                               if lo <= PUBLISHED <= hi else
-                              "published number OUTSIDE our 95% interval: a systematic gap is likely "
-                              "(split, prompt, scoring or preprocessing)"))
+                              "published number OUTSIDE our 95% interval: a gap beyond sampling error")
+          + " (different splits and setups: this check does not attribute a cause)")
     print(f"saved {a.out}")
 
 
