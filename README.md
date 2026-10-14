@@ -38,7 +38,7 @@ Error bars are 95% Wilson intervals with one observation per question.*
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
 START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
-pixi run test              # 70 tests in a light CPU environment, a few seconds
+pixi run test              # 94 tests in a light CPU environment, about 15 seconds
 ```
 
 The script runs every measurement, redraws the figure and regenerates this README
@@ -259,7 +259,9 @@ admits at most `--max-queue` requests (default 8) and rejects the rest at once w
 
 If the pipeline had a systematic fault — in prompting, scoring or preprocessing — every
 result above would be suspect. The check: run DocVQA with the official **ANLS** metric
-and compare with the number published by the model's authors.
+and compare with the number published by the model's authors. The comparison crosses
+splits (validation here, test there) and evaluation setups, so it can flag a gap but
+cannot attribute one.
 
 |  | ANLS | 95% CI | Published value inside the CI? |
 |---|---:|---:|---|
@@ -267,12 +269,13 @@ and compare with the number published by the model's authors.
 | This project, English instruction (300 samples, validation split) | **72.4** | [67.9, 77.0] | **no** |
 | Published by the SmolVLM authors (full test split) | 81.6 | — | — |
 
-The published 81.6 lies outside our 95% interval [67.2, 76.2]: the gap of 10 points is systematic, not sampling noise.
+The published 81.6 (test split) lies outside our 95% interval [67.2, 76.2] (validation split): the gap of 10 points is larger than sampling error. However, the two numbers come from different splits and evaluation setups, so this check alone does not show where it comes from.
 
 Where the lost score goes: of the 28 ANLS points lost, answers that are a
 shortened form of the reference ("Pfizer" for "Pfizer Pharmaceuticals Group"), which the
 brief-answer instruction could cause, account for about 2. The rest are
-values the model read wrongly. The English instruction does not close the gap either
+other wrong answers; this check does not separate misreading from setup differences.
+The English instruction does not close the gap either
 (next section). What remains — the validation split versus the authors' test split,
 their evaluation prompt and image settings — is not something this project can
 separate, so the gap is reported rather than explained away.
@@ -327,7 +330,7 @@ audit of the whole repository, and every one is fixed in the code.
 | Token pruning also deleted the 119 tile-layout tokens (`<row_1_col_2>`, `<global-img>`) between the tiles | none — found by reading the code | the accuracy cost of pruning mixed two effects, and "which tokens are kept does not matter" was not supported |
 | The README said four token-selection methods were tried; only three had ever run | "which tokens are kept does not matter" | the untried fourth, largest-norm selection, turned out to be the best and reversed that conclusion |
 | Another process shared the GPU during one sweep; the drift check did not notice | "single tile" at 2.08×; 13% of that run's timings far above the median | the cheapest lever looked much slower than it is |
-| DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a real gap to the published score was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
+| DocVQA check used a fixed 10-point tolerance on 100 samples, and ANLS stripped punctuation unlike the official metric | "no systematic fault" | a gap beyond sampling error was reported as a pass; with the official metric and 300 samples the published score lies outside our 95% interval |
 | ChartQA scored with a lenient home-made metric while the README called it relaxed accuracy | on the first 300 questions the baseline scored 64.7% instead of 55.0% (+9.7 points) | edge 768's accuracy cost looked large and certain on those 300 questions (−7.3 points, p = 0.002); with the benchmark metric it is small and needs the whole split |
 | Confidence intervals counted every round as a new sample | error bars about √3 too narrow | results looked more certain than the data allow |
 | Noise threshold measured on the 256M model, then its file overwritten by a quick run | threshold 25.5% instead of the measured one | real improvements below 25% would have been dismissed |
@@ -366,7 +369,7 @@ serve/
   admission.py         admission control: reject at once beyond the queue bound
   server.py            inference server: bounded queue, clear errors, server-side timing
   client_bench.py      end-to-end latency at several concurrency levels
-tests/                 70 tests for the core, on CPU in a few seconds
+tests/                 94 tests for the core, on CPU in about 15 seconds
 results/               raw JSON results + figures; results/history/ keeps the runs that
                        document the mistakes above
 speedrun.sh            one command to rerun every result and regenerate this README
