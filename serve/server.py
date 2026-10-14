@@ -2,7 +2,9 @@
 
 Three properties an inference server needs, and where they live:
   - admission control: at most --max-queue requests waiting or running; beyond
-    that, reject at once with RESOURCE_EXHAUSTED instead of letting latency grow
+    that, reject at once with RESOURCE_EXHAUSTED instead of letting latency grow.
+    A request whose client has gone (deadline passed or cancelled) while it waited
+    for the GPU is dropped before inference instead of computing an unread answer
   - server-side timing: compute time and GPU-queue time are returned separately
   - graceful degradation: a clear error on a bad image, an unsupported setting or
     GPU out-of-memory, instead of hanging
@@ -25,6 +27,8 @@ ALLOWED_EDGES = (768, 1152, 1536)
 
 
 class VlmService(vlm_pb2_grpc.VlmServiceServicer):
+    POLL_S = 0.05            # how often a queued request checks whether its client is gone
+
     def __init__(self, model_id, max_edge=1536, max_new_tokens=32, device="cuda",
                  prompt="vi", max_queue=8):
         from bench.harness import Runner, Config
@@ -45,6 +49,22 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
         return vlm_pb2.HealthReply(ready=True, model=self.model_id,
                                    device=self.device, vram_mb=vram)
 
+    def _acquire_gpu(self, context):
+        """Wait for the GPU, but give up as soon as the client can no longer use the answer.
+
+        A blocking wait would hand the GPU to a request whose deadline passed while it
+        queued, spending a full generation on a reply nobody reads.
+        """
+        while not self.gpu.acquire(timeout=self.POLL_S):
+            remaining = context.time_remaining()
+            if remaining is not None and remaining <= 0:
+                context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "deadline passed while queued")
+            if not context.is_active():
+                context.abort(grpc.StatusCode.CANCELLED, "client cancelled while queued")
+        if not context.is_active():          # it may have gone just as the GPU freed up
+            self.gpu.release()
+            context.abort(grpc.StatusCode.CANCELLED, "client gone before inference")
+
     def Infer(self, request, context):
         edge = request.max_edge or self.default_edge
         if edge not in ALLOWED_EDGES:
@@ -62,7 +82,8 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
                               max_new_tokens=request.max_new_tokens or self.default_tokens)
             sample = {"image": img, "query": request.question or "Describe the image."}
             t_wait = time.perf_counter()
-            with self.gpu:
+            self._acquire_gpu(context)
+            try:
                 queue_ms = (time.perf_counter() - t_wait) * 1000
                 t0 = time.perf_counter()
                 try:
@@ -71,22 +92,37 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
                     torch.cuda.empty_cache()
                     context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED, "out of GPU memory")
                 server_ms = (time.perf_counter() - t0) * 1000
+            finally:
+                self.gpu.release()
         finally:
             self.admission.leave()
         return vlm_pb2.InferReply(answer=pred, image_tokens=n_img,
                                   server_ms=server_ms, queue_ms=queue_ms)
 
 
-def serve(args):
+def build_server(service, max_queue):
+    """One worker per admissible request, plus one so Health answers under full load.
+
+    gRPC hands calls to the executor before any handler runs; with fewer workers than
+    the bound, excess calls wait in the executor's unbounded queue where admission
+    cannot see them. maximum_concurrent_rpcs makes gRPC itself reject what no worker
+    can take, so every accepted call reaches admission at once.
+    """
+    slots = max_queue + 1
     server = grpc.server(
-        futures.ThreadPoolExecutor(max_workers=args.max_queue),
-        options=[("grpc.max_receive_message_length", 32 * 1024 * 1024)])
+        futures.ThreadPoolExecutor(max_workers=slots),
+        options=[("grpc.max_receive_message_length", 32 * 1024 * 1024)],
+        maximum_concurrent_rpcs=slots)
+    vlm_pb2_grpc.add_VlmServiceServicer_to_server(service, server)
+    return server
+
+
+def serve(args):
     device = args.device
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
-    vlm_pb2_grpc.add_VlmServiceServicer_to_server(
-        VlmService(args.model, args.max_edge, args.max_new_tokens, device,
-                   args.prompt, args.max_queue), server)
+    server = build_server(VlmService(args.model, args.max_edge, args.max_new_tokens, device,
+                                     args.prompt, args.max_queue), args.max_queue)
     server.add_insecure_port(f"[::]:{args.port}")
     server.start()
     print(f"server ready on port {args.port} | model {args.model} "
