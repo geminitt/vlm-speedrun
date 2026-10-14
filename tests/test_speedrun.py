@@ -26,6 +26,7 @@ echo "pixi $*" >> "$LOG"
 if [[ "${FAIL_DOCKER_CLIENT:-0}" == "1" && "$*" == *gate4_docker_* ]]; then exit 3; fi
 """
 SERVER = r"""#!/bin/bash
+echo "server $*" >> "$LOG"
 exec sleep 30
 """
 DOCKER = r"""#!/bin/bash
@@ -91,3 +92,16 @@ def test_the_noise_level_is_read_only_by_steps_that_use_it(run, start, end, need
     proc, cmds = run(START=start, END=end)
     assert proc.returncode == 0, proc.stderr
     assert any("robust_cv" in c for c in cmds) == needed
+
+
+def test_benchmark_servers_listen_on_localhost_only(run):
+    # The client runs on the same machine; a benchmark has no reason to expose an
+    # unauthenticated server to the network.
+    proc, cmds = run(START="8", END="8", DOCKER="1")
+    assert proc.returncode == 0, proc.stderr
+    docker_runs = [c for c in cmds if c.startswith("docker run")]
+    assert docker_runs and all("-p 127.0.0.1:50051:50051" in c for c in docker_runs)
+    natives = [c for c in cmds if c.startswith("server ")]
+    assert len(natives) == 2 and all("--host 127.0.0.1" in c for c in natives)
+    clients = [c for c in cmds if "serve.client_bench" in c]
+    assert len(clients) == 4 and all("--target 127.0.0.1:50051" in c for c in clients)

@@ -96,11 +96,13 @@ fi
 
 serve_bench() {   # $1 = longest edge, $2 = output file
   local edge="$1" out="$2"
-  "$PYBIN" -m serve.server --model "$MODEL" --max-edge "$edge" > "$OUT/server_$edge.log" 2>&1 &
+  # localhost only: the client runs here, and the server has no authentication
+  "$PYBIN" -m serve.server --model "$MODEL" --max-edge "$edge" --host 127.0.0.1 \
+    > "$OUT/server_$edge.log" 2>&1 &
   local pid=$!
   trap "kill $pid 2>/dev/null || true" EXIT      # expands now: stop this server on any exit
-  $PY -m serve.client_bench --samples "$SERVE_REQUESTS" --concurrency 1,2,4 \
-    --max-edge "$edge" --out "$out"
+  $PY -m serve.client_bench --target 127.0.0.1:50051 --samples "$SERVE_REQUESTS" \
+    --concurrency 1,2,4 --max-edge "$edge" --out "$out"
   kill "$pid"; wait "$pid" 2>/dev/null || true
   trap - EXIT
 }
@@ -113,12 +115,14 @@ if step 8; then
     echo "== 8b/9 the same server inside Docker =="
     docker build -t vlm-speedrun .
     for edge in 1536 768; do
-      cid=$(docker run -d --gpus all -p 50051:50051 -v ~/.cache/huggingface:/models \
+      # inside the container the server listens on all its interfaces; the host side
+      # publishes the port on localhost only
+      cid=$(docker run -d --gpus all -p 127.0.0.1:50051:50051 -v ~/.cache/huggingface:/models \
             vlm-speedrun pixi run python -m serve.server --model "$MODEL" --max-edge "$edge")
       # expands now: a failed client run must not leave the container holding the GPU
       trap "docker rm -f $cid > /dev/null 2>&1 || true" EXIT
-      $PY -m serve.client_bench --samples "$SERVE_REQUESTS" --concurrency 1,2,4 \
-        --max-edge "$edge" --out "$OUT/gate4_docker_$edge.json"
+      $PY -m serve.client_bench --target 127.0.0.1:50051 --samples "$SERVE_REQUESTS" \
+        --concurrency 1,2,4 --max-edge "$edge" --out "$OUT/gate4_docker_$edge.json"
       docker rm -f "$cid" > /dev/null
       trap - EXIT
     done

@@ -38,7 +38,7 @@ Error bars are 95% Wilson intervals with one observation per question.*
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
 START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
-pixi run test              # 94 tests in a light CPU environment, about 15 seconds
+pixi run test              # 96 tests in a light CPU environment, about 15 seconds
 ```
 
 The script runs every measurement, redraws the figure and regenerates this README
@@ -369,7 +369,7 @@ serve/
   admission.py         admission control: reject at once beyond the queue bound
   server.py            inference server: bounded queue, clear errors, server-side timing
   client_bench.py      end-to-end latency at several concurrency levels
-tests/                 94 tests for the core, on CPU in about 15 seconds
+tests/                 96 tests for the core, on CPU in about 15 seconds
 results/               raw JSON results + figures; results/history/ keeps the runs that
                        document the mistakes above
 speedrun.sh            one command to rerun every result and regenerate this README

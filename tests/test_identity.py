@@ -181,3 +181,25 @@ def test_report_ignores_identity_records(tmp_path):
         data["identity"] = {"model_revision": REV_MODEL, "environment": {"torch": "1"}}
         f.write_text(json.dumps(data))
     assert values(results) == reference
+
+
+@pytest.mark.parametrize("host, address", [("[::]", "[::]:5"), ("127.0.0.1", "127.0.0.1:5")])
+def test_server_binds_the_requested_host(pinned, monkeypatch, host, address):
+    import argparse
+    import bench.harness as h
+    from serve import server
+    bound = []
+
+    class FakeServer:
+        def add_insecure_port(self, addr):
+            bound.append(addr)
+            raise Stop
+
+    monkeypatch.setattr(h, "Runner", lambda *a, **k: None)
+    monkeypatch.setattr(server, "build_server", lambda service, max_queue: FakeServer())
+    args = argparse.Namespace(model="org/m", model_revision="main", max_edge=1536,
+                              max_new_tokens=32, device="cpu", prompt="vi", max_queue=2,
+                              port=5, host=host)
+    with pytest.raises(Stop):
+        server.serve(args)
+    assert bound == [address]

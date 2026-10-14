@@ -126,7 +126,7 @@ def serve(args):
     revision = resolve_revision(args.model, args.model_revision, "model")
     server = build_server(VlmService(args.model, args.max_edge, args.max_new_tokens, device,
                                      args.prompt, args.max_queue, revision), args.max_queue)
-    server.add_insecure_port(f"[::]:{args.port}")
+    server.add_insecure_port(f"{args.host}:{args.port}")
     server.start()
     print(f"server ready on port {args.port} | model {args.model} "
           f"| device {device} | max edge {args.max_edge} | prompt {args.prompt} "
@@ -139,6 +139,8 @@ if __name__ == "__main__":
     ap.add_argument("--model", default="HuggingFaceTB/SmolVLM-Instruct")
     ap.add_argument("--model-revision", default="main",
                     help="hub branch, tag or commit; resolved to a commit and reported by Health")
+    ap.add_argument("--host", default="[::]",
+                    help="address to listen on; 127.0.0.1 keeps a local benchmark off the network")
     ap.add_argument("--port", type=int, default=50051)
     ap.add_argument("--max-queue", type=int, default=8,
                     help="requests waiting or running before new ones are rejected")
