@@ -9,7 +9,7 @@ Three properties an inference server needs, and where they live:
   - graceful degradation: a clear error on a bad image, an unsupported setting or
     GPU out-of-memory, instead of hanging
 """
-import argparse, io, threading, time
+import argparse, collections, io, threading, time
 from concurrent import futures
 
 import grpc
@@ -40,9 +40,12 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
         # reported by Health, so a client can record exactly which weights answered
         self.model_id = f"{model_id}@{revision}" if revision else model_id
         self.prompt = prompt
-        # One GPU serves one request at a time; the lock makes admitted requests
-        # queue in order instead of competing for memory.
-        self.gpu = threading.Lock()
+        # One GPU serves one request at a time. Admitted requests take it strictly in
+        # arrival order: a plain lock polled with a timeout lets a newcomer overtake
+        # requests that have waited longer, which stretches the latency tail.
+        self.gpu_turn = threading.Condition()
+        self.gpu_waiting = collections.deque()
+        self.gpu_busy = False
         self.admission = Admission(max_queue)
 
     def Health(self, request, context):
@@ -56,15 +59,30 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
         A blocking wait would hand the GPU to a request whose deadline passed while it
         queued, spending a full generation on a reply nobody reads.
         """
-        while not self.gpu.acquire(timeout=self.POLL_S):
-            remaining = context.time_remaining()
-            if remaining is not None and remaining <= 0:
-                context.abort(grpc.StatusCode.DEADLINE_EXCEEDED, "deadline passed while queued")
-            if not context.is_active():
-                context.abort(grpc.StatusCode.CANCELLED, "client cancelled while queued")
-        if not context.is_active():          # it may have gone just as the GPU freed up
-            self.gpu.release()
-            context.abort(grpc.StatusCode.CANCELLED, "client gone before inference")
+        ticket = object()
+        with self.gpu_turn:
+            self.gpu_waiting.append(ticket)
+            try:
+                while self.gpu_busy or self.gpu_waiting[0] is not ticket:
+                    self.gpu_turn.wait(self.POLL_S)
+                    remaining = context.time_remaining()
+                    if remaining is not None and remaining <= 0:
+                        context.abort(grpc.StatusCode.DEADLINE_EXCEEDED,
+                                      "deadline passed while queued")
+                    if not context.is_active():
+                        context.abort(grpc.StatusCode.CANCELLED, "client cancelled while queued")
+                if not context.is_active():  # it may have gone just as the GPU freed up
+                    context.abort(grpc.StatusCode.CANCELLED, "client gone before inference")
+                self.gpu_busy = True
+            finally:
+                # leaving the line, served or not, lets the next request check its turn
+                self.gpu_waiting.remove(ticket)
+                self.gpu_turn.notify_all()
+
+    def _release_gpu(self):
+        with self.gpu_turn:
+            self.gpu_busy = False
+            self.gpu_turn.notify_all()
 
     def Infer(self, request, context):
         edge = request.max_edge or self.default_edge
@@ -94,7 +112,7 @@ class VlmService(vlm_pb2_grpc.VlmServiceServicer):
                     context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED, "out of GPU memory")
                 server_ms = (time.perf_counter() - t0) * 1000
             finally:
-                self.gpu.release()
+                self._release_gpu()
         finally:
             self.admission.leave()
         return vlm_pb2.InferReply(answer=pred, image_tokens=n_img,

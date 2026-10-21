@@ -131,3 +131,16 @@ def test_a_queued_request_cancelled_by_its_client_never_reaches_the_model(serve)
     assert _status(first) == "OK"
     time.sleep(0.3)
     assert service.runner.calls == ["q0"]
+
+
+def test_queued_requests_reach_the_model_in_arrival_order(serve):
+    service, stub = serve(5)
+    first = stub.Infer.future(_request("q0"), timeout=10)
+    assert service.runner.started.wait(5)
+    queued = []
+    for i in range(1, 5):
+        queued.append(stub.Infer.future(_request(f"q{i}"), timeout=10))
+        time.sleep(0.15)                # each waits several polling intervals behind the last
+    service.runner.release.set()
+    assert [_status(c) for c in [first] + queued] == ["OK"] * 5
+    assert service.runner.calls == ["q0", "q1", "q2", "q3", "q4"]
