@@ -14,16 +14,16 @@
 ## Result in one paragraph
 
 > On a 6 GB laptop GPU, answering one chart question with SmolVLM-2.2B spends
-> **53.3% of the time in the vision encoder** and 27.0% in the language
+> **54.7% of the time in the vision encoder** and 25.5% in the language
 > model's prefill, even though the language model reads more than a thousand image
 > tokens. Pruning image tokens after the encoder, the most discussed technique, can only
-> shrink the prefill: Amdahl's law caps it near 1.37×, and it measured
-> **1.10–1.23×**. Which tokens are kept does matter — keeping the
+> shrink the prefill: Amdahl's law caps it near 1.34×, and it measured
+> **1.10–1.24×**. Which tokens are kept does matter — keeping the
 > largest-norm quarter loses far less accuracy than keeping an evenly spaced quarter —
-> but no pruning variant comes close to **halving the input resolution: 1.92×
-> faster, with 1.92× the serving throughput**, at a cost of 2.2 accuracy points (p = 0.011, 1,920 questions).
+> but no pruning variant comes close to **halving the input resolution: 1.94×
+> faster, with 1.83× the serving throughput**, at a cost of 2.2 accuracy points (p = 0.011, 1,920 questions).
 > nf4 quantization with
-> bitsandbytes **cuts memory by 56%** but runs 5% slower: it buys
+> bitsandbytes **cuts memory by 57%** but runs 3% slower: it buys
 > memory, not speed.
 
 ![Speed versus quality trade-off](results/tradeoff_light.png)
@@ -38,7 +38,7 @@ Error bars are 95% Wilson intervals with one observation per question.*
 FAST=1 ./speedrun.sh       # reduced run into results/fast/ to check the pipeline
 DOCKER=1 ./speedrun.sh     # also build the image and measure the server in Docker
 START=5 ./speedrun.sh      # resume from step 5; long runs also resume mid-step from a checkpoint
-pixi run test              # 96 tests in a light CPU environment, about 15 seconds
+pixi run test              # 97 tests in a light CPU environment, about 15 seconds
 ```
 
 The script runs every measurement, redraws the figure and regenerates this README
@@ -63,10 +63,10 @@ as the native run, one request at a time:
 
 | Longest edge | Native | In Docker | Latency difference [95% CI] |
 |---:|---:|---:|---:|
-| 768 | 543 ms · 1.83 req/s | 530 ms · 1.87 req/s | −2% [−9, +5] |
-| 1536 | 993 ms · 0.95 req/s | 1,018 ms · 0.94 req/s | +3% [−2, +7] |
+| 768 | 548 ms · 1.74 req/s | 505 ms · 1.93 req/s | −8% [−14, −2] |
+| 1536 | 1,001 ms · 0.95 req/s | 1,009 ms · 0.94 req/s | +1% [−4, +7] |
 
-Both intervals include zero, so Docker cannot be said to be slower. Without a GPU the server runs with `--device cpu`.
+At least one interval excludes zero: Docker is measurably different there. Without a GPU the server runs with `--device cpu`.
 
 Hardware: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**, under WSL2.
 No cloud GPU, no API spend.
@@ -85,11 +85,11 @@ Median of 36 timings per component:
 
 | Component | Time | Share |
 |---|---:|---:|
-| **Vision encoder** | 472 ms | **53.3%** |
-| Connector | 2.6 ms | 0.3% |
-| Language-model prefill | 239 ms | 27.0% |
-| Generating the answer (median 6 tokens, at most 32) | 169 ms | 19.1% |
-| *(CPU-side image preprocessing, before the GPU)* | *31 ms* | *3.5%* |
+| **Vision encoder** | 541 ms | **54.7%** |
+| Connector | 3.0 ms | 0.3% |
+| Language-model prefill | 252 ms | 25.5% |
+| Generating the answer (median 6 tokens, at most 32) | 176 ms | 17.9% |
+| *(CPU-side image preprocessing, before the GPU)* | *26 ms* | *2.7%* |
 
 The median sample is split into **13 tiles** (the tile grid plus one downscaled view of the whole image) and yields **1,053 image tokens** —
 85% of the 1,242-token input. The encoder, the connector and the
@@ -106,25 +106,25 @@ questions of the paired time ratio, with a bootstrap 95% interval.
 | Configuration | Image tokens | Accuracy [95% CI] | Δ points | p | p (Holm) | Speedup [95% CI] |
 |---|---:|---|---:|---:|---:|---:|
 | Baseline (13 tiles, longest edge 1536) | 1,053 | 60.0% [50–69] | — | — | — | 1.00× |
-| Longest edge 1152 | 810 | 55.0% [45–64] | −5.0 | 0.267 | 1.000 | 1.21× [1.19–1.24] |
-| Longest edge 960 (upscaled to 1152) | 810 | 57.0% [47–66] | −3.0 | 0.581 | 1.000 | 1.21× [1.19–1.23] |
-| **Longest edge 768** | 405 | 59.0% [49–68] | −1.0 | 1.000 | 1.000 | 1.91× [1.84–1.95] |
-| Longest edge 576 (upscaled to 768) | 405 | 56.0% [46–65] | −4.0 | 0.424 | 1.000 | 1.89× [1.84–1.93] |
-| Single tile, no splitting | 81 | 32.0% [24–42] | −28.0 | < 0.0001 | < 0.0001 | 3.29× [3.14–3.48] |
-| Prune to 50% per tile, uniform | 520 | 44.0% [35–54] | −16.0 | < 0.001 | 0.002 | 1.10× [1.09–1.11] |
+| Longest edge 1152 | 810 | 55.0% [45–64] | −5.0 | 0.267 | 1.000 | 1.20× [1.19–1.22] |
+| Longest edge 960 (upscaled to 1152) | 810 | 57.0% [47–66] | −3.0 | 0.581 | 1.000 | 1.21× [1.20–1.22] |
+| **Longest edge 768** | 405 | 59.0% [49–68] | −1.0 | 1.000 | 1.000 | 1.92× [1.89–1.97] |
+| Longest edge 576 (upscaled to 768) | 405 | 56.0% [46–65] | −4.0 | 0.424 | 1.000 | 1.98× [1.89–2.00] |
+| Single tile, no splitting | 81 | 32.0% [24–42] | −28.0 | < 0.0001 | < 0.0001 | 3.64× [3.35–3.84] |
+| Prune to 50% per tile, uniform | 520 | 44.0% [35–54] | −16.0 | < 0.001 | 0.002 | 1.10× [1.10–1.11] |
 | Prune to 25% per tile, uniform | 260 | 26.0% [18–35] | −34.0 | < 0.0001 | < 0.0001 | 1.17× [1.15–1.19] |
-| Prune to 25% per tile, random | 260 | 31.0% [23–41] | −29.0 | < 0.0001 | < 0.001 | 1.17× [1.16–1.19] |
-| Prune to 25% per tile, 2-D mean pooling | 260 | 23.0% [16–32] | −37.0 | < 0.0001 | < 0.0001 | 1.17× [1.16–1.19] |
-| Prune to 25% per tile, largest norm | 260 | 49.0% [39–59] | −11.0 | 0.052 | 0.261 | 1.16× [1.15–1.17] |
-| Prune to 7.7% per tile, uniform | 78 | 18.0% [12–27] | −42.0 | < 0.0001 | < 0.0001 | 1.23× [1.20–1.24] |
+| Prune to 25% per tile, random | 260 | 31.0% [23–41] | −29.0 | < 0.0001 | < 0.001 | 1.18× [1.17–1.19] |
+| Prune to 25% per tile, 2-D mean pooling | 260 | 23.0% [16–32] | −37.0 | < 0.0001 | < 0.0001 | 1.18× [1.17–1.19] |
+| Prune to 25% per tile, largest norm | 260 | 49.0% [39–59] | −11.0 | 0.052 | 0.261 | 1.17× [1.16–1.18] |
+| Prune to 7.7% per tile, uniform | 78 | 18.0% [12–27] | −42.0 | < 0.0001 | < 0.0001 | 1.24× [1.23–1.25] |
 
 Three conclusions:
 
 - **Fewer tiles beats token pruning.** Halving the longest edge (13 → 5 tiles) is
-  1.91× faster; every pruning variant stays at 1.10–1.23×,
+  1.92× faster; every pruning variant stays at 1.10–1.24×,
   because pruning after the encoder still pays the full cost of the vision encoder.
   The best pruning variant (largest-norm, 25%) keeps 49.0% accuracy at
-  1.16×, while edge 768 keeps 59.0% at 1.91×
+  1.17×, while edge 768 keeps 59.0% at 1.92×
   (the accuracy difference between the two: p = 0.110).
 - **Which tokens are kept matters.** At the same 25% budget, largest-norm selection beats
   evenly spaced selection (30 vs 7 discordant, p < 0.001) and random selection
@@ -132,14 +132,14 @@ Three conclusions:
   evenly spaced half (p = 0.359). Evenly spaced, random and 2-D
   mean pooling are not distinguishable from each other (14 vs 9 discordant, p = 0.405;
   10 vs 13 discordant, p = 0.678).
-- **A single tile is the fastest option, and the most expensive one.** 3.29×
+- **A single tile is the fastest option, and the most expensive one.** 3.64×
   faster, but −28.0 points: at 384×384 the digits on a chart become unreadable.
 
 ### The main lever on the whole validation split
 
 The accuracy cost of the main lever is small, so it needs many questions: on the whole
-split of 1,920 questions, longest edge 768 runs **1.92×** faster
-[1.91–1.93] and changes accuracy from 55.2% to
+split of 1,920 questions, longest edge 768 runs **1.94×** faster
+[1.92–1.95] and changes accuracy from 55.2% to
 53.0%: **−2.2 points** [−3.9, −0.6], p
 = 0.011 (150 vs 108 discordant questions) — a real trade-off.
 
@@ -200,10 +200,10 @@ Latency is the median of 32 timings; logit parity is measured on
 
 | Mode | Latency (median) | Peak VRAM | Top-1 agreement | Max logit difference |
 |---|---:|---:|---:|---:|
-| bf16 (reference) | 886 ms | 4,749 MB | 100% | 0.00 |
-| fp16 | 881 ms | 4,749 MB | 94% | 6.08 |
-| int8 | 2,354 ms | 3,008 MB | 100% | 3.84 |
-| **nf4** | 1,005 ms | 1,858 MB | 100% | 6.78 |
+| bf16 (reference) | 911 ms | 4,749 MB | 100% | 0.00 |
+| fp16 | 937 ms | 4,749 MB | 94% | 6.08 |
+| int8 | 2,442 ms | 3,008 MB | 100% | 3.84 |
+| **nf4** | 1,004 ms | 1,858 MB | 100% | 6.78 |
 
 **bitsandbytes quantization buys memory here, not speed.** Neither format reduces the
 arithmetic, and each adds work:
@@ -229,9 +229,9 @@ card, so they run one after the other; the comparison is paired per question):
 |---|---:|---:|---|
 | Accuracy (baseline) | 55.0% | 53.3% | −1.7 points, p = 0.533 |
 | Accuracy (edge 768) | 52.0% | 49.0% | −3.0 points, p = 0.188 |
-| Speed, paired (baseline) | 1.00× | 0.95× [0.94–0.96] | **5% slower** |
-| Speed, paired (edge 768) | 1.00× | 0.88× [0.87–0.89] | **14% slower** |
-| Peak VRAM | 4,891 MB | **2,169 MB** | **−56%** |
+| Speed, paired (baseline) | 1.00× | 0.97× [0.96–0.97] | **3% slower** |
+| Speed, paired (edge 768) | 1.00× | 0.87× [0.86–0.88] | **15% slower** |
+| Peak VRAM | 5,063 MB | **2,169 MB** | **−57%** |
 
 The accuracy change of −1.7 points is not distinguishable from no change (p = 0.533).
 
@@ -241,17 +241,17 @@ The accuracy change of −1.7 points is not distinguishable from no change (p = 
 
 | Longest edge | Concurrency | Median | p95 | Server compute | Throughput |
 |---:|---:|---:|---:|---:|---:|
-| 1536 | 1 | 993 ms | 1,534 ms | 988 ms | 0.95 req/s |
-| 1536 | 2 | 2,023 ms | 2,747 ms | 1,012 ms | 0.94 req/s |
-| 1536 | 4 | 3,912 ms | 4,740 ms | 931 ms | 1.01 req/s |
-| **768** | 1 | **543 ms** | 814 ms | 538 ms | **1.83 req/s** |
-| 768 | 2 | 1,013 ms | 1,301 ms | 511 ms | 1.92 req/s |
-| 768 | 4 | 2,076 ms | 2,463 ms | 497 ms | 1.91 req/s |
+| 1536 | 1 | 1,001 ms | 1,533 ms | 995 ms | 0.95 req/s |
+| 1536 | 2 | 1,988 ms | 2,612 ms | 993 ms | 0.96 req/s |
+| 1536 | 4 | 4,367 ms | 6,312 ms | 1,062 ms | 0.86 req/s |
+| **768** | 1 | **548 ms** | 949 ms | 541 ms | **1.74 req/s** |
+| 768 | 2 | 1,064 ms | 1,446 ms | 538 ms | 1.78 req/s |
+| 768 | 4 | 2,172 ms | 2,674 ms | 540 ms | 1.78 req/s |
 
 Server-side compute time is **flat across concurrency levels**; everything added is
 queue wait. One GPU serves one request at a time, so **raising concurrency does not
 raise throughput, it only inflates latency**. Reducing the resolution multiplies
-throughput by 1.92×, close to the 1.92× measured offline. The server
+throughput by 1.83×, close to the 1.94× measured offline. The server
 admits at most `--max-queue` requests (default 8) and rejects the rest at once with
 `RESOURCE_EXHAUSTED`, so overload shows up as a clear error instead of unbounded latency.
 
@@ -308,7 +308,7 @@ your own favor. These rules live in `bench/harness.py`, not in a document:
 4. **Report the median and interquartile range**, never mean ± standard deviation
 5. **Claim a difference only when its 95% interval excludes "no difference"**, and correct
    for multiple comparisons (Holm) when many configurations face one baseline. For
-   reference, a single measurement varies with a robust CV of 6.0% on this machine
+   reference, a single measurement varies with a robust CV of 3.2% on this machine
    (60 runs of one input) — why one run against one run proves little.
 6. **Record invariants and machine state, and check each run's integrity** — image tokens,
    clock, temperature, control drift, timing spikes against each sample's own replicates,
@@ -369,7 +369,7 @@ serve/
   admission.py         admission control: reject at once beyond the queue bound
   server.py            inference server: bounded queue, clear errors, server-side timing
   client_bench.py      end-to-end latency at several concurrency levels
-tests/                 96 tests for the core, on CPU in about 15 seconds
+tests/                 97 tests for the core, on CPU in about 15 seconds
 results/               raw JSON results + figures; results/history/ keeps the runs that
                        document the mistakes above
 speedrun.sh            one command to rerun every result and regenerate this README
@@ -380,7 +380,7 @@ Dockerfile             packages the inference server
 
 - One model, one benchmark family, one GPU. Nothing is claimed for other setups.
 - The laptop GPU clocks cannot be locked (`nvidia-smi` reports active power and
-  thermal capping), so a baseline noise of about 6.0% (CV) is unavoidable.
+  thermal capping), so a baseline noise of about 3.2% (CV) is unavoidable.
 - Quantization was tested only through bitsandbytes (weight-only nf4 and LLM.int8).
   Activation quantization (W8A8, FP8), CUDA graphs and fused 4-bit kernels, which
   target the bottlenecks found here, were not.

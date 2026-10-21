@@ -1,5 +1,21 @@
 {
   "model": "HuggingFaceTB/SmolVLM-Instruct",
+  "identity": {
+    "model_revision": "81cd9a775a4d644f2faf4e7becff4559b46b14c7",
+    "dataset_revision": "539088ef8a8ada01ac8e2e6d4e372586748a265e",
+    "source_sha256": "4b701ba1abf5111c4d759b3a47f16550357ea8582da7892aec53b207a35d41ce",
+    "environment": {
+      "python": "3.12.14",
+      "torch": "2.14.0+cu130",
+      "cuda": "13.0",
+      "gpu": "NVIDIA RTX 1000 Ada Generation Laptop GPU",
+      "transformers": "5.17.0",
+      "datasets": "5.0.1",
+      "accelerate": "1.15.0",
+      "bitsandbytes": "0.50.2",
+      "pillow": "12.3.0"
+    }
+  },
   "dataset": "docvqa/validation",
   "prompt": "en",
   "n": 300,
