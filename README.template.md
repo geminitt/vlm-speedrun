@@ -63,7 +63,7 @@ as the native run, one request at a time:
 
 {{table_docker}}
 
-{{docker_verdict}} Without a GPU the server runs with `--device cpu`.
+Without a GPU the server runs with `--device cpu`.
 
 Hardware: **NVIDIA RTX 1000 Ada Laptop, 6 GB, compute capability 8.9**, under WSL2.
 No cloud GPU, no API spend.

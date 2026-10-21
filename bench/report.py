@@ -8,7 +8,7 @@ is caught:
     python -m bench.report --write     # regenerate README.md
     python -m bench.report --check     # fail if README.md is out of date (CI runs this)
 """
-import argparse, json, re, statistics, sys
+import argparse, json, re, statistics, subprocess, sys
 from pathlib import Path
 
 from bench.compare_anls import compare as compare_anls
@@ -358,18 +358,15 @@ def values(results):
     v["serve_requests"] = serving[768]["1"]["end_to_end_ms"]["n"]
     v["serve_throughput_gain"] = (f"{serving[768]['1']['throughput_rps'] / serving[1536]['1']['throughput_rps']:.2f}×")
 
-    rows, verdicts = [], []
+    rows = []
     for edge in (768, 1536):
         nat, dk = serving[edge]["1"], load(results, f"gate4_docker_{edge}")["1"]
         r, lo, hi = median_ratio_ci(nat["raw_end_to_end_ms"], dk["raw_end_to_end_ms"])
-        verdicts.append(lo <= 1 <= hi)
         rows.append([edge, f"{nat['end_to_end_ms']['median']:,.0f} ms · {nat['throughput_rps']:.2f} req/s",
                      f"{dk['end_to_end_ms']['median']:,.0f} ms · {dk['throughput_rps']:.2f} req/s",
                      f"{signed(100 * (r - 1), 0)}% [{signed(100 * (lo - 1), 0)}, {signed(100 * (hi - 1), 0)}]"])
     v["table_docker"] = table(["Longest edge", "Native", "In Docker", "Latency difference [95% CI]"],
                               rows, ["---:", "---:", "---:", "---:"])
-    v["docker_verdict"] = ("Both intervals include zero, so Docker cannot be said to be slower." if all(verdicts)
-                           else "At least one interval excludes zero: Docker is measurably different there.")
 
     # ---- DocVQA sanity check and instruction language -----------------------------------------
     dv, de = load(results, "sanity_docvqa"), load(results, "sanity_docvqa_en")
@@ -417,8 +414,11 @@ def values(results):
              prompt_docvqa_ci=f"[{signed(ca['diff_ci95'][0])}, {signed(ca['diff_ci95'][1])}]")
 
     # ---- repository facts ----------------------------------------------------------------------
-    v["n_tests"] = sum(len(re.findall(r"^def test_", p.read_text(), re.M))
-                       for p in (ROOT / "tests").glob("test_*.py"))
+    # count what pytest runs, parametrized cases included, not the test functions
+    collected = subprocess.run([sys.executable, "-m", "pytest", "tests/", "--collect-only", "-q",
+                                "-p", "no:cacheprovider"], cwd=ROOT, capture_output=True,
+                               text=True, timeout=120)
+    v["n_tests"] = re.search(r"^(\d+) tests? collected", collected.stdout, re.M)[1]
     return {k: str(x) for k, x in v.items()}
 
 
