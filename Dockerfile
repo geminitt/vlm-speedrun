@@ -14,20 +14,24 @@ FROM ubuntu:24.04
 RUN apt-get update && apt-get install -y --no-install-recommends \
         curl ca-certificates gcc libc6-dev && rm -rf /var/lib/apt/lists/*
 
-# pixi builds the environment from the same pixi.lock used in development
-RUN curl -fsSL https://pixi.sh/install.sh | bash
+# Match the development package manager as well as its locked dependencies.
+ARG PIXI_VERSION=0.79.0
+RUN curl --fail --location --retry 3 --connect-timeout 20 --max-time 120 \
+        https://pixi.sh/install.sh -o /tmp/install-pixi.sh && \
+    PIXI_VERSION="$PIXI_VERSION" bash /tmp/install-pixi.sh
 ENV PATH="/root/.pixi/bin:${PATH}"
 
 WORKDIR /app
 COPY pixi.toml pixi.lock ./
 # The package cache is shared across builds: changing a layer above does not force
 # re-downloading several GB of packages, and an interrupted build can be retried.
-# Parallel downloads are cut from the default 50 to 4, since unstable links tend to
-# drop when too many connections are open at once.
-# UV_HTTP_TIMEOUT: the torch wheel is 529 MB; on a slow link the default timeout of
-# about 30 seconds made the installer abandon the whole file partway through.
+# Download one package at a time: four concurrent downloads still encountered
+# connection resets on the large CUDA wheels. Pixi also passes this limit to its
+# PyPI installer. Keep successful downloads across interrupted builds.
+# These variables configure Pixi's embedded PyPI client; no uv CLI is installed.
 RUN --mount=type=cache,target=/root/.cache/rattler \
-    UV_HTTP_TIMEOUT=900 pixi install --locked -e default --concurrent-downloads 4
+    UV_HTTP_TIMEOUT=900 UV_HTTP_RETRIES=5 \
+    pixi install --locked -e default --concurrent-downloads 1
 
 COPY bench/ bench/
 COPY serve/ serve/
